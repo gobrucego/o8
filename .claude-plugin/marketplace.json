@@ -11,7 +11,7 @@
   "plugins": [
     {
       "name": "orchestr8",
-      "source": ".claude",
+      "source": "./.claude",
       "description": "Complete autonomous software engineering organization with 81+ specialized agents, 13 autonomous workflows, enterprise compliance, game development, AI/ML, and blockchain/Web3 support",
       "version": "1.2.4"
     }
