@@ -1,8 +1,8 @@
 {
   "name": "claude-orchestration",
   "displayName": "Claude Code Enterprise Orchestration System",
-  "version": "1.0.0",
-  "description": "Complete autonomous software engineering organization with 72+ specialized agents, 13 autonomous workflows, and enterprise compliance. Transform Claude Code into a full development team.",
+  "version": "1.1.0",
+  "description": "Complete autonomous software engineering organization with 81+ specialized agents, 13 autonomous workflows, enterprise compliance, game development, AI/ML, and blockchain/Web3 support. Transform Claude Code into a full development team.",
   "author": "Claude Code Community",
   "license": "MIT",
   "repository": "https://github.com/anthropics/claude-orchestration",
@@ -29,7 +29,19 @@
     "typescript",
     "java",
     "go",
-    "rust"
+    "rust",
+    "unity",
+    "unreal",
+    "godot",
+    "game-development",
+    "langchain",
+    "llamaindex",
+    "ai",
+    "ml",
+    "blockchain",
+    "web3",
+    "solidity",
+    "ethereum"
   ],
   "categories": [
     "Development",
@@ -38,7 +50,10 @@
     "Security",
     "Compliance",
     "Infrastructure",
-    "Testing"
+    "Testing",
+    "Game Development",
+    "AI/ML",
+    "Blockchain"
   ],
   "engines": {
     "claudeCode": ">=1.0.0"
@@ -58,11 +73,14 @@
     "terraform": ">=1.0.0"
   },
   "features": {
-    "agents": 72,
+    "agents": 81,
     "workflows": 13,
     "languages": 11,
     "cloudProviders": 3,
     "compliance": 5,
+    "gameEngines": 3,
+    "aiMlFrameworks": 2,
+    "blockchainPlatforms": 2,
     "crossPlatform": true
   }
 }

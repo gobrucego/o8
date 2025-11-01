@@ -5,6 +5,145 @@ All notable changes to the Claude Code Orchestration System.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-11-01
+
+### 🎮 Game Development
+
+**New Game Engine Specialists (3 agents)**
+- **Unity Specialist** - Complete Unity game development
+  - C# scripting with MonoBehaviour lifecycle
+  - Player controllers, physics, animations, UI systems
+  - Object pooling, save systems, event systems
+  - Universal/High Definition Render Pipeline
+  - Netcode for GameObjects multiplayer
+  - Cross-platform deployment (PC, mobile, WebGL, console)
+  - Unity 2022+ LTS, performance optimization
+
+- **Unreal Engine Specialist** - AAA game development
+  - C++ and Blueprint visual scripting
+  - Actor/Component architecture, replication
+  - Nanite virtualized geometry, Lumen global illumination
+  - Niagara particle systems, advanced materials
+  - Multiplayer with RPCs and dedicated servers
+  - Unreal Engine 5.x features
+  - Ray tracing, virtual shadow maps
+
+- **Godot Specialist** - Open-source game development
+  - GDScript 2.0 with type hints
+  - Scene tree and node system
+  - 2D/3D physics, animation, signals
+  - State machines, AI, pathfinding
+  - Cross-platform indie game development
+  - Godot 4.x with Vulkan rendering
+
+### 🤖 AI/ML Enhanced Capabilities
+
+**New AI/ML Specialists (2 agents)**
+- **LangChain Specialist** - LLM application development
+  - RAG systems with vector stores (Pinecone, Weaviate, Chroma, FAISS)
+  - Agents and tools with ReAct pattern
+  - Conversational memory (buffer, summary, entity)
+  - LangChain Expression Language (LCEL) chains
+  - Streaming responses, prompt engineering
+  - Production patterns (caching, monitoring with LangSmith, evaluation)
+  - OpenAI GPT-4, Anthropic Claude, open-source models
+
+- **LlamaIndex Specialist** - Data-centric AI applications
+  - Advanced indexing (Vector, Tree, List, Keyword, Knowledge Graph)
+  - Query engines with re-ranking (Cohere, SentenceTransformer)
+  - Sub-question and router query engines
+  - SQL database integration, multi-modal data
+  - Document loaders for 100+ data sources
+  - The Graph integration, IPFS support
+  - Evaluation and optimization frameworks
+
+### 🧪 Advanced Testing
+
+**New Testing Specialists (2 agents)**
+- **Mutation Testing Specialist** - Test quality validation
+  - PITest (Java/Kotlin), Stryker (JavaScript/TypeScript), mutmut (Python)
+  - Mutation score calculation and improvement strategies
+  - Incremental mutation testing for CI/CD
+  - Test effectiveness measurement
+  - Equivalent mutant detection
+  - Performance optimization for large codebases
+
+- **Contract Testing Specialist** - API compatibility assurance
+  - Pact consumer-driven contract testing (JS, Java, Python, Go, .NET)
+  - Spring Cloud Contract for Java/Spring ecosystem
+  - Provider verification and bi-directional contracts
+  - Pact Broker integration with can-i-deploy checks
+  - Contract versioning and evolution strategies
+  - Breaking change detection
+  - CI/CD integration with quality gates
+
+### ⛓️ Blockchain & Web3
+
+**New Blockchain/Web3 Specialists (2 agents)**
+- **Solidity Specialist** - Smart contract development
+  - Solidity 0.8+ with OpenZeppelin contracts
+  - ERC-20, ERC-721, ERC-1155 token standards
+  - DeFi patterns (staking, liquidity pools, AMMs, governance)
+  - Upgradeable contracts (UUPS, Transparent proxy)
+  - Security best practices, reentrancy guards
+  - Gas optimization techniques
+  - Hardhat and Foundry testing frameworks
+  - Mainnet forking, deployment, Etherscan verification
+
+- **Web3 Specialist** - Decentralized application development
+  - Wallet integration (RainbowKit, WalletConnect, MetaMask)
+  - ethers.js v6, wagmi, viem libraries
+  - Smart contract interaction with TypeChain
+  - IPFS decentralized storage
+  - The Graph subgraph queries
+  - Multi-chain support (Ethereum, Polygon, Optimism, Arbitrum)
+  - NFT minting interfaces, DeFi protocol integrations
+  - Transaction management, event listening
+
+### 📊 Statistics
+
+**v1.1.0 adds 9 specialized agents:**
+- Total agents: 81+ (was 72+)
+- Game development: 3 new agents
+- AI/ML: 2 new agents
+- Advanced testing: 2 new agents
+- Blockchain/Web3: 2 new agents
+
+### 🚀 What's New
+
+1. **Game Development Support**
+   - Unity, Unreal Engine, Godot specialists
+   - 2D/3D game systems, physics, animations
+   - Multiplayer networking
+   - Cross-platform deployment
+
+2. **AI/ML Application Development**
+   - LangChain for LLM-powered apps
+   - LlamaIndex for data-centric AI
+   - RAG systems, agents, vector search
+   - Production-ready AI patterns
+
+3. **Enhanced Quality Assurance**
+   - Mutation testing for test quality
+   - Contract testing for microservices
+   - API compatibility guarantees
+   - Advanced testing strategies
+
+4. **Blockchain & Decentralized Apps**
+   - Smart contract development
+   - dApp frontend development
+   - DeFi protocol integration
+   - Multi-chain Web3 support
+
+### 📚 Updated Documentation
+
+- Agent creation guide updated with new categories
+- Token optimization strategies applied
+- Cross-platform support verified
+- Model assignments optimized
+
+---
+
 ## [1.0.0] - 2025-01-15
 
 ### 🎉 Initial Release
