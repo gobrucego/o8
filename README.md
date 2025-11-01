@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://claude.ai)
 
-**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 56+ specialized agents, 12 autonomous workflows, enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), ML/data pipelines, legacy modernization, and cost optimization.
+**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 64+ specialized agents, 13 autonomous workflows, enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), ML/data pipelines, API design (GraphQL/gRPC), and message queues (Kafka/RabbitMQ).
 
 ## 🎯 What Makes This Different
 
@@ -118,8 +118,8 @@ git init
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ Layer 2: Specialized Agents (56+)                          │
-│ Dev, Quality, DevOps, Data/ML, SRE, DBs, Frontend, Mobile  │
+│ Layer 2: Specialized Agents (64+)                          │
+│ Dev, API, Testing, Messaging, SRE, DBs, Frontend, Mobile   │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -239,6 +239,31 @@ git init
 
 - `sre-specialist` - SLOs/SLIs, error budgets, incident response, on-call procedures, chaos engineering, toil automation
 - `observability-specialist` - Prometheus, Grafana, OpenTelemetry, distributed tracing, ELK stack, APM, alerting
+
+</details>
+
+<details>
+<summary><b>🔌 API Design Specialists (3)</b> - Modern API architectures</summary>
+
+- `graphql-specialist` - GraphQL schema design, Apollo Server/Client, subscriptions, DataLoader, federation
+- `grpc-specialist` - Protocol Buffers, gRPC services, streaming patterns, interceptors, cross-language RPC
+- `openapi-specialist` - REST API design, OpenAPI 3.1 specs, validation, Swagger/ReDoc, code generation
+
+</details>
+
+<details>
+<summary><b>📨 Message Queue Specialists (2)</b> - Async messaging</summary>
+
+- `kafka-specialist` - Apache Kafka producers/consumers, Kafka Streams, event-driven architecture, schema registry
+- `rabbitmq-specialist` - RabbitMQ exchanges, routing patterns, work queues, pub/sub, RPC patterns
+
+</details>
+
+<details>
+<summary><b>🧪 Advanced Testing Specialists (2)</b> - Quality assurance</summary>
+
+- `playwright-specialist` - E2E testing, browser automation, visual regression, Page Object Model, cross-browser
+- `load-testing-specialist` - k6, Locust, stress testing, capacity planning, performance benchmarking
 
 </details>
 
