@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://claude.ai)
 
-**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 50+ specialized agents, hierarchical orchestration, enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), autonomous web UI testing, ML/data pipelines, and complete project lifecycle automation.
+**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 56+ specialized agents, 12 autonomous workflows, enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), ML/data pipelines, legacy modernization, and cost optimization.
 
 ## 🎯 What Makes This Different
 
@@ -118,8 +118,8 @@ git init
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
-│ Layer 2: Specialized Agents (50+)                          │
-│ Development, Quality, DevOps, Data/ML, SRE, Databases      │
+│ Layer 2: Specialized Agents (56+)                          │
+│ Dev, Quality, DevOps, Data/ML, SRE, DBs, Frontend, Mobile  │
 └─────────────────────────────────────────────────────────────┘
                           ↓
 ┌─────────────────────────────────────────────────────────────┐
@@ -161,6 +161,24 @@ git init
 - `architect` - System design, technology selection
 - `frontend-developer` - React, Vue, modern frontend
 - `backend-developer` - APIs, services, business logic
+
+</details>
+
+<details>
+<summary><b>🎨 Frontend Framework Specialists (4)</b> - Modern web frameworks</summary>
+
+- `react-specialist` - React 18+, hooks, performance optimization, Zustand/Redux, Server Components
+- `nextjs-specialist` - Next.js 14+ App Router, Server Actions, ISR, SSR, SSG, full-stack React
+- `vue-specialist` - Vue 3 Composition API, Pinia state management, Vite, reactive patterns
+- `angular-specialist` - Angular 17+ standalone components, signals, RxJS, TypeScript
+
+</details>
+
+<details>
+<summary><b>📱 Mobile Development Specialists (2)</b> - Native mobile apps</summary>
+
+- `swiftui-specialist` - SwiftUI for iOS/macOS, async/await, SwiftData, modern Swift patterns
+- `compose-specialist` - Jetpack Compose for Android, Material Design 3, Kotlin Coroutines, Room
 
 </details>
 
@@ -566,6 +584,91 @@ Workflows are the easiest way to accomplish complex tasks.
 - Replacing legacy monitoring
 - Implementing SRE practices
 - Compliance requirements (SOC2, ISO27001)
+
+---
+
+#### 11. Modernize Legacy: `/modernize-legacy`
+
+**Syntax:**
+```bash
+/modernize-legacy "Description of legacy system and modernization goals"
+```
+
+**Example:**
+```bash
+/modernize-legacy "Django 2.2 app to Django 4.2. PostgreSQL with 10M+ records. Zero downtime required."
+```
+
+**What Happens:**
+1. **Assessment** - Analyze legacy codebase, dependencies, risks, create migration strategy
+2. **Test Coverage** - Establish comprehensive test suite (characterization tests, integration, E2E)
+3. **Incremental Migration** - Use Strangler Fig or Branch by Abstraction patterns for safe migration
+4. **Data Migration** - Dual-write strategy for zero data loss, schema migration
+5. **Performance** - Benchmark and optimize, ensure modern code performs better
+6. **Documentation** - Technical docs, migration guides, runbooks
+7. **Deployment** - Blue-green or canary deployment with monitoring and rollback
+
+**Modernization Patterns:**
+- **Strangler Fig**: New implementation alongside legacy, gradual traffic shift
+- **Branch by Abstraction**: Extract interface, swap implementations
+- **Parallel Run**: Run both, compare results, switch when confident
+
+**Deliverables:**
+- Modernized codebase
+- 80%+ test coverage
+- Zero downtime migration
+- Performance improvements
+- Complete documentation
+- Rollback plan
+
+**When to Use:**
+- Python 2 → 3, Java 8 → 17 upgrades
+- Framework migrations (Django, React, Angular versions)
+- Monolith → microservices transformation
+- Legacy tech stack modernization
+
+---
+
+#### 12. Optimize Costs: `/optimize-costs`
+
+**Syntax:**
+```bash
+/optimize-costs "Cloud environment description and cost reduction goals"
+```
+
+**Example:**
+```bash
+/optimize-costs "AWS spending $50k/month. Microservices on EKS, RDS, S3 storage. Need 40% reduction."
+```
+
+**What Happens:**
+1. **Cost Analysis** - Break down spend by service, identify waste, top cost drivers
+2. **Right-Sizing** - Analyze CPU/memory utilization, recommend instance type changes
+3. **Storage Optimization** - S3 lifecycle policies, remove unattached volumes, gp2→gp3
+4. **Reserved Capacity** - Calculate RI/Savings Plan recommendations, spot instance opportunities
+5. **Auto-Scaling** - Configure ASGs, scheduled scaling for dev/test environments
+6. **Networking** - VPC endpoints, CloudFront CDN, load balancer consolidation
+7. **FinOps Monitoring** - Cost anomaly detection, budgets, tagging enforcement, showback/chargeback
+
+**Typical Savings:**
+- **Compute**: 30-50% (right-sizing, reserved instances, spot, auto-scaling)
+- **Storage**: 20-40% (lifecycle policies, intelligent tiering, volume optimization)
+- **Database**: 20-40% (right-sizing, reserved instances, Aurora Serverless)
+- **Networking**: 10-30% (VPC endpoints, CDN, load balancer consolidation)
+
+**Deliverables:**
+- Cost breakdown and waste analysis
+- Right-sizing recommendations
+- Implemented optimizations
+- FinOps monitoring dashboards
+- 30-60% cost reduction achieved
+
+**When to Use:**
+- Cloud bill optimization
+- Cost reduction initiatives
+- Budget constraints
+- FinOps implementation
+- Quarterly cost reviews
 
 ---
 
