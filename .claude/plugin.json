@@ -1,13 +1,14 @@
 {
   "name": "orchestr8",
-  "displayName": "Orchestr8 - Enterprise Orchestration System",
   "version": "1.2.2",
   "description": "Complete autonomous software engineering organization with 81+ specialized agents, 13 autonomous workflows, enterprise compliance, game development, AI/ML, and blockchain/Web3 support. Transform Claude Code into a full development team.",
-  "author": "Claude Code Community",
+  "author": {
+    "name": "Seth Schultz",
+    "url": "https://github.com/seth-schultz"
+  },
   "license": "MIT",
   "repository": "https://github.com/seth-schultz/orchestr8",
   "homepage": "https://github.com/seth-schultz/orchestr8",
-  "bugs": "https://github.com/seth-schultz/orchestr8/issues",
   "keywords": [
     "agents",
     "orchestration",
@@ -43,44 +44,6 @@
     "solidity",
     "ethereum"
   ],
-  "categories": [
-    "Development",
-    "DevOps",
-    "Quality",
-    "Security",
-    "Compliance",
-    "Infrastructure",
-    "Testing",
-    "Game Development",
-    "AI/ML",
-    "Blockchain"
-  ],
-  "engines": {
-    "claudeCode": ">=1.0.0"
-  },
-  "main": ".claude/CLAUDE.md",
-  "files": [
-    ".claude/**/*",
-    "README.md",
-    "LICENSE"
-  ],
-  "dependencies": {
-    "docker": ">=20.0.0"
-  },
-  "optionalDependencies": {
-    "node": ">=18.0.0",
-    "python": ">=3.11.0",
-    "terraform": ">=1.0.0"
-  },
-  "features": {
-    "agents": 81,
-    "workflows": 13,
-    "languages": 11,
-    "cloudProviders": 3,
-    "compliance": 5,
-    "gameEngines": 3,
-    "aiMlFrameworks": 2,
-    "blockchainPlatforms": 2,
-    "crossPlatform": true
-  }
+  "commands": "commands/**/*.md",
+  "agents": "agents/**/*.md"
 }
