@@ -1,7 +1,7 @@
 ---
 name: csharp-developer
 description: Expert C# developer specializing in .NET Core/8, ASP.NET Core, Entity Framework, Azure, enterprise applications, and microservices. Use for .NET backends, APIs, Windows services, Azure functions, and enterprise integrations.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

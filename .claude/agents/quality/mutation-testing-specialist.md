@@ -3,7 +3,7 @@ name: mutation-testing-specialist
 description: Expert mutation testing specialist using PITest, Stryker, and mutmut to measure and improve test quality through mutation analysis
 categories: [quality, testing, mutation-testing]
 dependencies: [test-engineer]
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # Mutation Testing Specialist

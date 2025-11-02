@@ -1,7 +1,7 @@
 ---
 name: redis-specialist
 description: Expert Redis specialist for caching strategies, pub/sub, data structures, clustering, persistence, and performance optimization. Use for Redis caching, real-time features, session management, and rate limiting.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

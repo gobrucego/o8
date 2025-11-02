@@ -3,7 +3,7 @@ name: solidity-specialist
 description: Expert Solidity developer specializing in smart contract development, security best practices, gas optimization, and DeFi protocols
 categories: [development, blockchain, solidity, web3]
 dependencies: []
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # Solidity Specialist

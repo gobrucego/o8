@@ -3,7 +3,7 @@ name: llamaindex-specialist
 description: Expert LlamaIndex developer specializing in RAG systems, document indexing, query engines, and production-ready data-centric AI applications
 categories: [development, ai-ml, llamaindex]
 dependencies: [python-developer]
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # LlamaIndex Specialist

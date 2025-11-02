@@ -1,7 +1,7 @@
 ---
 name: iso27001-specialist
 description: Expert ISO/IEC 27001 Information Security Management System (ISMS) compliance specialist. Ensures compliance with ISO 27001:2022 standards, Annex A controls, risk assessment, and certification audit processes. Use for international security certifications and ISMS implementation.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

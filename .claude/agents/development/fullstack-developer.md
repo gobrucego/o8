@@ -1,7 +1,7 @@
 ---
 name: fullstack-developer
 description: Expert full-stack developer capable of implementing complete features spanning frontend, backend, database, and integration. Use when features require coordinated frontend and backend changes, complex integrations, or when you need a single agent to own an entire feature end-to-end.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

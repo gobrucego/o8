@@ -3,7 +3,7 @@ name: godot-specialist
 description: Expert Godot Engine developer specializing in GDScript, Godot 4.x, scene system, signals, and cross-platform indie game development
 categories: [development, game-engines, godot]
 dependencies: []
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # Godot Engine Specialist

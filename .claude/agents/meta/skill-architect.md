@@ -1,7 +1,7 @@
 ---
 name: skill-architect
 description: Expert in designing auto-activated skills that augment agent capabilities with reusable expertise. Use for creating methodology, pattern, and best practice skills that provide context-specific guidance.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

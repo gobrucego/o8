@@ -1,7 +1,7 @@
 ---
 name: debugger
 description: Expert debugging specialist for identifying and fixing complex bugs across all technology stacks. Use for production issues, race conditions, memory leaks, performance problems, and hard-to-reproduce bugs. Masters debugging tools, profilers, and root cause analysis.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Bash

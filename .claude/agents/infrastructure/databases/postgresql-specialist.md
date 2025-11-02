@@ -1,7 +1,7 @@
 ---
 name: postgresql-specialist
 description: Expert PostgreSQL database specialist for performance tuning, replication, high availability, pgvector for AI/embeddings, query optimization, and production database management. Use for PostgreSQL-specific optimization, scaling, and troubleshooting.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

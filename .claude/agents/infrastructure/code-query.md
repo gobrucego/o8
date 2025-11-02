@@ -1,7 +1,7 @@
 ---
 name: code-query
 description: JIT context loading agent that provides intelligent code queries from the database with automatic reconciliation. File system is source of truth. Use for loading only relevant code context instead of entire files.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write
@@ -527,7 +527,7 @@ def assess_function_change_impact(function_name):
 ---
 name: example-agent
 description: Example agent that properly uses the database
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

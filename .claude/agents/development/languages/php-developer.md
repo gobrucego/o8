@@ -1,7 +1,7 @@
 ---
 name: php-developer
 description: Expert PHP developer specializing in Laravel, Symfony, WordPress, PHPUnit, Composer, API development, and modern PHP 8+ features. Use for Laravel applications, WordPress plugins/themes, RESTful APIs, and enterprise PHP solutions.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

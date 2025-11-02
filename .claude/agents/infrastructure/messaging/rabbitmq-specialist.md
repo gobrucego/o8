@@ -1,7 +1,7 @@
 ---
 name: rabbitmq-specialist
 description: Expert RabbitMQ specialist for message queues, exchanges, routing, pub/sub patterns, and reliable messaging. Use for async task processing, microservices communication, and message-driven architectures.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write
