@@ -1,7 +1,7 @@
 {
   "name": "orchestr8",
-  "version": "1.5.0",
-  "description": "Complete autonomous software engineering organization with 72 specialized agents (including automatic code indexing, error tracking, and intelligent query agents), 19 autonomous workflows, enterprise compliance, game development, AI/ML, blockchain/Web3 support, meta-orchestration capabilities, and revolutionary code intelligence database with automatic reconciliation. Features self-extending plugin architecture, multi-stage code review system, and JIT context loading with PostgreSQL + pgvector that reduces token usage by 80-90%. File system is source of truth with transparent database synchronization. Transform Claude Code into a full development team with intelligent context management.",
+  "version": "2.0.0",
+  "description": "Complete autonomous software engineering organization with 72 specialized agents, 19 autonomous workflows, and revolutionary ZERO-CONFIG code intelligence system. Features fully autonomous line-based indexing that works with ALL languages (Python, TypeScript, Java, Go, Rust, C++, Ruby, PHP, and everything else). Global SQLite database in ~/.claude/ with automatic hooks for Write/Edit operations - no Docker, no PostgreSQL, no manual indexing required. Reduces token usage by 80-95% through precise line-level queries. Self-extending plugin architecture with meta-orchestration, multi-stage code review, enterprise compliance, game development, AI/ML, and blockchain/Web3 support. Install once, forget forever, work 8+ hours without context limits.",
   "author": {
     "name": "Seth Schultz",
     "url": "https://github.com/seth-schultz"
@@ -54,13 +54,17 @@
     "plugin-development",
     "code-intelligence",
     "database",
-    "postgresql",
-    "pgvector",
-    "semantic-search",
+    "sqlite",
+    "autonomous",
+    "zero-config",
+    "auto-indexing",
+    "all-languages",
+    "line-level-queries",
     "context-optimization",
     "jit-loading",
     "token-reduction",
-    "vector-embeddings"
+    "global-database",
+    "hooks"
   ],
   "commands": "commands/**/*.md",
   "agents": "agents/**/*.md"
