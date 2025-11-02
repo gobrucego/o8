@@ -1,7 +1,7 @@
 {
   "name": "orchestr8",
   "version": "1.5.0",
-  "description": "Complete autonomous software engineering organization with 69 specialized agents, 19 autonomous workflows, enterprise compliance, game development, AI/ML, blockchain/Web3 support, meta-orchestration capabilities, and revolutionary code intelligence database. Features self-extending plugin architecture, multi-stage code review system, and JIT context loading with PostgreSQL + pgvector that reduces token usage by 80-90%. Transform Claude Code into a full development team with intelligent context management.",
+  "description": "Complete autonomous software engineering organization with 72 specialized agents (including automatic code indexing, error tracking, and intelligent query agents), 19 autonomous workflows, enterprise compliance, game development, AI/ML, blockchain/Web3 support, meta-orchestration capabilities, and revolutionary code intelligence database with automatic reconciliation. Features self-extending plugin architecture, multi-stage code review system, and JIT context loading with PostgreSQL + pgvector that reduces token usage by 80-90%. File system is source of truth with transparent database synchronization. Transform Claude Code into a full development team with intelligent context management.",
   "author": {
     "name": "Seth Schultz",
     "url": "https://github.com/seth-schultz"
