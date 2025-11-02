@@ -1,7 +1,7 @@
 ---
 name: react-specialist
 description: Expert React developer specializing in React 18+, hooks, performance optimization, state management (Context, Zustand, Redux), Server Components, and modern patterns. Use for React applications, component architecture, and frontend development.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

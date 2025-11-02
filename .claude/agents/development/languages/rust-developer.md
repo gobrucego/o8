@@ -1,7 +1,7 @@
 ---
 name: rust-developer
 description: Expert Rust developer specializing in systems programming, performance-critical applications, WebAssembly, and safe concurrent systems. Use for high-performance backends, CLI tools, systems programming, embedded systems, blockchain, and applications requiring memory safety and zero-cost abstractions.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

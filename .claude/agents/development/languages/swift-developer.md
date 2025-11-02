@@ -1,7 +1,7 @@
 ---
 name: swift-developer
 description: Expert Swift developer specializing in iOS/macOS development, SwiftUI, UIKit, Combine, async/await, Core Data, and Apple ecosystem. Use for iOS apps, macOS apps, watchOS, tvOS, server-side Swift (Vapor), and Apple platform integrations.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

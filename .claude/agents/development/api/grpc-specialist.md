@@ -1,7 +1,7 @@
 ---
 name: grpc-specialist
 description: Expert gRPC developer specializing in Protocol Buffers, service design, streaming, interceptors, and performance optimization. Use for high-performance microservices, real-time communication, and polyglot systems.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

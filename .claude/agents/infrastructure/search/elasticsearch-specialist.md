@@ -1,7 +1,7 @@
 ---
 name: elasticsearch-specialist
 description: Expert Elasticsearch specialist for full-text search, aggregations, analyzers, and distributed search at scale. Use for search engines, log analytics, and real-time data exploration.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

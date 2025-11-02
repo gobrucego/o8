@@ -1,7 +1,7 @@
 ---
 name: error-logger
 description: Automatic error tracking agent that captures and logs all errors during coding sessions to the intelligence database. Use for learning from past errors and preventing recurring issues.
-model: claude-sonnet-4-5
+model: claude-haiku-4-5-20251001
 tools:
   - Read
   - Write

@@ -1,7 +1,7 @@
 ---
 name: load-testing-specialist
 description: Expert load and performance testing specialist using k6, Locust, and JMeter. Use for stress testing, capacity planning, and performance benchmarking of APIs and web applications.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

@@ -1,7 +1,7 @@
 ---
 name: project-orchestrator
 description: Orchestrates complete end-to-end project development from requirements to deployment. Use for new projects, large features, or complex multi-domain tasks requiring coordination across multiple specialized agents.
-model: claude-opus-4
+model: claude-opus-4-1-20250805
 tools:
   - Task
   - Read

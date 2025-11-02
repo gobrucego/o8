@@ -1,7 +1,7 @@
 ---
 name: agent-architect
 description: Expert in designing Claude Code agents following established patterns and best practices. Use for creating new specialized agents, determining tool selection, model choice, and documentation structure.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write
@@ -224,7 +224,7 @@ You are an expert in designing Claude Code agents following the established patt
 ---
 name: technology-specialist
 description: Expert [Language/Framework] developer specializing in [key areas]. Use for [use cases].
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write
@@ -292,7 +292,7 @@ Your deliverables should be production-ready, well-tested [technology] code foll
 ---
 name: review-specialist
 description: Performs comprehensive [domain] review checking for [criteria]. Use for [scenarios].
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Glob
@@ -368,7 +368,7 @@ You are an expert [domain] reviewer...
 ---
 name: infrastructure-specialist
 description: Expert [tool/platform] specialist for [capabilities]. Use for [use cases].
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write
@@ -434,7 +434,7 @@ Your deliverables should be production-ready, secure, scalable infrastructure fo
 ---
 name: meta-orchestrator
 description: Orchestrates [scope] from [start] to [end]. Use for [scenarios].
-model: claude-opus-4
+model: claude-opus-4-1-20250805
 tools:
   - Task
   - Read

@@ -1,7 +1,7 @@
 ---
 name: ml-engineer
 description: Expert ML engineer specializing in TensorFlow, PyTorch, scikit-learn, model training, hyperparameter tuning, feature engineering, and ML experimentation. Use for building production ML models, training pipelines, and model optimization.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

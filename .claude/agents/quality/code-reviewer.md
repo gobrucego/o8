@@ -1,7 +1,7 @@
 ---
 name: code-reviewer
 description: Performs comprehensive code reviews checking for best practices, clean code principles, security issues, performance problems, and maintainability. Use after implementation to validate code quality before merging or deployment.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Glob

@@ -3,7 +3,7 @@ name: unity-specialist
 description: Expert Unity game engine developer specializing in C# scripting, Unity Editor, physics, animations, UI, multiplayer, and platform deployment
 categories: [development, game-engines, unity]
 dependencies: [csharp-developer]
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # Unity Specialist

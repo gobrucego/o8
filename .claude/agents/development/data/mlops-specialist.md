@@ -1,7 +1,7 @@
 ---
 name: mlops-specialist
 description: Expert MLOps specialist for ML deployment, monitoring, MLflow, Kubeflow, model serving, A/B testing, and ML pipeline automation. Use for production ML infrastructure, continuous training, and model lifecycle management.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

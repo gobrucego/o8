@@ -1,7 +1,7 @@
 ---
 name: aws-specialist
 description: Expert AWS cloud architect specializing in serverless, containers (ECS/EKS), infrastructure design, cost optimization, and security. Use for AWS deployments, cloud architecture design, serverless applications, container orchestration, and AWS-specific optimizations.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

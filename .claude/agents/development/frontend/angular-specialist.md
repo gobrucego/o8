@@ -1,7 +1,7 @@
 ---
 name: angular-specialist
 description: Expert Angular developer specializing in Angular 17+, standalone components, signals, RxJS, TypeScript, and modern patterns. Use for Angular applications, enterprise frontends, and reactive architectures.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

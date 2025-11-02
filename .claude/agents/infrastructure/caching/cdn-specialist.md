@@ -1,7 +1,7 @@
 ---
 name: cdn-specialist
 description: Expert CDN specialist for Cloudflare, CloudFront, Fastly, and edge caching strategies. Use for global content delivery, DDoS protection, edge computing, and performance optimization.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

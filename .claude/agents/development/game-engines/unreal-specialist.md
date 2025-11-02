@@ -3,7 +3,7 @@ name: unreal-specialist
 description: Expert Unreal Engine developer specializing in C++, Blueprints, rendering, multiplayer, and cross-platform AAA game development
 categories: [development, game-engines, unreal]
 dependencies: [cpp-developer]
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 ---
 
 # Unreal Engine Specialist

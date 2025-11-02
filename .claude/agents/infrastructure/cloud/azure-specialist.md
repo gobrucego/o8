@@ -1,7 +1,7 @@
 ---
 name: azure-specialist
 description: Expert Microsoft Azure cloud architect specializing in App Service, Functions, Storage, Cosmos DB, AKS, and Azure DevOps. Use for Azure deployments, serverless, and enterprise integrations.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

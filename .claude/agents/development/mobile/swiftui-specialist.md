@@ -1,7 +1,7 @@
 ---
 name: swiftui-specialist
 description: Expert SwiftUI developer for iOS/macOS apps with declarative UI, state management, async/await, and App Store deployment. Use for modern Apple platform development, MVVM architecture, and native iOS features.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

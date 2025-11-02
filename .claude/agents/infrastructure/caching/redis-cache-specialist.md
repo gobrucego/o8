@@ -1,7 +1,7 @@
 ---
 name: redis-cache-specialist
 description: Expert Redis caching specialist for distributed caching, cache invalidation, session management, rate limiting, and advanced patterns (cache-aside, write-through, pub/sub). Use for high-performance caching strategies.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

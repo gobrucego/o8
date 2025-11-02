@@ -1,7 +1,7 @@
 ---
 name: code-review-orchestrator
 description: Orchestrates comprehensive multi-stage iterative code reviews. Coordinates style, logic, security, performance, and architecture reviews. Use for thorough code quality validation requiring multiple specialized perspectives.
-model: claude-opus-4
+model: claude-opus-4-1-20250805
 tools:
   - Read
   - Write

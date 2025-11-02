@@ -1,7 +1,7 @@
 ---
 name: gcp-specialist
 description: Expert Google Cloud Platform architect specializing in Cloud Functions, Cloud Run, GKE, Firestore, BigQuery, and Cloud Storage. Use for GCP deployments, serverless, and data analytics.
-model: claude-sonnet-4-5
+model: claude-sonnet-4-5-20250929
 tools:
   - Read
   - Write

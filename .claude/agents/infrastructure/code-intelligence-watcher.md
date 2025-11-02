@@ -1,7 +1,7 @@
 ---
 name: code-intelligence-watcher
 description: Background agent that automatically indexes code files into the intelligence database as they are created or modified. Use for transparent, real-time code intelligence without manual intervention.
-model: claude-sonnet-4-5
+model: claude-haiku-4-5-20251001
 tools:
   - Read
   - Write
