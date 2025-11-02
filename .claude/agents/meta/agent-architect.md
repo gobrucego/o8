@@ -434,7 +434,7 @@ Your deliverables should be production-ready, secure, scalable infrastructure fo
 ---
 name: meta-orchestrator
 description: Orchestrates [scope] from [start] to [end]. Use for [scenarios].
-model: claude-opus-4
+model: claude-opus-4-1-20250805
 tools:
   - Task
   - Read
