@@ -1,12 +1,6 @@
 ---
 name: database-error-learning
 description: Expertise in logging errors and learning from failures using the orchestr8 intelligence database. Auto-activates when handling errors, debugging issues, or analyzing failure patterns. Enables continuous improvement through error analysis and resolution tracking.
-autoActivationContext:
-  - error handling
-  - debugging
-  - failure analysis
-  - error logging
-  - troubleshooting
 ---
 
 # Database Error Learning Skill

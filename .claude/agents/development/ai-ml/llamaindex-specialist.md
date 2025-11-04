@@ -4,6 +4,13 @@ description: Expert LlamaIndex developer specializing in RAG systems, document i
 categories: [development, ai-ml, llamaindex]
 dependencies: [python-developer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # LlamaIndex Specialist

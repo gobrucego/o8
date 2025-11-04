@@ -1,12 +1,6 @@
 ---
 name: database-knowledge-storage
 description: Expertise in storing and retrieving agent knowledge using the orchestr8 intelligence database. Auto-activates when agents need to learn from experience, store best practices, or query historical knowledge. Enables continuous learning and knowledge accumulation.
-autoActivationContext:
-  - agent learning
-  - knowledge management
-  - best practices
-  - pattern recognition
-  - experience sharing
 ---
 
 # Database Knowledge Storage Skill

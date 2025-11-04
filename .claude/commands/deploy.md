@@ -30,14 +30,28 @@ Autonomous, safe production deployment from pre-deployment validation to post-de
 
 ## Execution Instructions
 
-### Phase 1: Pre-Deployment Validation (20%)
+### Phase 1: Pre-Deployment Validation (0-20%)
 
 **Use all quality agents in parallel:**
 
 #### 1. Code Quality Gates
 
-**Run `code-reviewer`:**
-```markdown
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-reviewer agent to:
+1. Validate all PR comments addressed
+2. Check for TODO comments in critical paths
+3. Verify no debug logging left in code
+4. Check for commented-out code
+5. Validate consistent code style
+6. Verify proper error handling
+7. Check for hardcoded values
+8. Validate security best practices
+
+subagent_type: "code-reviewer"
+description: "Pre-deployment code review validation"
+prompt: "Perform pre-deployment code review:
+
 CODE REVIEW CHECKLIST:
 ✓ All PR comments addressed
 ✓ No TODO comments in critical paths
@@ -53,12 +67,57 @@ BLOCKER ISSUES:
 - Security vulnerabilities
 - Breaking changes without migration path
 - Missing required tests
+
+Expected outputs:
+- pre-deployment-code-review.md with:
+  - Checklist status
+  - Blocker issues (if any)
+  - Approval status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `pre-deployment-code-review.md` - Code review validation results
+
+**Quality Gate: Code Review**
+```bash
+# Validate code review
+if [ ! -f "pre-deployment-code-review.md" ]; then
+  echo "❌ Code review not completed"
+  exit 1
+fi
+
+if grep -q "BLOCKER" pre-deployment-code-review.md; then
+  echo "❌ Blocker issues found"
+  exit 1
+fi
+
+echo "✅ Code review passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "code-review" $TOKENS "5%"
 ```
 
 #### 2. Test Coverage Validation
 
-**Run `test-engineer`:**
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Run all unit tests with coverage
+2. Run integration tests
+3. Run E2E tests
+4. Run performance tests
+5. Run load tests
+6. Validate coverage > 80%
+7. Ensure no flaky tests
+8. Verify performance within baseline
+
+subagent_type: "test-engineer"
+description: "Pre-deployment test validation"
+prompt: "Execute comprehensive test suite:
+
 # Unit tests
 npm test -- --coverage
 # Require > 80% coverage
@@ -81,12 +140,52 @@ VALIDATION:
 ✓ No flaky tests
 ✓ Performance within baseline
 ✓ Load test successful (target RPS)
+
+Expected outputs:
+- test-validation-report.md with:
+  - Test results (pass/fail counts)
+  - Coverage percentage
+  - Performance metrics
+  - Load test results
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `test-validation-report.md` - Test execution results
+
+**Quality Gate: Test Coverage**
+```bash
+# Run tests
+if ! npm test -- --coverage 2>/dev/null; then
+  echo "❌ Tests failing"
+  exit 1
+fi
+
+echo "✅ All tests passing"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "test-validation" $TOKENS "10%"
 ```
 
 #### 3. Security Scan
 
-**Run `security-auditor`:**
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Run dependency vulnerability scan
+2. Run SAST (static analysis)
+3. Run secrets detection
+4. Run container scanning (if applicable)
+5. Validate no critical/high vulnerabilities
+6. Ensure no secrets in code
+
+subagent_type: "security-auditor"
+description: "Pre-deployment security scanning"
+prompt: "Execute security scans:
+
 # Dependency vulnerabilities
 npm audit --audit-level=moderate
 
@@ -104,12 +203,50 @@ VALIDATION:
 ✓ No secrets in code
 ✓ No security misconfigurations
 ✓ Container images scanned and clean
+
+Expected outputs:
+- security-scan-report.md with:
+  - Vulnerability summary
+  - Secrets detection results
+  - Container scan results
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `security-scan-report.md` - Security scan results
+
+**Quality Gate: Security**
+```bash
+# Run security scans
+npm audit --audit-level=moderate 2>/dev/null
+semgrep --config=auto 2>/dev/null
+gitleaks detect 2>/dev/null
+
+echo "✅ Security scans passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "security-scan" $TOKENS "13%"
 ```
 
 #### 4. Build Validation
 
-**Run appropriate language agent:**
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the appropriate language specialist agent to:
+1. Build the application
+2. Verify build artifacts
+3. Check bundle size within budget
+4. Validate all assets generated
+5. Build Docker image (if applicable)
+6. Push to registry
+
+subagent_type: "[typescript-developer|python-developer|java-developer|go-developer|rust-developer]"
+description: "Build and validate application artifacts"
+prompt: "Build application and validate artifacts:
+
 # Build the application
 npm run build
 # or: mvn clean package
@@ -133,13 +270,54 @@ VALIDATION:
 ✓ No build errors
 ✓ Bundle size within budget
 ✓ Docker image built and pushed
+
+Expected outputs:
+- build-validation-report.md with:
+  - Build status
+  - Bundle size
+  - Artifact checksums
+  - Docker image details
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `build-validation-report.md` - Build validation results
+- Build artifacts
+- Docker image (if applicable)
+
+**Quality Gate: Build**
+```bash
+# Build application
+if ! npm run build 2>/dev/null; then
+  echo "❌ Build failed"
+  exit 1
+fi
+
+echo "✅ Build successful"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "build-validation" $TOKENS "16%"
 ```
 
 #### 5. Database Migration Validation
 
-**Run `database-specialist`:**
-```bash
-# Test migrations in isolated environment
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the database-specialist agent to:
+1. Create test database
+2. Run migrations
+3. Verify schema changes
+4. Test rollback
+5. Re-apply migrations
+6. Validate data integrity
+
+subagent_type: "database-specialist"
+description: "Validate database migrations"
+prompt: "Test database migrations:
+
 # Create test database
 createdb deployment_test
 
@@ -166,18 +344,57 @@ VALIDATION:
 ✓ Rollback works
 ✓ No data loss during migration
 ✓ Performance impact acceptable
+
+Expected outputs:
+- migration-validation-report.md with:
+  - Migration execution results
+  - Rollback test results
+  - Schema validation
+  - Performance impact
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `migration-validation-report.md` - Migration validation results
+
+**Quality Gate: Database Migrations**
+```bash
+# Validate migrations
+if [ ! -f "migration-validation-report.md" ]; then
+  echo "❌ Migration validation not completed"
+  exit 1
+fi
+
+echo "✅ Database migrations validated"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "migration-validation" $TOKENS "18%"
 ```
 
 #### 6. Infrastructure Validation
 
-**Run `infrastructure-engineer` or cloud specialist:**
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the infrastructure-engineer or cloud specialist agent to:
+1. Validate infrastructure code
+2. Check for destructive changes
+3. Validate Kubernetes manifests
+4. Validate scaling configuration
+5. Check resource limits
+
+subagent_type: "[infrastructure-engineer|aws-specialist|azure-specialist|gcp-specialist]"
+description: "Validate infrastructure configuration"
+prompt: "Validate infrastructure:
+
 # Validate infrastructure code
 terraform validate
 terraform plan -out=tfplan
 
 # Check for destructive changes
-terraform show tfplan | grep -i "will be destroyed"
+terraform show tfplan | grep -i 'will be destroyed'
 
 # Validate Kubernetes manifests
 kubectl apply --dry-run=client -f k8s/
@@ -194,17 +411,57 @@ VALIDATION:
 ✓ No unexpected destructive changes
 ✓ Kubernetes manifests valid
 ✓ Scaling properly configured
+
+Expected outputs:
+- infrastructure-validation-report.md with:
+  - Terraform plan summary
+  - Destructive changes (if any)
+  - Kubernetes validation results
+  - Scaling configuration
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `infrastructure-validation-report.md` - Infrastructure validation results
+
+**Quality Gate: Infrastructure**
+```bash
+# Validate infrastructure
+terraform validate 2>/dev/null
+kubectl apply --dry-run=client -f k8s/ 2>/dev/null
+
+echo "✅ Infrastructure validated"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "infrastructure-validation" $TOKENS "20%"
 ```
 
 **CHECKPOINT**: All pre-deployment validations passed ✓
 
-### Phase 2: Staging Deployment (15%)
+---
+
+### Phase 2: Staging Deployment (20-35%)
 
 **Deploy to staging environment first:**
 
 #### 1. Deploy to Staging
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Set staging environment
+2. Apply database migrations
+3. Deploy application
+4. Wait for rollout completion
+5. Validate deployment status
+
+subagent_type: "ci-cd-engineer"
+description: "Deploy to staging environment"
+prompt: "Deploy application to staging:
+
 # Set environment
 export ENV=staging
 
@@ -235,14 +492,58 @@ VALIDATION:
 ✓ All pods/instances healthy
 ✓ Database migrations applied
 ✓ Configuration loaded correctly
+
+Expected outputs:
+- staging-deployment-log.md with:
+  - Deployment steps executed
+  - Status of each component
+  - Health check results
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `staging-deployment-log.md` - Staging deployment results
+
+**Quality Gate: Staging Deployment**
+```bash
+# Validate staging deployment
+kubectl rollout status deployment/app -n staging 2>/dev/null
+
+echo "✅ Staging deployment successful"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "staging-deployment" $TOKENS "28%"
 ```
 
 #### 2. Staging Smoke Tests
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Run health checks
+2. Execute smoke tests
+3. Test critical user paths
+4. Run performance smoke test
+5. Validate all systems operational
+
+subagent_type: "test-engineer"
+description: "Execute staging smoke tests"
+prompt: "Run staging smoke tests:
+
 # Health check
 curl https://staging.example.com/health
-# Expected: {"status": "healthy"}
+# Expected: {\"status\": \"healthy\"}
+
+# Database connectivity
+curl https://staging.example.com/health/database
+# Expected: {\"status\": \"connected\"}
+
+# External dependencies
+curl https://staging.example.com/health/dependencies
+# Expected: {\"redis\": \"connected\", \"s3\": \"accessible\"}
 
 # Basic functionality tests
 npm run test:smoke -- --env=staging
@@ -263,12 +564,49 @@ VALIDATION:
 ✓ Core features working
 ✓ No errors in logs
 ✓ Performance acceptable
+
+Expected outputs:
+- staging-smoke-test-report.md with:
+  - Health check results
+  - Smoke test results
+  - Critical path validation
+  - Performance metrics
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `staging-smoke-test-report.md` - Smoke test results
+
+**Quality Gate: Smoke Tests**
+```bash
+# Run smoke tests
+npm run test:smoke -- --env=staging 2>/dev/null
+
+echo "✅ Smoke tests passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "smoke-tests" $TOKENS "33%"
 ```
 
 #### 3. Staging Validation
 
-```bash
-# Monitor for 15 minutes
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to:
+1. Monitor metrics for 15 minutes
+2. Check error rates
+3. Check response times
+4. Check resource usage
+5. Review logs
+6. Validate no issues
+
+subagent_type: "performance-analyzer"
+description: "Monitor staging environment"
+prompt: "Monitor staging for 15 minutes:
+
 # Watch for:
 - Error rates
 - Response times
@@ -289,17 +627,61 @@ VALIDATION:
 ✓ Metrics within normal range
 ✓ No resource leaks
 ✓ Logs clean
+
+Expected outputs:
+- staging-monitoring-report.md with:
+  - Metrics collected
+  - Error analysis
+  - Resource usage
+  - Log analysis
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `staging-monitoring-report.md` - Staging monitoring results
+
+**Quality Gate: Staging Validation**
+```bash
+# Validate staging metrics
+if [ ! -f "staging-monitoring-report.md" ]; then
+  echo "❌ Staging validation not completed"
+  exit 1
+fi
+
+echo "✅ Staging validation passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "staging-validation" $TOKENS "35%"
 ```
 
 **CHECKPOINT**: Staging deployment validated ✓
 
-### Phase 3: Production Deployment (30%)
+---
+
+### Phase 3: Production Deployment (35-65%)
 
 **Choose deployment strategy based on requirements:**
 
 #### Strategy A: Blue-Green Deployment
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Prepare green environment
+2. Run smoke tests on green
+3. Apply database migrations
+4. Warm up green environment
+5. Switch traffic from blue to green
+6. Monitor green environment
+7. Validate or rollback
+
+subagent_type: "ci-cd-engineer"
+description: "Execute blue-green deployment"
+prompt: "Perform blue-green deployment to production:
+
 # Step 1: Prepare Green Environment
 # Green is the new version, Blue is current production
 
@@ -333,7 +715,7 @@ done
 # Update load balancer / ingress
 kubectl patch service myapp-service \
   -n production \
-  -p '{"spec":{"selector":{"env":"green"}}}'
+  -p '{\"spec\":{\"selector\":{\"env\":\"green\"}}}'
 
 # Or AWS ALB target group
 aws elbv2 modify-rule \
@@ -349,14 +731,14 @@ aws elbv2 modify-rule \
 
 # Step 7: Decision point
 if [ $ERROR_RATE -lt 0.1 ]; then
-  echo "Deployment successful"
+  echo 'Deployment successful'
   # Keep green, decommission blue after 24 hours
 else
-  echo "Rollback required"
+  echo 'Rollback required'
   # Switch back to blue
   kubectl patch service myapp-service \
     -n production \
-    -p '{"spec":{"selector":{"env":"blue"}}}'
+    -p '{\"spec\":{\"selector\":{\"env\":\"blue\"}}}'
 fi
 
 VALIDATION:
@@ -365,11 +747,55 @@ VALIDATION:
 ✓ Error rates normal
 ✓ Response times acceptable
 ✓ No user complaints
+
+Expected outputs:
+- blue-green-deployment-log.md with:
+  - Each step executed
+  - Monitoring metrics
+  - Decision rationale
+  - Final status (SUCCESS/ROLLBACK)
+"
+```
+
+**Expected Outputs:**
+- `blue-green-deployment-log.md` - Blue-green deployment results
+
+**Quality Gate: Blue-Green Deployment**
+```bash
+# Validate deployment
+if [ ! -f "blue-green-deployment-log.md" ]; then
+  echo "❌ Blue-green deployment not completed"
+  exit 1
+fi
+
+if grep -q "ROLLBACK" blue-green-deployment-log.md; then
+  echo "❌ Deployment rolled back"
+  exit 1
+fi
+
+echo "✅ Blue-green deployment successful"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "blue-green-deployment" $TOKENS "65%"
 ```
 
 #### Strategy B: Rolling Deployment
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Update deployment with new version
+2. Configure rolling update strategy
+3. Watch rollout
+4. Monitor during rollout
+5. Validate complete rollout
+
+subagent_type: "ci-cd-engineer"
+description: "Execute rolling deployment"
+prompt: "Perform rolling deployment to production:
+
 # Step 1: Update deployment with new version
 kubectl set image deployment/myapp \
   myapp=registry.example.com/myapp:${VERSION} \
@@ -377,12 +803,12 @@ kubectl set image deployment/myapp \
 
 # Configure rolling update strategy
 kubectl patch deployment myapp -n production -p '{
-  "spec": {
-    "strategy": {
-      "type": "RollingUpdate",
-      "rollingUpdate": {
-        "maxSurge": 1,
-        "maxUnavailable": 0
+  \"spec\": {
+    \"strategy\": {
+      \"type\": \"RollingUpdate\",
+      \"rollingUpdate\": {
+        \"maxSurge\": 1,
+        \"maxUnavailable\": 0
       }
     }
   }
@@ -401,10 +827,10 @@ kubectl rollout status deployment/myapp -n production
 watch kubectl get pods -n production
 
 # Check metrics every 30 seconds
-while kubectl rollout status deployment/myapp -n production | grep -q "Waiting"; do
+while kubectl rollout status deployment/myapp -n production | grep -q 'Waiting'; do
   ERROR_RATE=$(check_error_rate)
   if [ $ERROR_RATE -gt 1 ]; then
-    echo "High error rate detected, pausing rollout"
+    echo 'High error rate detected, pausing rollout'
     kubectl rollout pause deployment/myapp -n production
     exit 1
   fi
@@ -413,18 +839,53 @@ done
 
 # Step 4: Validate complete rollout
 kubectl rollout status deployment/myapp -n production
-# Should output: "deployment successfully rolled out"
+# Should output: 'deployment successfully rolled out'
 
 VALIDATION:
 ✓ All pods updated
 ✓ All pods healthy
 ✓ Error rates normal during rollout
 ✓ Zero downtime achieved
+
+Expected outputs:
+- rolling-deployment-log.md with:
+  - Rollout progress
+  - Monitoring metrics
+  - Final status (SUCCESS/PAUSED)
+"
+```
+
+**Expected Outputs:**
+- `rolling-deployment-log.md` - Rolling deployment results
+
+**Quality Gate: Rolling Deployment**
+```bash
+# Validate deployment
+kubectl rollout status deployment/myapp -n production 2>/dev/null
+
+echo "✅ Rolling deployment successful"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "rolling-deployment" $TOKENS "65%"
 ```
 
 #### Strategy C: Canary Deployment
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Deploy canary (5% of traffic)
+2. Monitor canary (30 minutes)
+3. Gradual rollout if metrics good
+4. Make canary the new stable
+5. Decommission old stable
+
+subagent_type: "ci-cd-engineer"
+description: "Execute canary deployment"
+prompt: "Perform canary deployment to production:
+
 # Step 1: Deploy canary (5% of traffic)
 kubectl apply -f k8s/production/canary/
 
@@ -440,7 +901,7 @@ spec:
   - match:
     - headers:
         canary:
-          exact: "true"
+          exact: 'true'
     route:
     - destination:
         host: myapp-canary
@@ -469,23 +930,23 @@ spec:
 # 5% → 10% → 25% → 50% → 100%
 for WEIGHT in 10 25 50 100; do
   # Update traffic split
-  kubectl patch virtualservice myapp -n production -p "{
-    \"spec\": {
-      \"http\": [{
-        \"route\": [
-          {\"destination\": {\"host\": \"myapp-stable\"}, \"weight\": $((100-WEIGHT))},
-          {\"destination\": {\"host\": \"myapp-canary\"}, \"weight\": $WEIGHT}
+  kubectl patch virtualservice myapp -n production -p \"{
+    \\\"spec\\\": {
+      \\\"http\\\": [{
+        \\\"route\\\": [
+          {\\\"destination\\\": {\\\"host\\\": \\\"myapp-stable\\\"}, \\\"weight\\\": $((100-WEIGHT))},
+          {\\\"destination\\\": {\\\"host\\\": \\\"myapp-canary\\\"}, \\\"weight\\\": $WEIGHT}
         ]
       }]
     }
-  }"
+  }\"
 
   # Monitor for 15 minutes at each stage
   sleep 900
 
   # Check metrics
   if [ $CANARY_ERROR_RATE -gt $STABLE_ERROR_RATE ]; then
-    echo "Canary showing higher errors, rolling back"
+    echo 'Canary showing higher errors, rolling back'
     # Set weight back to 0
     exit 1
   fi
@@ -494,7 +955,7 @@ done
 # Step 4: Make canary the new stable
 kubectl patch service myapp-service \
   -n production \
-  -p '{"spec":{"selector":{"version":"canary"}}}'
+  -p '{\"spec\":{\"selector\":{\"version\":\"canary\"}}}'
 
 # Decommission old stable
 kubectl delete deployment myapp-stable -n production
@@ -504,11 +965,55 @@ VALIDATION:
 ✓ Gradual rollout successful
 ✓ 100% traffic on new version
 ✓ Old version decommissioned
+
+Expected outputs:
+- canary-deployment-log.md with:
+  - Each traffic split stage
+  - Comparative metrics
+  - Decision rationale at each stage
+  - Final status (SUCCESS/ROLLBACK)
+"
+```
+
+**Expected Outputs:**
+- `canary-deployment-log.md` - Canary deployment results
+
+**Quality Gate: Canary Deployment**
+```bash
+# Validate deployment
+if [ ! -f "canary-deployment-log.md" ]; then
+  echo "❌ Canary deployment not completed"
+  exit 1
+fi
+
+if grep -q "ROLLBACK" canary-deployment-log.md; then
+  echo "❌ Deployment rolled back"
+  exit 1
+fi
+
+echo "✅ Canary deployment successful"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "canary-deployment" $TOKENS "65%"
 ```
 
 #### Database Migrations (Production)
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the database-specialist agent to:
+1. Backup database
+2. Run migrations (backward compatible)
+3. Deploy application
+4. Backfill data (if needed)
+5. Run cleanup migrations (after 24 hours)
+
+subagent_type: "database-specialist"
+description: "Execute production database migrations"
+prompt: "Execute zero-downtime database migrations:
+
 # Step 1: Backup database
 pg_dump production_db > backup_$(date +%Y%m%d_%H%M%S).sql
 # Upload to S3
@@ -541,28 +1046,64 @@ VALIDATION:
 ✓ Migrations successful
 ✓ No downtime during migration
 ✓ Data integrity maintained
+
+Expected outputs:
+- production-migration-log.md with:
+  - Backup details
+  - Migration execution log
+  - Backfill results
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `production-migration-log.md` - Migration execution results
+
+**Quality Gate: Database Migrations**
+```bash
+# Validate migrations
+if [ ! -f "production-migration-log.md" ]; then
+  echo "❌ Migration log not found"
+  exit 1
+fi
+
+echo "✅ Database migrations successful"
 ```
 
 **CHECKPOINT**: Production deployment complete ✓
 
-### Phase 4: Post-Deployment Validation (20%)
+---
+
+### Phase 4: Post-Deployment Validation (65-85%)
 
 **Monitor and validate deployment:**
 
 #### 1. Automated Health Checks
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Check application health
+2. Check database connectivity
+3. Check external dependencies
+4. Run production smoke tests
+5. Validate all systems operational
+
+subagent_type: "test-engineer"
+description: "Post-deployment health checks"
+prompt: "Execute post-deployment health checks:
+
 # Application health
 curl https://api.example.com/health
-# Expected: {"status": "healthy", "version": "1.2.3"}
+# Expected: {\"status\": \"healthy\", \"version\": \"1.2.3\"}
 
 # Database connectivity
 curl https://api.example.com/health/database
-# Expected: {"status": "connected"}
+# Expected: {\"status\": \"connected\"}
 
 # External dependencies
 curl https://api.example.com/health/dependencies
-# Expected: {"redis": "connected", "s3": "accessible"}
+# Expected: {\"redis\": \"connected\", \"s3\": \"accessible\"}
 
 # Smoke tests in production
 npm run test:smoke -- --env=production
@@ -572,45 +1113,121 @@ VALIDATION:
 ✓ Database connected
 ✓ External services accessible
 ✓ Smoke tests passing
+
+Expected outputs:
+- post-deployment-health-report.md with:
+  - Health check results
+  - Smoke test results
+  - System status
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `post-deployment-health-report.md` - Health check results
+
+**Quality Gate: Health Checks**
+```bash
+# Validate health checks
+curl https://api.example.com/health 2>/dev/null
+
+echo "✅ Health checks passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "health-checks" $TOKENS "70%"
 ```
 
 #### 2. Metrics Monitoring (Critical Window: First Hour)
 
-```bash
-# Monitor dashboards
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to:
+1. Monitor error rates
+2. Monitor response times
+3. Monitor throughput
+4. Monitor resource usage
+5. Monitor business metrics
+6. Compare to baseline
+
+subagent_type: "performance-analyzer"
+description: "Monitor production metrics"
+prompt: "Monitor production metrics for 1 hour:
+
 # Track for 1 hour minimum:
 
 ERROR RATES:
-- Current: 0.05%
-- Baseline: 0.04%
+- Current vs Baseline
 - Threshold: 0.5%
-- Status: ✓ GOOD
+- Status: GOOD/WARNING/CRITICAL
 
 RESPONSE TIMES:
-- p50: 145ms (baseline: 150ms)
-- p95: 380ms (baseline: 400ms)
-- p99: 720ms (baseline: 800ms)
-- Status: ✓ GOOD (improved!)
+- p50, p95, p99 vs baseline
+- Status: GOOD/WARNING/CRITICAL
 
 THROUGHPUT:
-- Current: 1,240 req/s
-- Baseline: 1,200 req/s
-- Status: ✓ GOOD
+- Current vs baseline
+- Status: GOOD/WARNING/CRITICAL
 
 RESOURCE USAGE:
-- CPU: 45% (baseline: 50%)
-- Memory: 2.1 GB (baseline: 2.3 GB)
-- Status: ✓ GOOD
+- CPU vs baseline
+- Memory vs baseline
+- Status: GOOD/WARNING/CRITICAL
 
 BUSINESS METRICS:
-- Successful checkouts: 98.5% (baseline: 98.2%)
-- User signups: 145/hr (baseline: 140/hr)
-- Status: ✓ GOOD
+- Successful transactions vs baseline
+- User activity vs baseline
+- Status: GOOD/WARNING/CRITICAL
+
+Expected outputs:
+- production-metrics-report.md with:
+  - All metric comparisons
+  - Baseline vs current
+  - Status for each category
+  - Overall validation (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `production-metrics-report.md` - Production metrics analysis
+
+**Quality Gate: Metrics**
+```bash
+# Validate metrics
+if [ ! -f "production-metrics-report.md" ]; then
+  echo "❌ Metrics report not found"
+  exit 1
+fi
+
+if grep -q "CRITICAL" production-metrics-report.md; then
+  echo "❌ Critical metrics issues"
+  exit 1
+fi
+
+echo "✅ Metrics within normal range"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "metrics-monitoring" $TOKENS "75%"
 ```
 
 #### 3. Log Analysis
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the devops-engineer agent to:
+1. Check for errors in logs
+2. Identify suspicious patterns
+3. Search for critical issues
+4. Analyze error rates
+5. Validate log health
+
+subagent_type: "devops-engineer"
+description: "Analyze production logs"
+prompt: "Analyze production logs post-deployment:
+
 # Check for errors in logs
 kubectl logs -l app=myapp -n production --since=1h | grep -i error
 
@@ -633,11 +1250,50 @@ VALIDATION:
 ✓ Error rate within normal range
 ✓ No new error patterns
 ✓ Warnings are expected and documented
+
+Expected outputs:
+- log-analysis-report.md with:
+  - Error summary
+  - Suspicious patterns
+  - Critical issues (if any)
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `log-analysis-report.md` - Log analysis results
+
+**Quality Gate: Log Analysis**
+```bash
+# Validate logs
+if [ ! -f "log-analysis-report.md" ]; then
+  echo "❌ Log analysis not completed"
+  exit 1
+fi
+
+echo "✅ Log analysis passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "log-analysis" $TOKENS "80%"
 ```
 
 #### 4. User Impact Analysis
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to:
+1. Check Real User Monitoring (RUM)
+2. Calculate Apdex score
+3. Monitor user feedback
+4. Check A/B test results (if canary)
+5. Validate user satisfaction
+
+subagent_type: "performance-analyzer"
+description: "Analyze user impact"
+prompt: "Analyze user impact post-deployment:
+
 # Real User Monitoring (RUM)
 # Check Web Vitals from actual users
 
@@ -661,52 +1317,91 @@ VALIDATION:
 ✓ Apdex score > 0.95
 ✓ No support ticket spike
 ✓ Business metrics stable or improved
+
+Expected outputs:
+- user-impact-report.md with:
+  - RUM metrics
+  - Apdex score
+  - User feedback summary
+  - A/B test results (if applicable)
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `user-impact-report.md` - User impact analysis
+
+**Quality Gate: User Impact**
+```bash
+# Validate user impact
+if [ ! -f "user-impact-report.md" ]; then
+  echo "❌ User impact analysis not completed"
+  exit 1
+fi
+
+echo "✅ User impact analysis passed"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "user-impact" $TOKENS "85%"
 ```
 
 **CHECKPOINT**: Post-deployment validation successful ✓
 
-### Phase 5: Monitoring & Alerting (10%)
+---
+
+### Phase 5: Monitoring & Alerting (85-95%)
 
 **Configure ongoing monitoring:**
 
-```yaml
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the devops-engineer agent to:
+1. Configure Prometheus alerts
+2. Set up dashboards
+3. Configure notification channels
+4. Validate alert thresholds
+5. Test alerting
+
+subagent_type: "devops-engineer"
+description: "Configure production monitoring and alerting"
+prompt: "Set up production monitoring and alerting:
+
 # Prometheus alerts
 groups:
   - name: deployment
     interval: 30s
     rules:
       - alert: HighErrorRate
-        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        expr: rate(http_requests_total{status=~\"5..\"}[5m]) > 0.05
         for: 5m
         annotations:
-          summary: "High error rate detected"
-          description: "Error rate is {{ $value }} (threshold: 0.05)"
+          summary: 'High error rate detected'
+          description: 'Error rate is {{ $value }} (threshold: 0.05)'
 
       - alert: HighResponseTime
         expr: histogram_quantile(0.95, http_request_duration_seconds) > 1.0
         for: 10m
         annotations:
-          summary: "High response time"
-          description: "p95 latency is {{ $value }}s"
+          summary: 'High response time'
+          description: 'p95 latency is {{ $value }}s'
 
       - alert: MemoryUsageHigh
         expr: container_memory_usage_bytes / container_spec_memory_limit_bytes > 0.9
         for: 5m
         annotations:
-          summary: "Memory usage high"
-          description: "Memory usage at {{ $value }}%"
+          summary: 'Memory usage high'
+          description: 'Memory usage at {{ $value }}%'
 
       - alert: DeploymentReplicasMismatch
         expr: kube_deployment_status_replicas_available != kube_deployment_spec_replicas
         for: 15m
         annotations:
-          summary: "Deployment replicas mismatch"
-          description: "Deployment has {{ $value }} available replicas"
-```
+          summary: 'Deployment replicas mismatch'
+          description: 'Deployment has {{ $value }} available replicas'
 
-#### Dashboards
-
-```markdown
+# Dashboards
 ## Deployment Dashboard
 
 ### Key Metrics
@@ -732,15 +1427,56 @@ groups:
 - Deployed By: CI/CD (commit: abc123)
 - Strategy: Blue-Green
 - Rollback Plan: Switch to blue (v1.2.2)
+
+Expected outputs:
+- monitoring-config.yaml with:
+  - Alert rules
+  - Dashboard configuration
+  - Notification channels
+  - Validation status (PASS/FAIL)
+"
+```
+
+**Expected Outputs:**
+- `monitoring-config.yaml` - Monitoring configuration
+
+**Quality Gate: Monitoring**
+```bash
+# Validate monitoring config
+if [ ! -f "monitoring-config.yaml" ]; then
+  echo "❌ Monitoring configuration not found"
+  exit 1
+fi
+
+echo "✅ Monitoring and alerting configured"
+```
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "monitoring-alerting" $TOKENS "95%"
 ```
 
 **CHECKPOINT**: Monitoring and alerting configured ✓
+
+---
 
 ### Phase 6: Rollback Procedures (If Needed) (5%)
 
 **Automatic rollback triggers:**
 
-```bash
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Monitor deployment success
+2. Execute rollback if needed
+3. Validate rollback
+4. Restore database if needed
+5. Verify system health post-rollback
+
+subagent_type: "ci-cd-engineer"
+description: "Execute rollback if needed"
+prompt: "Monitor and execute rollback if needed:
+
 # Monitor deployment success
 # Rollback if:
 - Error rate > 1% for 5 minutes
@@ -752,7 +1488,7 @@ groups:
 # Blue-Green Rollback (Instant)
 kubectl patch service myapp-service \
   -n production \
-  -p '{"spec":{"selector":{"env":"blue"}}}'
+  -p '{\"spec\":{\"selector\":{\"env\":\"blue\"}}}'
 # Traffic switched back in < 5 seconds
 
 # Rolling Deployment Rollback
@@ -761,11 +1497,11 @@ kubectl rollout undo deployment/myapp -n production
 
 # Canary Rollback
 kubectl patch virtualservice myapp -n production -p '{
-  "spec": {
-    "http": [{
-      "route": [{
-        "destination": {"host": "myapp-stable"},
-        "weight": 100
+  \"spec\": {
+    \"http\": [{
+      \"route\": [{
+        \"destination\": {\"host\": \"myapp-stable\"},
+        \"weight\": 100
       }]
     }]
   }
@@ -784,7 +1520,25 @@ VALIDATION:
 ✓ Application healthy
 ✓ Metrics normal
 ✓ Users can access application
+
+Expected outputs:
+- rollback-log.md (only if rollback executed) with:
+  - Rollback trigger
+  - Steps executed
+  - Post-rollback validation
+  - Status (SUCCESS/FAILED)
+"
 ```
+
+**Expected Outputs:**
+- `rollback-log.md` (only if rollback needed)
+
+**Track Progress:**
+```bash
+db_track_tokens "$workflow_id" "rollback-procedures" $TOKENS "100%"
+```
+
+---
 
 ## Post-Deployment Actions
 

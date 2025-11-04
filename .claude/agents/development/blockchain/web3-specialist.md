@@ -4,6 +4,13 @@ description: Expert Web3 developer specializing in dApp development, wallet inte
 categories: [development, blockchain, web3, dapps]
 dependencies: [react-specialist, typescript-developer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Web3 Application Specialist

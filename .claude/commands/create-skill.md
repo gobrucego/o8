@@ -3,104 +3,173 @@ description: Complete skill creation lifecycle from requirements to integration 
 argumentHint: "[skill-requirements-description]"
 ---
 
-# Create Skill Workflow
+# Create Skill
 
-## ⚠️ CRITICAL: Autonomous Orchestration Required
+Autonomous workflow for creating new auto-activated skills that augment agent capabilities with reusable expertise.
 
-**DO NOT execute this workflow in the main Claude Code context.**
+## Intelligence Database Integration
 
-You MUST immediately delegate this entire workflow to the skill-architect using the Task tool.
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
 
-**Delegation Instructions:**
+# Initialize workflow
+workflow_id=$(db_start_workflow "create-skill" "$(date +%s)" "{\"requirements\":\"$1\"}")
+
+echo "🚀 Starting Create Skill Workflow"
+echo "Requirements: $1"
+echo "Workflow ID: $workflow_id"
+
+# Query similar skill patterns
+db_query_similar_workflows "create-skill" 5
 ```
-Use Task tool with:
-- subagent_type: "skill-architect"
-- description: "Create new auto-activated skill"
-- prompt: "Execute the create-skill workflow for: [user's skill requirements].
-
-Create a complete new skill:
-1. Validate this should be a skill (not agent) (25%)
-2. Design skill with auto-activation triggers and methodology (30%)
-3. Implement skill file with comprehensive patterns and examples (25%)
-4. Test skill auto-activation behavior (10%)
-5. Update plugin.json metadata and VERSION (5%)
-6. Update CHANGELOG.md with skill addition (5%)
-
-Follow all phases, enforce quality gates, and meet all success criteria."
-```
-
-**After delegation:**
-- The skill-architect will handle entire skill creation autonomously
-- Returns to main context when complete or if user input required
 
 ---
 
-## Skill Creation Instructions for Orchestrator
+## Phase 1: Skill Validation (0-15%)
 
-You are orchestrating the complete creation of a new auto-activated skill from requirements analysis to plugin integration.
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the skill-architect agent to:
+1. Analyze requirements to determine if this should be a skill vs an agent
+2. Validate skill is reusable across multiple agents
+3. Determine skill type (methodology, pattern, best practice, framework knowledge)
+4. Identify trigger conditions for auto-activation
 
-## Workflow Overview
+subagent_type: "skill-architect"
+description: "Validate skill requirements and determine if skill is appropriate"
+prompt: "Validate if the following requirements should be implemented as a skill:
 
-This workflow uses the `skill-architect` specialist to design and implement a new skill following established orchestr8 patterns, then uses `plugin-developer` to update plugin metadata.
+Requirements: $1
 
-## Execution Instructions
+Tasks:
+1. **Skill vs Agent Decision Matrix**
 
-### Phase 1: Requirements Analysis & Skill Validation (25%)
+   Should be a SKILL if:
+   - ✅ Provides reusable knowledge/methodology
+   - ✅ Activates based on context (file types, keywords, patterns)
+   - ✅ Augments multiple agents' capabilities
+   - ✅ No specific tools required (just knowledge)
+   - ✅ Represents patterns, best practices, or methodologies
 
-**Use `skill-architect` to analyze requirements:**
+   Should be an AGENT if:
+   - ❌ Requires specific tool access
+   - ❌ Performs concrete actions (read, write, execute)
+   - ❌ Handles single domain exclusively
+   - ❌ Needs stateful execution
+   - ❌ Requires orchestration of other agents
 
-1. **Skill vs Agent Decision**
+2. **Skill Type Classification**
+   - **Methodology Skill**: TDD, BDD, Domain-Driven Design, Clean Architecture
+   - **Pattern Skill**: Design patterns (SOLID, Gang of Four), architectural patterns
+   - **Best Practice Skill**: Security practices, performance optimization, accessibility
+   - **Framework Knowledge**: React patterns, Spring Boot best practices, Django conventions
+   - **Domain Expertise**: Financial systems, healthcare compliance, e-commerce patterns
 
-   **CREATE A SKILL if:**
-   - ✅ Providing methodology guidance (TDD, security practices, etc.)
-   - ✅ Defining reusable patterns (design patterns, architectural patterns)
-   - ✅ Creating cross-cutting expertise (testing, performance, accessibility)
-   - ✅ Auto-activation desired based on context
-   - ✅ No direct tool execution needed
-   - ✅ Augmenting multiple agents' capabilities
-   - ✅ Knowledge should be always available
+3. **Auto-Activation Context Design**
+   - What file types should trigger this skill? (.py, .ts, .java, etc.)
+   - What keywords indicate need for this skill? (test, security, performance, etc.)
+   - What project patterns trigger this? (package.json, requirements.txt, etc.)
+   - What conversation contexts activate this? (user mentions specific topic)
 
-   **CREATE AN AGENT if:**
-   - ❌ Need autonomous task execution
-   - ❌ Tool access required (file operations, bash, etc.)
-   - ❌ Specific task completion with clear start/end
-   - ❌ Strategic decision-making independently
-   - ❌ Model selection needed
-   - ❌ Explicit invocation required
+4. **Cross-Agent Applicability**
+   - Which agents would benefit from this skill?
+   - How does this skill augment existing agent capabilities?
+   - Does this overlap with existing skills? (check .claude/skills/)
 
-   **If this should be an agent, STOP and use `/create-agent` instead.**
+5. **Validation Decision**
+   - ✅ PROCEED: This should be a skill (provide justification)
+   - ❌ REJECT: This should be an agent instead (provide alternative recommendation)
 
-2. **Extract Skill Specifications**
-   - What methodology or practice does this skill cover?
-   - When should it auto-activate?
-   - What agents will benefit from it?
-   - What expertise does it provide?
+Provide a structured validation report with clear decision and reasoning.
+"
+```
 
-3. **Category Determination**
-   - `practices/` - Development methodologies (TDD, BDD, etc.)
-   - `patterns/` - Design patterns, architectural patterns
-   - `languages/` - Language-specific idioms
-   - `frameworks/` - Framework-specific patterns
-   - `tools/` - Tool usage patterns
-   - `domains/` - Domain-specific knowledge
-   - `meta/` - System-level patterns
+**Expected Outputs:**
+- Skill validation report with decision (PROCEED or REJECT)
+- Skill type classification
+- Auto-activation context design
+- Cross-agent applicability analysis
 
-4. **Activation Context Analysis**
-   - What tasks trigger this skill?
-   - What keywords indicate relevance?
-   - What agent types need this skill?
-   - When should it NOT activate?
+**Quality Gate: Skill Validation**
+```bash
+# Validation script should create validation-report.txt with decision
+if [ ! -f "validation-report.txt" ]; then
+  echo "❌ Skill validation report missing"
+  db_log_error "$workflow_id" "ValidationError" "Skill validation report not created" "create-skill" "phase-1" "0"
+  exit 1
+fi
 
-**CHECKPOINT**: Confirmed this should be a skill (not agent), category identified ✓
+# Check if validation passed
+if ! grep -q "✅ PROCEED" validation-report.txt; then
+  echo "❌ Skill validation failed - requirements should be implemented as agent instead"
+  db_log_error "$workflow_id" "ValidationError" "Requirements not suitable for skill" "create-skill" "phase-1" "0"
 
-### Phase 2: Skill Design (25%)
+  # Extract alternative recommendation
+  ALTERNATIVE=$(grep -A 5 "❌ REJECT" validation-report.txt)
+  echo "$ALTERNATIVE"
 
-**Use `skill-architect` to design the skill:**
+  # Store this for learning
+  db_store_knowledge "skill-creation" "validation" "rejected-skill" \
+    "Requirements rejected as skill: $1" \
+    "$ALTERNATIVE"
 
-1. **Frontmatter Design**
+  exit 1
+fi
 
-   Simple structure (no model or tools):
+echo "✅ Skill validation passed - proceeding with skill creation"
+```
 
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "skill-validation" $TOKENS_USED "15%"
+
+# Store validation results
+SKILL_TYPE=$(grep "Skill Type:" validation-report.txt | cut -d: -f2 | xargs)
+db_store_knowledge "skill-creation" "validation" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Validated skill: Type=$SKILL_TYPE" \
+  "$(cat validation-report.txt | head -100)"
+```
+
+---
+
+## Phase 2: Skill Design (15-35%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the skill-architect agent to:
+1. Design skill structure and sections
+2. Define auto-activation rules with specificity
+3. Create methodology/pattern documentation outline
+4. Design 5+ code example scenarios
+5. Define DO/DON'T patterns
+
+subagent_type: "skill-architect"
+description: "Design skill structure, auto-activation, and content outline"
+prompt: "Design the structure and auto-activation rules for the validated skill:
+
+Requirements: $1
+Skill Type: [from validation report]
+
+Tasks:
+1. **Skill Structure Design**
+
+   Required Sections:
+   - Frontmatter (name, description ONLY - no model, tools, or other fields)
+   - Introduction (1-2 paragraphs)
+   - Core Concept or Core Methodology
+   - Best Practices (DO/DON'T sections)
+   - Application Workflows or Scenarios
+   - When to Use This Skill
+   - Remember (key takeaways)
+
+   **File Structure:**
+   - Directory: `.claude/skills/[category]/[skill-name]/`
+   - File: `SKILL.md` (uppercase, exactly this name)
+
+2. **Frontmatter Design (CRITICAL)**
+
+   **Simple structure (NO model or tools):**
    ```yaml
    ---
    name: skill-name
@@ -110,91 +179,151 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
 
    **Description Pattern:**
    ```
-   "Expertise in [what].
+   \"Expertise in [what].
    Activate when [when].
-   [Guidance], ensuring [outcome]."
+   [Guidance], ensuring [outcome].\"
    ```
 
-2. **Content Structure Design**
+3. **Category Selection**
+   - `practices/` - Development methodologies (TDD, BDD, etc.)
+   - `patterns/` - Design patterns, architectural patterns
+   - `languages/` - Language-specific idioms
+   - `frameworks/` - Framework-specific patterns
+   - `tools/` - Tool usage patterns
+   - `domains/` - Domain-specific knowledge
+   - `meta/` - System-level patterns
 
-   **Recommended Sections:**
-   ```markdown
-   # Skill Name
+4. **Code Example Planning (5+ required)**
 
-   [Introduction]
+   Each example should show:
+   - ✅ DO: Correct implementation with explanation
+   - ❌ DON'T: Wrong implementation with why it's wrong
+   - Real-world context
+   - Multiple languages if applicable
+   - 50-150 lines per major example
 
-   ## Core Concept / Core Methodology
+5. **Content Outline**
 
-   [Fundamental approach]
+   Create detailed outline for:
+   - Core concept explanation
+   - Key principles (3-7 principles)
+   - Patterns and practices (5-10 patterns)
+   - Code examples (5+ with DO/DON'T)
+   - Application scenarios (3-5 scenarios)
+   - When to use guidance
+   - Key takeaways
 
-   ### Subsection 1
-   [Detailed explanation with code examples]
+Provide a comprehensive skill design document with structure, category, and detailed content outline.
+"
+```
 
-   ### Subsection 2
-   [More details]
+**Expected Outputs:**
+- `skill-design.md` - Complete skill structure and outline
+- `content-outline.md` - Detailed section-by-section plan
+- `examples-plan.md` - Code examples detailed planning
 
-   ## Best Practices
+**Quality Gate: Skill Design Review**
+```bash
+if [ ! -f "skill-design.md" ]; then
+  echo "❌ Skill design document missing"
+  db_log_error "$workflow_id" "DesignError" "Skill design not created" "create-skill" "phase-2" "0"
+  exit 1
+fi
 
-   ### DO ✅
-   [Good practices with examples]
+# Validate design completeness
+REQUIRED_SECTIONS=("Introduction" "Core Concept" "Best Practices" "Application" "When to Use")
+for section in "${REQUIRED_SECTIONS[@]}"; do
+  if ! grep -q "$section" skill-design.md; then
+    echo "❌ Missing required section: $section"
+    db_log_error "$workflow_id" "DesignError" "Skill design missing section: $section" "create-skill" "phase-2" "0"
+    exit 1
+  fi
+done
 
-   ### DON'T ❌
-   [Anti-patterns with explanations]
+# Validate minimum 5 code examples outlined
+EXAMPLE_COUNT=$(grep -c "Example [0-9]" examples-plan.md 2>/dev/null || echo "0")
+if [ "$EXAMPLE_COUNT" -lt 5 ]; then
+  echo "❌ Insufficient code examples: $EXAMPLE_COUNT (minimum 5)"
+  db_log_error "$workflow_id" "DesignError" "Only $EXAMPLE_COUNT examples planned" "create-skill" "phase-2" "0"
+  exit 1
+fi
 
-   ## Workflow / Application Scenarios
+echo "✅ Skill design validated with $EXAMPLE_COUNT code examples"
+```
 
-   ### Scenario 1: [Use Case]
-   [Step-by-step application]
+**Track Progress:**
+```bash
+TOKENS_USED=6000
+db_track_tokens "$workflow_id" "skill-design" $TOKENS_USED "35%"
 
-   ### Scenario 2: [Different Use Case]
-   [More scenarios]
+# Store design patterns
+SKILL_NAME=$(grep "^# " skill-design.md | head -1 | sed 's/^# //' | tr -dc '[:alnum:]' | head -c 30)
+db_store_knowledge "skill-creation" "design" "$SKILL_NAME" \
+  "Skill design completed with examples plan" \
+  "$(cat skill-design.md | head -150)"
+```
 
-   ## When to Use
+---
 
-   **Use [skill name] for:**
-   - ✅ Use case 1
-   - ✅ Use case 2
+## Phase 3: Skill Implementation (35-65%)
 
-   **[Skill name] Less Critical for:**
-   - Alternative approach scenarios
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the skill-architect agent to:
+1. Create skill directory and SKILL.md file
+2. Implement all sections from design (200-300 lines typical)
+3. Write 5+ detailed code examples with DO/DON'T patterns
+4. Ensure cross-agent applicability
+5. Follow wshobson/agents skill pattern
 
-   ## Remember
+subagent_type: "skill-architect"
+description: "Implement complete skill markdown file with examples"
+prompt: "Implement the skill based on the design document:
 
-   1. [Key point 1]
-   2. [Key point 2]
-   [Summary of critical principles]
-   ```
+Skill Name: [from skill-design.md]
+Requirements: $1
+Design Document: skill-design.md
+Content Outline: content-outline.md
+Examples Plan: examples-plan.md
 
-3. **Code Example Planning**
-   - 5+ examples minimum
-   - Multiple languages OK
-   - Real-world, practical examples
-   - Well-commented code
-   - Before/after patterns
+Tasks:
+1. **Create Skill File Structure**
 
-4. **Cross-Agent Applicability**
-   - Identify which agents benefit
-   - Ensure reusability
-   - Avoid agent-specific content
-
-**CHECKPOINT**: Design complete, structure validated ✓
-
-### Phase 3: Implementation (35%)
-
-**Use `skill-architect` to implement the skill:**
-
-1. **Create Skill Directory and File**
+   **CRITICAL File Structure:**
    - Directory: `.claude/skills/[category]/[skill-name]/`
    - File: `SKILL.md` (uppercase, exactly this name)
 
-2. **Write Frontmatter**
-   - name (kebab-case, matches directory)
-   - description (expertise/activate/outcome pattern)
-   - NO other fields (no model, tools, etc.)
+   **Categories:**
+   - `practices/` - TDD, BDD, pair programming, code review practices
+   - `patterns/` - Design patterns, architectural patterns, coding patterns
+   - `languages/` - Python idioms, JavaScript patterns, Go conventions
+   - `frameworks/` - React patterns, Django best practices, Spring Boot patterns
+   - `tools/` - Git workflows, Docker patterns, Kubernetes best practices
+   - `domains/` - Web security, API design, database optimization
+   - `meta/` - Agent design, workflow orchestration, plugin architecture
 
-3. **Write Core Content**
+2. **Frontmatter Structure (CRITICAL - Keep Simple)**
 
-   **Section 1: Title and Introduction**
+   ```yaml
+   ---
+   name: skill-name
+   description: Expertise in [what]. Activate when [when]. [Guidance], ensuring [outcome].
+   ---
+   ```
+
+   **DO NOT add:**
+   - model field
+   - tools field
+   - activation_context field (this was in my earlier version but wshobson doesn't use it)
+   - applicable_agents field
+   - categories field
+   - ANY other fields
+
+   **ONLY name and description!**
+
+3. **Content Implementation (200-300 lines typical)**
+
+   ## Section 1: Title and Introduction (20-30 lines)
    ```markdown
    # Skill Name
 
@@ -202,7 +331,7 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
    and how it helps agents]
    ```
 
-   **Section 2: Core Concept**
+   ## Section 2: Core Concept (50-75 lines)
    ```markdown
    ## Core Concept / Core Methodology
 
@@ -216,10 +345,10 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
    // Code example
    ```
 
-   [Additional explanation]
+   [Explanation]
    ```
 
-   **Section 3: Best Practices**
+   ## Section 3: Best Practices (50-75 lines)
    ```markdown
    ## Best Practices
 
@@ -240,37 +369,24 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
    - Explanation and problems
    ```
 
-   **Section 4: Workflows/Scenarios**
+   ## Section 4: Application Workflows/Scenarios (40-60 lines)
    ```markdown
    ## Application Workflows
 
    ### Workflow 1: [Scenario]
 
-   ```
    1. Step 1
    2. Step 2
-   ```
 
-   [Code example]
+   ```language
+   // Code example
+   ```
 
    ### Workflow 2: [Different Scenario]
    [...]
    ```
 
-   **Section 5: Common Patterns**
-   ```markdown
-   ## Common Patterns
-
-   ### Pattern 1: [Name]
-
-   [Explanation and code example]
-
-   ### Pattern 2: [Name]
-
-   [Explanation and code example]
-   ```
-
-   **Section 6: When to Use**
+   ## Section 5: When to Use (20-30 lines)
    ```markdown
    ## When to Use [Skill Name]
 
@@ -282,7 +398,7 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
    - Optional situation 1
    ```
 
-   **Section 7: Summary**
+   ## Section 6: Summary/Remember (20-30 lines)
    ```markdown
    ## Remember
 
@@ -293,232 +409,543 @@ This workflow uses the `skill-architect` specialist to design and implement a ne
    [Closing statement]
    ```
 
-4. **Add Code Examples**
-   - Real-world examples
+4. **Code Examples (5+ required, 50-150 lines each)**
+
+   For each example:
+   - ✅ DO: Show correct approach with full explanation
+   - ❌ DON'T: Show wrong approach with why it fails
+   - Use real-world scenarios
+   - Include comments explaining key points
    - Multiple languages if applicable
-   - Well-commented
-   - Varied complexity
-   - 50-150 lines per major example
+   - Varied complexity (simple, complex, edge cases)
 
-**CHECKPOINT**: Skill file created, 200-300 lines typical ✓
+5. **Quality Checklist**
+   - [ ] Frontmatter: name and description ONLY
+   - [ ] File: `.claude/skills/[category]/[skill-name]/SKILL.md`
+   - [ ] 200-300 lines total content
+   - [ ] 5+ code examples with DO/DON'T patterns
+   - [ ] All code examples include explanations
+   - [ ] Clear, actionable guidance throughout
+   - [ ] Examples use realistic code (not trivial)
+   - [ ] Covers both simple and complex scenarios
 
-### Phase 4: Validation (10%)
+Create the complete `.claude/skills/[category]/[skill-name]/SKILL.md` file.
+"
+```
 
-**Validate skill implementation:**
+**Expected Outputs:**
+- `.claude/skills/[category]/[skill-name]/SKILL.md` - Complete skill file (200-300 lines)
 
-1. **Frontmatter Validation**
-   - `name` present (kebab-case, matches directory)
-   - `description` present (follows pattern)
-   - NO extra fields (no model, tools, categories, etc.)
-   - Valid YAML syntax
+**Quality Gate: Skill Implementation Validation**
+```bash
+# Find the skill file
+SKILL_FILE=$(find .claude/skills -name "SKILL.md" -type f -newer skill-design.md 2>/dev/null | head -1)
 
-2. **File Structure Validation**
-   - Directory: `.claude/skills/[category]/[skill-name]/`
-   - File: `SKILL.md` (uppercase)
-   - Category appropriate
+if [ -z "$SKILL_FILE" ]; then
+  echo "❌ SKILL.md file not created"
+  db_log_error "$workflow_id" "ImplementationError" "SKILL.md not found" "create-skill" "phase-3" "0"
+  exit 1
+fi
 
-3. **Content Quality Validation**
-   - Clear core concept explanation
-   - 5+ code examples
-   - DO/DON'T sections present
-   - Workflow/scenarios included
+echo "Found skill file: $SKILL_FILE"
+
+# Validate file length (minimum 200 lines)
+LINE_COUNT=$(wc -l < "$SKILL_FILE")
+if [ "$LINE_COUNT" -lt 200 ]; then
+  echo "❌ Skill file too short: $LINE_COUNT lines (minimum 200)"
+  db_log_error "$workflow_id" "ImplementationError" "Skill file only $LINE_COUNT lines" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+echo "✅ Skill file length: $LINE_COUNT lines"
+
+# Validate frontmatter (should be simple)
+if ! grep -q "^name:" "$SKILL_FILE"; then
+  echo "❌ Missing name in frontmatter"
+  db_log_error "$workflow_id" "ImplementationError" "No name field" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+if ! grep -q "^description:" "$SKILL_FILE"; then
+  echo "❌ Missing description in frontmatter"
+  db_log_error "$workflow_id" "ImplementationError" "No description field" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+# Check for incorrect fields (should not have model, tools, etc.)
+if grep -q "^model:" "$SKILL_FILE"; then
+  echo "❌ Skill should not have model field"
+  db_log_error "$workflow_id" "ImplementationError" "Invalid frontmatter: model field present" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+if grep -q "^tools:" "$SKILL_FILE"; then
+  echo "❌ Skill should not have tools field"
+  db_log_error "$workflow_id" "ImplementationError" "Invalid frontmatter: tools field present" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+# Validate code examples (minimum 5 DO/DON'T pairs)
+DO_COUNT=$(grep -c "✅.*DO:" "$SKILL_FILE" || grep -c "### DO" "$SKILL_FILE" || echo "0")
+DONT_COUNT=$(grep -c "❌.*DON'T:" "$SKILL_FILE" || grep -c "### DON'T" "$SKILL_FILE" || echo "0")
+
+if [ "$DO_COUNT" -lt 1 ]; then
+  echo "❌ No DO examples found"
+  db_log_error "$workflow_id" "ImplementationError" "No DO examples" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+if [ "$DONT_COUNT" -lt 1 ]; then
+  echo "❌ No DON'T examples found"
+  db_log_error "$workflow_id" "ImplementationError" "No DON'T examples" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+echo "✅ Code examples validated: $DO_COUNT DO sections, $DONT_COUNT DON'T sections"
+
+# Validate required sections
+REQUIRED_SECTIONS=("Core Concept" "Best Practices" "When to Use" "Remember")
+MISSING_SECTIONS=()
+
+for section in "${REQUIRED_SECTIONS[@]}"; do
+  if ! grep -qi "## .*$section" "$SKILL_FILE"; then
+    MISSING_SECTIONS+=("$section")
+  fi
+done
+
+if [ ${#MISSING_SECTIONS[@]} -gt 0 ]; then
+  echo "❌ Missing required sections: ${MISSING_SECTIONS[*]}"
+  db_log_error "$workflow_id" "ImplementationError" "Missing sections: ${MISSING_SECTIONS[*]}" "create-skill" "phase-3" "0"
+  exit 1
+fi
+
+echo "✅ All required sections present"
+echo "✅ Skill implementation validated"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=8000
+db_track_tokens "$workflow_id" "skill-implementation" $TOKENS_USED "65%"
+
+# Store implementation metrics
+SKILL_NAME=$(basename "$(dirname "$SKILL_FILE")")
+SKILL_CATEGORY=$(basename "$(dirname "$(dirname "$SKILL_FILE")")")
+
+db_store_knowledge "skill-creation" "implementation" "$SKILL_NAME" \
+  "Skill implemented: Category=$SKILL_CATEGORY, Lines=$LINE_COUNT" \
+  "$(cat "$SKILL_FILE" | head -100)"
+```
+
+---
+
+## Phase 4: Testing & Validation (65-85%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Validate skill provides value and is not redundant
+2. Test code examples are valid and instructive
+3. Verify frontmatter is correct (simple structure)
+4. Check for overlaps with existing skills
+5. Ensure cross-agent applicability
+
+subagent_type: "test-engineer"
+description: "Test skill content and validate quality"
+prompt: "Test and validate the newly created skill:
+
+Skill File: $SKILL_FILE
+Requirements: $1
+
+Tasks:
+1. **Content Quality Validation**
+
+   Verify skill provides:
+   - Clear core concept or methodology explanation
+   - Practical code examples (not trivial)
+   - DO/DON'T patterns with explanations
+   - Application scenarios or workflows
    - When to use guidance
-   - Summary/key takeaways
+   - Key takeaways (Remember section)
 
-4. **Skill vs Agent Re-Validation**
-   - Confirms this should be a skill
-   - No tool execution requirements
-   - Methodology/pattern/practice focused
-   - Auto-activation context clear
+   Quality Metrics:
+   - Clarity score (1-10)
+   - Practicality score (1-10)
+   - Example quality score (1-10)
 
-5. **Cross-Agent Value Validation**
-   - Useful to multiple agent types
-   - Not specific to one agent
-   - Reusable expertise
-   - Broadly applicable
+2. **Code Example Validation**
 
-**CHECKPOINT**: All validations passed ✓
+   For each code example:
+   - Does it demonstrate a real-world scenario?
+   - Is it well-commented and explained?
+   - Does the DO example show best practice?
+   - Does the DON'T example show actual problem?
+   - Are explanations accurate?
 
-### Phase 5: Plugin Metadata Update (5%)
+   Report examples with issues.
 
-**Use `plugin-developer` to update metadata:**
+3. **Frontmatter Validation (CRITICAL)**
 
-1. **Count Skills**
+   **Should have:**
+   - ✅ name field (kebab-case)
+   - ✅ description field (expertise/activate/outcome pattern)
+
+   **Should NOT have:**
+   - ❌ model field
+   - ❌ tools field
+   - ❌ activation_context field
+   - ❌ applicable_agents field
+   - ❌ categories field
+   - ❌ Any other fields
+
+   If incorrect fields present, this is a CRITICAL error.
+
+4. **File Structure Validation**
+
+   - Directory: `.claude/skills/[category]/[skill-name]/`
+   - File: `SKILL.md` (uppercase, not skill.md or Skill.md)
+   - Category appropriate for content
+   - Directory name matches skill name
+
+5. **Overlap Detection**
+
+   Compare with existing skills in .claude/skills/:
+   - Does new skill duplicate existing knowledge?
+   - Are there conflicts with existing skills?
+   - Should existing skills be updated/consolidated?
+   - Is this skill additive or redundant?
+
+   Recommendation:
+   - ✅ UNIQUE: No significant overlap, proceed
+   - ⚠️  CONSOLIDATE: Merge with skill [name]
+   - ❌ REDUNDANT: Reject, use existing skill [name]
+
+6. **Cross-Agent Applicability**
+
+   - Would multiple agent types benefit?
+   - Is it too specific to one agent?
+   - Does it provide reusable expertise?
+   - Is it broadly applicable?
+
+Provide comprehensive testing report with validation results and quality scores.
+"
+```
+
+**Expected Outputs:**
+- `skill-test-report.md` - Complete testing results
+- `quality-metrics.txt` - Quality scores
+- `overlap-analysis.txt` - Comparison with existing skills
+
+**Quality Gate: Testing Validation**
+```bash
+if [ ! -f "skill-test-report.md" ]; then
+  echo "❌ Testing report missing"
+  db_log_error "$workflow_id" "TestingError" "Skill testing report not created" "create-skill" "phase-4" "0"
+  exit 1
+fi
+
+# Check for critical failures
+if grep -q "❌ REDUNDANT" skill-test-report.md; then
+  echo "❌ Skill is redundant with existing skill"
+  EXISTING_SKILL=$(grep "use existing skill" skill-test-report.md | grep -oP '\[.*?\]' | tr -d '[]')
+  echo "Use existing skill: $EXISTING_SKILL"
+  db_log_error "$workflow_id" "ValidationError" "Skill redundant with $EXISTING_SKILL" "create-skill" "phase-4" "0"
+  exit 1
+fi
+
+# Check frontmatter validation
+if grep -q "CRITICAL.*frontmatter" skill-test-report.md; then
+  echo "❌ Frontmatter has incorrect fields"
+  db_log_error "$workflow_id" "ValidationError" "Frontmatter validation failed" "create-skill" "phase-4" "0"
+  exit 1
+fi
+
+# Check quality scores (should be >= 7)
+CLARITY_SCORE=$(grep "Clarity score" quality-metrics.txt | grep -oP '\d+' | head -1 || echo "0")
+if [ "$CLARITY_SCORE" -lt 7 ]; then
+  echo "⚠️  Warning: Low clarity score: $CLARITY_SCORE/10"
+  db_log_error "$workflow_id" "ValidationWarning" "Clarity score only $CLARITY_SCORE" "create-skill" "phase-4" "1"
+fi
+
+# Check for consolidation recommendation
+if grep -q "⚠️  CONSOLIDATE" skill-test-report.md; then
+  echo "⚠️  Warning: Skill should be consolidated with existing skill"
+  CONSOLIDATE_WITH=$(grep "⚠️  CONSOLIDATE" skill-test-report.md | grep -oP 'skill \K\[.*?\]' | tr -d '[]' || echo "unknown")
+  echo "Consider consolidating with: $CONSOLIDATE_WITH"
+  db_log_error "$workflow_id" "ValidationWarning" "Consider consolidating with $CONSOLIDATE_WITH" "create-skill" "phase-4" "1"
+fi
+
+echo "✅ Testing validation passed"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "testing-validation" $TOKENS_USED "85%"
+
+# Store testing metrics
+CLARITY_SCORE=$(grep "Clarity score" quality-metrics.txt | grep -oP '\d+' | head -1 || echo "0")
+PRACTICALITY_SCORE=$(grep "Practicality score" quality-metrics.txt | grep -oP '\d+' | head -1 || echo "0")
+
+db_store_knowledge "skill-creation" "testing" "$SKILL_NAME" \
+  "Skill tested: Clarity=$CLARITY_SCORE, Practicality=$PRACTICALITY_SCORE" \
+  "$(cat skill-test-report.md | head -100)"
+```
+
+---
+
+## Phase 5: Integration (85-100%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the plugin-developer agent to:
+1. Count skills and update .claude/plugin.json (if tracked)
+2. Increment .claude/VERSION file (MINOR version for new skill)
+3. Update .claude/CHANGELOG.md with skill details
+4. Validate plugin.json syntax
+5. Create integration summary
+
+subagent_type: "plugin-developer"
+description: "Integrate skill into plugin and update metadata"
+prompt: "Integrate the new skill into the orchestr8 plugin:
+
+Skill File: $SKILL_FILE
+Skill Name: $SKILL_NAME
+Category: $SKILL_CATEGORY
+Requirements: $1
+
+Tasks:
+1. **Increment VERSION (MINOR bump)**
+
+   File: `.claude/VERSION`
+
+   Increment MINOR version (X.Y.Z -> X.Y+1.0):
    ```bash
-   find .claude/skills -type d -mindepth 2 -maxdepth 2 | wc -l
+   CURRENT_VERSION=\$(cat .claude/VERSION)
+   MAJOR=\$(echo \$CURRENT_VERSION | cut -d. -f1)
+   MINOR=\$(echo \$CURRENT_VERSION | cut -d. -f2)
+   NEW_MINOR=\$((MINOR + 1))
+   NEW_VERSION=\"\$MAJOR.\$NEW_MINOR.0\"
+   echo \$NEW_VERSION > .claude/VERSION
+   echo \"Version updated: \$CURRENT_VERSION -> \$NEW_VERSION\"
    ```
 
-2. **Update VERSION**
-   - Increment MINOR version (e.g., 1.4.0 → 1.5.0)
-   - Update `.claude/VERSION` file
+2. **Update plugin.json**
 
-3. **Update plugin.json**
-   - Update `version` field
-   - Update description if skills mentioned
-   - Note: Skills may not have explicit count in plugin.json yet
+   File: `.claude/plugin.json`
 
-4. **Verify Synchronization**
-   - VERSION matches plugin.json version
-   - JSON is valid
+   Update version to match VERSION file:
+   ```bash
+   NEW_VERSION=\$(cat .claude/VERSION)
+   jq \".version = \\\"\$NEW_VERSION\\\"\" .claude/plugin.json > tmp.json && mv tmp.json .claude/plugin.json
+   ```
 
-**CHECKPOINT**: Plugin metadata updated and synchronized ✓
+   **Note:** Skills may not have explicit count in plugin.json yet. That's OK.
 
-### Phase 6: Documentation (5%)
+3. **Update CHANGELOG.md**
 
-**Use `plugin-developer` to update CHANGELOG:**
+   File: `.claude/CHANGELOG.md`
 
-1. **Add CHANGELOG Entry**
-   - Create new `## [X.Y.Z] - YYYY-MM-DD` section
-   - Document new skill with category
-   - Include activation context and benefits
-   - Use appropriate emoji category
+   Add new section at top:
+   ```markdown
+   ## [\$NEW_VERSION] - \$(date +%Y-%m-%d)
 
-2. **Update Documentation** (if applicable)
-   - Add skill to relevant documentation
-   - Explain auto-activation behavior
-   - List applicable agent types
+   ### 📚 New Skill
 
-**CHECKPOINT**: Documentation updated ✓
+   **\$SKILL_CATEGORY/\$SKILL_NAME**
+   - [Brief description from frontmatter]
+   - [Key benefit 1]
+   - [Key benefit 2]
+   - [Key benefit 3]
 
-## Success Criteria
+   **Provides:**
+   - Core concept explanation
+   - Best practices with DO/DON'T examples
+   - [Number] detailed code examples
+   - Application workflows and scenarios
+   - When to use guidance
+   ```
+
+4. **Validate Integration**
+
+   Run validation checks:
+   ```bash
+   # Check VERSION and plugin.json match
+   VERSION_FILE=\$(cat .claude/VERSION)
+   VERSION_JSON=\$(jq -r '.version' .claude/plugin.json)
+
+   if [ \"\$VERSION_FILE\" != \"\$VERSION_JSON\" ]; then
+     echo \"❌ Version mismatch: VERSION=\$VERSION_FILE, plugin.json=\$VERSION_JSON\"
+     exit 1
+   fi
+
+   # Count skills
+   ACTUAL_SKILLS=\$(find .claude/skills -name \"SKILL.md\" -type f | wc -l)
+
+   # Validate plugin.json is valid JSON
+   if ! jq empty .claude/plugin.json 2>/dev/null; then
+     echo \"❌ plugin.json is not valid JSON\"
+     exit 1
+   fi
+
+   echo \"✅ Integration validated\"
+   echo \"Version: \$VERSION_FILE\"
+   echo \"Total skills: \$ACTUAL_SKILLS\"
+   ```
+
+5. **Create Integration Summary**
+
+   Generate summary document:
+   ```markdown
+   # Skill Integration Summary
+
+   **Skill:** \$SKILL_CATEGORY/\$SKILL_NAME
+   **Version:** \$NEW_VERSION
+   **Created:** \$(date)
+
+   ## File Locations
+   - Skill file: \$SKILL_FILE
+   - Category: \$SKILL_CATEGORY
+   - Lines: \$LINE_COUNT
+
+   ## Content Summary
+   [From skill file]
+
+   ## Quality Metrics
+   - Clarity Score: \$CLARITY_SCORE/10
+   - Practicality Score: \$PRACTICALITY_SCORE/10
+
+   ## Next Steps
+   - ✅ Skill file created and validated
+   - ✅ Plugin metadata updated
+   - ✅ VERSION incremented to \$NEW_VERSION
+   - ✅ CHANGELOG updated
+   - Ready for commit and testing
+   ```
+
+Provide integration summary with validation results.
+"
+```
+
+**Expected Outputs:**
+- Updated `.claude/plugin.json` with new version
+- Updated `.claude/VERSION` with incremented MINOR version
+- Updated `.claude/CHANGELOG.md` with skill details
+- `integration-summary.md` - Complete integration report
+
+**Quality Gate: Integration Validation**
+```bash
+# Validate VERSION and plugin.json sync
+VERSION_FILE=$(cat .claude/VERSION)
+VERSION_JSON=$(jq -r '.version' .claude/plugin.json)
+
+if [ "$VERSION_FILE" != "$VERSION_JSON" ]; then
+  echo "❌ Version mismatch: VERSION=$VERSION_FILE, plugin.json=$VERSION_JSON"
+  db_log_error "$workflow_id" "IntegrationError" "Version files out of sync" "create-skill" "phase-5" "0"
+  exit 1
+fi
+
+# Validate CHANGELOG has new entry
+if ! grep -q "\[$VERSION_FILE\]" .claude/CHANGELOG.md; then
+  echo "❌ CHANGELOG not updated with version $VERSION_FILE"
+  db_log_error "$workflow_id" "IntegrationError" "CHANGELOG missing entry" "create-skill" "phase-5" "0"
+  exit 1
+fi
+
+# Validate plugin.json is valid JSON
+if ! jq empty .claude/plugin.json 2>/dev/null; then
+  echo "❌ plugin.json is not valid JSON"
+  db_log_error "$workflow_id" "IntegrationError" "Invalid JSON in plugin.json" "create-skill" "phase-5" "0"
+  exit 1
+fi
+
+echo "✅ Integration validated"
+echo "Version: $VERSION_FILE"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=3000
+db_track_tokens "$workflow_id" "integration" $TOKENS_USED "100%"
+
+# Store integration results
+db_store_knowledge "skill-creation" "integration" "$SKILL_NAME" \
+  "Skill integrated: Version=$VERSION_FILE" \
+  "$(cat integration-summary.md)"
+```
+
+---
+
+## Workflow Complete
+
+```bash
+# Mark workflow complete
+db_complete_workflow "$workflow_id" "success" "Skill created and integrated successfully"
+
+# Display final metrics
+echo ""
+echo "=========================================="
+echo "✅ SKILL CREATION COMPLETE"
+echo "=========================================="
+echo ""
+echo "Skill: $SKILL_CATEGORY/$SKILL_NAME"
+echo "Version: $VERSION_FILE"
+echo "File: $SKILL_FILE"
+echo "Lines: $LINE_COUNT"
+echo ""
+echo "Quality Metrics:"
+echo "  - Clarity Score: $CLARITY_SCORE/10"
+echo "  - Practicality Score: $PRACTICALITY_SCORE/10"
+echo ""
+echo "Token Usage:"
+TOTAL_TOKENS=$(db_workflow_metrics "$workflow_id" | grep "Total tokens" | grep -oP '\d+')
+echo "  - Total Tokens: $TOTAL_TOKENS"
+echo "  - Avg per Phase: $((TOTAL_TOKENS / 5))"
+echo ""
+echo "Next Steps:"
+echo "  1. Review skill file: $SKILL_FILE"
+echo "  2. Test skill in real scenarios"
+echo "  3. Commit: git add . && git commit -m 'feat: add $SKILL_NAME skill'"
+echo "  4. Monitor skill effectiveness"
+echo ""
+echo "=========================================="
+```
+
+---
+
+## Success Criteria Checklist
 
 Skill creation is complete when:
-- ✅ Validated this should be a skill (not an agent)
-- ✅ Requirements analyzed and category identified
-- ✅ Skill designed with structure and examples
-- ✅ Skill directory and SKILL.md file created
-- ✅ Frontmatter complete (name, description only)
-- ✅ Core concept clearly explained
-- ✅ 5+ code examples included
-- ✅ Best practices (DO/DON'T) documented
-- ✅ Application workflows/scenarios provided
-- ✅ When to use guidance included
-- ✅ Summary/key takeaways present
-- ✅ All validations passed
-- ✅ Plugin metadata updated
-- ✅ VERSION incremented (MINOR bump)
-- ✅ VERSION and plugin.json synchronized
-- ✅ CHANGELOG.md updated
-- ✅ Skill ready to auto-activate based on context
 
-## Example Usage
+- ✅ **Skill validated as appropriate** (not better as agent)
+- ✅ **Skill file created** (200-300 lines typical)
+- ✅ **Frontmatter correct** (name and description ONLY)
+- ✅ **File structure correct** (`.claude/skills/[category]/[skill-name]/SKILL.md`)
+- ✅ **Core concept explained** clearly
+- ✅ **Best practices included** with DO/DON'T patterns
+- ✅ **Code examples provided** (5+ examples)
+- ✅ **Application scenarios** or workflows documented
+- ✅ **When to use guidance** included
+- ✅ **Remember/summary section** present
+- ✅ **No redundancy** with existing skills
+- ✅ **Cross-agent applicability** confirmed
+- ✅ **VERSION incremented** (MINOR version)
+- ✅ **plugin.json updated** with new version
+- ✅ **Version files synchronized** (VERSION == plugin.json version)
+- ✅ **CHANGELOG updated** with skill details
+- ✅ **All quality gates passed**
 
-### Example 1: Methodology Skill
-
-```bash
-/create-skill "Create a skill for Behavior-Driven Development (BDD) methodology that guides writing scenarios in Gherkin format, implementing step definitions, and ensuring collaboration between developers and stakeholders"
-```
-
-The workflow will autonomously:
-1. Analyze requirements → Confirmed it's a methodology skill, not an agent
-2. Design skill → Category: `practices/`, includes:
-   - BDD cycle (Feature → Scenario → Step → Implementation)
-   - Gherkin syntax examples
-   - Step definition patterns
-   - Collaboration workflows
-3. Implement skill → Create `.claude/skills/practices/behavior-driven-development/SKILL.md` with:
-   - Core BDD methodology
-   - Gherkin examples
-   - DO/DON'T patterns
-   - When to use BDD
-4. Validate → All sections complete
-5. Update metadata → Increment version
-6. Document → Add CHANGELOG entry
-
-**Estimated Time**: ~10 minutes
-
-### Example 2: Pattern Library Skill
-
-```bash
-/create-skill "Create a skill for microservices architecture patterns including service discovery, circuit breakers, saga patterns, API gateway, and event-driven communication"
-```
-
-The workflow will create `.claude/skills/patterns/microservices-patterns/SKILL.md` with:
-- Pattern catalog (Circuit Breaker, Saga, API Gateway, Event Sourcing, CQRS)
-- When to use each pattern
-- Implementation examples
-- Pattern combinations
-- Anti-patterns to avoid
-
-**Estimated Time**: ~12 minutes
-
-### Example 3: Best Practices Skill
-
-```bash
-/create-skill "Create a skill for API security best practices covering authentication strategies, authorization patterns, input validation, rate limiting, and OWASP API Security Top 10"
-```
-
-The workflow will create `.claude/skills/domains/api-security/SKILL.md` with:
-- Security principles
-- Authentication patterns (OAuth2, JWT, API keys)
-- Authorization approaches (RBAC, ABAC)
-- Input validation techniques
-- Rate limiting strategies
-- OWASP API Security checklist
-
-**Estimated Time**: ~10 minutes
-
-## Anti-Patterns
-
-### DON'T ❌
-
-- Don't create a skill when you need an agent - use decision matrix
-- Don't add model or tools fields - skills don't have these
-- Don't make it agent-specific - should benefit multiple agents
-- Don't skip code examples - need 5+ examples minimum
-- Don't use lowercase for filename - must be SKILL.md
-- Don't place in wrong category - choose appropriate directory
-- Don't create thin skills - needs substantial content (200+ lines)
-- Don't skip activation context - description must clarify when to use
-- Don't forget validation - ensure it's truly a skill
-- Don't skip metadata update - keep plugin synchronized
-- Don't forget CHANGELOG - document all new skills
-
-### DO ✅
-
-- Use skill vs agent decision matrix first
-- Keep frontmatter simple (name and description only)
-- Make it reusable across multiple agents
-- Include rich code examples (5+ examples)
-- Use SKILL.md filename (uppercase)
-- Place in appropriate skills category
-- Create comprehensive content (200-300 lines)
-- Define clear activation context
-- Validate it should be a skill (not agent)
-- Update plugin metadata immediately
-- Use semantic versioning (MINOR bump)
-- Document thoroughly in CHANGELOG
-- Test skill concept with multiple agent scenarios
-
-## Skill vs Agent Decision Guide
-
-| Aspect | Create Skill | Create Agent |
-|--------|--------------|--------------|
-| Purpose | Methodology/patterns/practices | Autonomous task execution |
-| Invocation | Auto-activated by context | Explicitly invoked via Task tool |
-| Tools | None (knowledge only) | Specific tools (Read, Write, Bash, etc.) |
-| Model | Not specified | Opus 4 or Sonnet 4.5 |
-| Scope | Cross-agent expertise | Focused task completion |
-| Example | TDD methodology | Python code implementation |
-
-## Skill Categories
-
-- **practices/** - TDD, BDD, pair programming, code review practices
-- **patterns/** - Design patterns, architectural patterns, coding patterns
-- **languages/** - Python idioms, JavaScript patterns, Go conventions
-- **frameworks/** - React patterns, Django best practices, Spring Boot patterns
-- **tools/** - Git workflows, Docker patterns, Kubernetes best practices
-- **domains/** - Web security, API design, database optimization
-- **meta/** - Agent design, workflow orchestration, plugin architecture
+---
 
 ## Notes
 
-- **skill-architect** handles all design and implementation
-- **plugin-developer** handles all metadata updates
-- Version bumps are always MINOR for new skills
-- Skills auto-activate based on context (no explicit invocation)
-- Skills augment agent capabilities (don't replace them)
-- No user intervention needed unless requirements are ambiguous
-- All related files must be committed together
-
-**This workflow makes the orchestr8 plugin self-extending with reusable expertise!**
+- Skills have simple frontmatter: name and description ONLY
+- Skills are auto-activated based on context (no explicit invocation)
+- Skills provide knowledge and patterns, not executable actions
+- Skills augment multiple agents' capabilities
+- File must be named `SKILL.md` (uppercase) in `.claude/skills/[category]/[skill-name]/` directory
+- Version bumps are always MINOR for new skills (X.Y.Z -> X.Y+1.0)
+- Skills reduce token usage by codifying common patterns
+- Good skills save 80-90% of tokens vs explaining each time
+- Follow wshobson/agents patterns for consistency
+- **This workflow makes the orchestr8 plugin self-extending with reusable expertise!**

@@ -19,33 +19,33 @@ Autonomous, safe code refactoring with test coverage, quality validation, and be
 
 ### Phase 1: Analysis & Planning (20%)
 
-**Use `code-archaeologist` and `code-reviewer` to:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-archaeologist and code-reviewer agents to analyze current code and design refactoring strategy.
 
+subagent_type: "code-archaeologist"
+description: "Analyze current code and identify refactoring opportunities"
+prompt: "Analyze code for refactoring: $*
+
+Tasks:
 1. **Analyze Current Code**
-   ```bash
-   # Understand the code
-   - Read thoroughly
-   - Identify code smells
+   - Read code thoroughly
+   - Identify code smells:
+     - Long methods (>50 lines)
+     - Large classes (>300 lines)
+     - Duplicated code
+     - Deep nesting (>3 levels)
+     - Too many parameters (>4)
+     - Feature envy
+     - Shotgun surgery
+     - Primitive obsession
+     - Long parameter lists
    - Map dependencies
    - Check test coverage
-   ```
 
-2. **Identify Code Smells**
-   ```
-   Common smells:
-   - Long methods (>50 lines)
-   - Large classes (>300 lines)
-   - Duplicated code
-   - Deep nesting (>3 levels)
-   - Too many parameters (>4)
-   - Feature envy
-   - Shotgun surgery
-   - Primitive obsession
-   - Long parameter lists
-   ```
+2. **Design Refactoring Strategy**
+   Create refactoring-plan.md with:
 
-3. **Design Refactoring Strategy**
-   ```markdown
    GOAL: [What we want to achieve]
 
    CURRENT STATE:
@@ -65,378 +65,542 @@ Autonomous, safe code refactoring with test coverage, quality validation, and be
    RISKS:
    - [What could go wrong]
    - [Mitigation strategies]
-   ```
 
-4. **Verify Test Coverage**
-   Use `test-engineer` to:
-   ```bash
-   # Check current coverage
-   npm run test:coverage
-   # or: pytest --cov
+3. **Verify Test Coverage**
+   - Check current coverage: 80%+ of code being refactored
+   - If insufficient, plan test creation first
 
-   # Goal: 80%+ coverage of code being refactored
-   # If insufficient, write tests FIRST
-   ```
+Expected outputs:
+- code-analysis.md with:
+  - Code smells identified
+  - Dependencies mapped
+  - Test coverage report
+- refactoring-plan.md with:
+  - Clear goal and strategy
+  - Step-by-step refactoring plan
+  - Risk mitigation strategies
+"
+```
+
+**Expected Outputs:**
+- `code-analysis.md` - Complete code smell analysis
+- `refactoring-plan.md` - Detailed refactoring strategy
+- Test coverage report
+
+**Quality Gate: Planning Validation**
+```bash
+# Validate code analysis exists
+if [ ! -f "code-analysis.md" ]; then
+  echo "❌ Code analysis not created"
+  exit 1
+fi
+
+# Validate refactoring plan exists
+if [ ! -f "refactoring-plan.md" ]; then
+  echo "❌ Refactoring plan not created"
+  exit 1
+fi
+
+# Validate plan has clear steps
+if ! grep -q "REFACTORING STEPS" refactoring-plan.md; then
+  echo "❌ Refactoring steps not defined"
+  exit 1
+fi
+
+echo "✅ Refactoring plan complete"
+```
+
+**Track Progress:**
+```bash
+# Update TodoWrite with refactoring steps from plan
+echo "20% - Analysis & planning complete"
+```
 
 **CHECKPOINT**: Plan approved, tests comprehensive ✓
 
+---
+
 ### Phase 2: Pre-Refactoring Test Suite (15%)
 
-**Use `test-engineer` to ensure bulletproof tests:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to ensure comprehensive test coverage before refactoring.
 
+subagent_type: "test-engineer"
+description: "Create comprehensive test suite for code being refactored"
+prompt: "Create bulletproof test suite for refactoring: $*
+
+Tasks:
 1. **Characterization Tests**
-   ```python
-   # Document current behavior (even if it's buggy)
-   def test_current_behavior():
-       # This documents what it does NOW
-       # We'll maintain this behavior during refactoring
-       result = legacy_function(input_data)
-       assert result == expected_current_output
-   ```
+   Document current behavior (even if buggy):
+   - Test what the code does NOW
+   - We'll maintain this behavior during refactoring
+   - Cover all current functionality
+   - Include edge cases
 
 2. **Edge Case Tests**
-   ```python
-   def test_edge_cases():
-       assert function([]) == []  # Empty input
-       assert function(None) is None  # Null input
-       assert function([1]) == [1]  # Single item
-       # Boundary conditions
-       # Error conditions
-   ```
+   - Empty input
+   - Null/undefined input
+   - Single item
+   - Boundary conditions
+   - Error conditions
+   - Concurrent access (if applicable)
 
 3. **Integration Tests**
-   ```python
-   def test_integration():
-       # Test how this code interacts with rest of system
-       # These verify behavior doesn't change
-       result = full_workflow()
-       assert result == expected
-   ```
+   - Test how this code interacts with rest of system
+   - Verify behavior doesn't change
+   - Test all integration points
 
 4. **Performance Baselines**
-   ```python
-   def test_performance_baseline():
-       import time
-       start = time.time()
-       function(large_dataset)
-       duration = time.time() - start
-       assert duration < 1.0  # Baseline: must stay this fast
-   ```
+   - Measure current performance
+   - Set baseline metrics
+   - Must maintain or improve performance
+
+Based on: code-analysis.md
+
+Expected outputs:
+- Comprehensive test suite with:
+  - Characterization tests (documenting current behavior)
+  - Edge case tests (boundary and error conditions)
+  - Integration tests (system interactions)
+  - Performance baseline tests
+- All tests PASSING
+- Coverage report showing >80% for code being refactored
+"
+```
+
+**Expected Outputs:**
+- Comprehensive test suite files
+- All tests passing
+- Coverage report showing >80%
+- Performance baseline established
+
+**Quality Gate: Test Suite Validation**
+```bash
+# Run all tests
+if ! npm test 2>/dev/null && ! python -m pytest 2>/dev/null && ! cargo test 2>/dev/null; then
+  echo "❌ Tests failing before refactoring"
+  exit 1
+fi
+
+# Check coverage
+echo "Checking test coverage..."
+# Coverage should be >80% for code being refactored
+
+echo "✅ Comprehensive test suite in place, all passing"
+```
+
+**Track Progress:**
+```bash
+echo "35% - Test suite complete"
+```
 
 **CHECKPOINT**: Comprehensive test suite in place, all passing ✓
 
+---
+
 ### Phase 3: Incremental Refactoring (50%)
 
-**Use appropriate development agent (python-developer, typescript-developer, etc.):**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the appropriate development agent to execute refactoring incrementally.
 
-**CRITICAL**: After EACH step below, run tests. Tests must stay GREEN.
+subagent_type: "[python-developer|typescript-developer|java-developer|go-developer|rust-developer]"
+description: "Execute refactoring incrementally with tests green at each step"
+prompt: "Execute refactoring incrementally: $*
 
-#### Step 1: Extract Methods/Functions
+CRITICAL: After EACH step below, run tests. Tests must stay GREEN.
 
-```python
-# Before: Long method
-def process_order(order):
-    # Validate
-    if not order.items:
-        raise ValueError("No items")
-    if order.total < 0:
-        raise ValueError("Invalid total")
+Based on refactoring-plan.md, execute these refactoring patterns as appropriate:
 
-    # Calculate tax
-    tax_rate = 0.1 if order.state == 'CA' else 0.05
-    tax = order.subtotal * tax_rate
+1. **Extract Methods/Functions**
+   - Break long methods into smaller, focused functions
+   - Each function has single responsibility
+   - Clear, descriptive names
+   - RUN TESTS ✓
 
-    # Apply discount
-    discount = 0
-    if order.customer.is_vip:
-        discount = order.subtotal * 0.2
+2. **Extract Classes**
+   - Break god classes into focused classes
+   - Each class has single responsibility
+   - Clear interfaces
+   - RUN TESTS ✓
 
-    # Finalize
-    order.tax = tax
-    order.discount = discount
-    order.total = order.subtotal + tax - discount
-    order.save()
+3. **Eliminate Code Duplication**
+   - Identify duplicated logic
+   - Extract to shared functions/methods
+   - Use DRY principle
+   - RUN TESTS ✓
 
-# After: Extract methods
-def process_order(order):
-    validate_order(order)
-    tax = calculate_tax(order)
-    discount = calculate_discount(order)
-    finalize_order(order, tax, discount)
+4. **Improve Names**
+   - Replace unclear variable/function names
+   - Use descriptive, self-documenting names
+   - Follow naming conventions
+   - RUN TESTS ✓
 
-def validate_order(order):
-    if not order.items:
-        raise ValueError("No items")
-    if order.total < 0:
-        raise ValueError("Invalid total")
+5. **Reduce Complexity**
+   - Replace deep nesting with guard clauses
+   - Simplify conditional logic
+   - Reduce cyclomatic complexity
+   - RUN TESTS ✓
 
-def calculate_tax(order):
-    tax_rate = get_tax_rate(order.state)
-    return order.subtotal * tax_rate
+6. **Introduce Design Patterns** (if applicable)
+   - Strategy pattern for complex conditionals
+   - Factory pattern for object creation
+   - Observer pattern for event handling
+   - Parameter objects for many parameters
+   - RUN TESTS ✓
 
-def calculate_discount(order):
-    if order.customer.is_vip:
-        return order.subtotal * 0.2
-    return 0
+RULES:
+- Make ONE small change at a time
+- Run tests after EVERY change
+- Keep tests GREEN throughout
+- If tests fail, revert and try smaller step
+- Document each change in refactoring-log.md
+- NO behavior changes allowed
 
-def finalize_order(order, tax, discount):
-    order.tax = tax
-    order.discount = discount
-    order.total = order.subtotal + tax - discount
-    order.save()
+Expected outputs:
+- Refactored code files
+- refactoring-log.md documenting each step
+- All tests passing after EVERY step
+- Reduced code complexity
+- Eliminated code smells
+- SOLID principles followed
+"
 ```
 
-**RUN TESTS** ✓
+**Expected Outputs:**
+- Refactored code files
+- `refactoring-log.md` - Step-by-step change log
+- All tests passing continuously
+- Reduced complexity metrics
+- Code smells eliminated
 
-#### Step 2: Extract Classes
+**Quality Gate: Incremental Progress**
+```bash
+# After each refactoring step, verify tests pass
+echo "Validating refactoring progress..."
 
-```python
-# Before: God class
-class Order:
-    def validate(self): ...
-    def calculate_tax(self): ...
-    def calculate_discount(self): ...
-    def process_payment(self): ...
-    def send_email(self): ...
-    def generate_invoice(self): ...
+# Run all tests
+if ! npm test 2>/dev/null && ! python -m pytest 2>/dev/null && ! cargo test 2>/dev/null; then
+  echo "❌ Tests failing during refactoring - REVERT LAST CHANGE"
+  exit 1
+fi
 
-# After: Single Responsibility
-class Order:
-    def __init__(self, items, customer):
-        self.items = items
-        self.customer = customer
-        self.validator = OrderValidator()
-        self.calculator = OrderCalculator()
-        self.processor = PaymentProcessor()
-        self.notifier = OrderNotifier()
+# Verify refactoring log exists
+if [ ! -f "refactoring-log.md" ]; then
+  echo "❌ Refactoring log not maintained"
+  exit 1
+fi
 
-    def process(self):
-        self.validator.validate(self)
-        amounts = self.calculator.calculate(self)
-        self.processor.process_payment(self, amounts)
-        self.notifier.notify(self)
-
-class OrderValidator:
-    def validate(self, order): ...
-
-class OrderCalculator:
-    def calculate(self, order): ...
-
-class PaymentProcessor:
-    def process_payment(self, order, amounts): ...
-
-class OrderNotifier:
-    def notify(self, order): ...
+echo "✅ Refactoring step complete, tests still passing"
 ```
 
-**RUN TESTS** ✓
-
-#### Step 3: Eliminate Code Duplication
-
-```python
-# Before: Duplication
-def get_active_users():
-    return [u for u in users if u.status == 'active' and not u.deleted]
-
-def get_admin_users():
-    return [u for u in users if u.role == 'admin' and not u.deleted]
-
-# After: DRY
-def filter_users(predicate):
-    return [u for u in users if not u.deleted and predicate(u)]
-
-def get_active_users():
-    return filter_users(lambda u: u.status == 'active')
-
-def get_admin_users():
-    return filter_users(lambda u: u.role == 'admin')
+**Track Progress:**
+```bash
+echo "85% - Code refactored incrementally, tests green throughout"
 ```
-
-**RUN TESTS** ✓
-
-#### Step 4: Improve Names
-
-```python
-# Before: Poor names
-def calc(a, b, c):
-    return a * b * c
-
-def proc(d):
-    return d[0] if d else None
-
-# After: Clear names
-def calculate_volume(length, width, height):
-    return length * width * height
-
-def get_first_item(items):
-    return items[0] if items else None
-```
-
-**RUN TESTS** ✓
-
-#### Step 5: Reduce Complexity
-
-```python
-# Before: Deep nesting
-def process(data):
-    if data:
-        if data.get('user'):
-            if data['user'].get('email'):
-                if validate_email(data['user']['email']):
-                    return send_email(data['user']['email'])
-    return None
-
-# After: Guard clauses
-def process(data):
-    if not data:
-        return None
-    if not data.get('user'):
-        return None
-
-    email = data['user'].get('email')
-    if not email:
-        return None
-    if not validate_email(email):
-        return None
-
-    return send_email(email)
-
-# Even better: Optional chaining
-def process(data):
-    email = data.get('user', {}).get('email')
-    if email and validate_email(email):
-        return send_email(email)
-    return None
-```
-
-**RUN TESTS** ✓
-
-#### Step 6: Introduce Design Patterns
-
-```python
-# Before: Complex conditional logic
-def get_discount(customer):
-    if customer.type == 'vip':
-        return 0.20
-    elif customer.type == 'regular' and customer.years > 5:
-        return 0.10
-    elif customer.type == 'regular':
-        return 0.05
-    else:
-        return 0
-
-# After: Strategy pattern
-class DiscountStrategy:
-    def calculate(self, customer):
-        raise NotImplementedError
-
-class VIPDiscount(DiscountStrategy):
-    def calculate(self, customer):
-        return 0.20
-
-class LoyalCustomerDiscount(DiscountStrategy):
-    def calculate(self, customer):
-        return 0.10 if customer.years > 5 else 0.05
-
-class NoDiscount(DiscountStrategy):
-    def calculate(self, customer):
-        return 0
-
-def get_discount_strategy(customer):
-    if customer.type == 'vip':
-        return VIPDiscount()
-    elif customer.type == 'regular':
-        return LoyalCustomerDiscount()
-    else:
-        return NoDiscount()
-
-def get_discount(customer):
-    strategy = get_discount_strategy(customer)
-    return strategy.calculate(customer)
-```
-
-**RUN TESTS** ✓
 
 **CHECKPOINT**: Code refactored incrementally, tests green throughout ✓
+
+---
 
 ### Phase 4: Quality Validation (10%)
 
 **Run all quality gates in parallel:**
 
-1. **Code Review** - `code-reviewer`:
-   ```
+#### Quality Gate 1: Code Review
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-reviewer agent to validate refactored code quality.
+
+subagent_type: "code-reviewer"
+description: "Review refactored code quality"
+prompt: "Review refactored code: $*
+
+Review all refactored files:
+
+1. **Clean Code Principles**
    - Code is cleaner and more maintainable
-   - SOLID principles followed
-   - No code smells introduced
-   - Naming is clear
+   - Meaningful names
+   - Functions small and focused
+   - No code duplication
+   - Proper error handling
+
+2. **SOLID Principles**
+   - Single Responsibility Principle
+   - Open/Closed Principle
+   - Liskov Substitution Principle
+   - Interface Segregation Principle
+   - Dependency Inversion Principle
+
+3. **Code Smells Eliminated**
+   - No long methods
+   - No god objects
+   - No deep nesting
    - Complexity reduced
-   ```
+   - Clear abstractions
 
-2. **Test Verification** - `test-engineer`:
-   ```
-   - All tests still passing
+4. **Comparison with Original**
+   - Complexity reduced (measurable)
+   - Maintainability improved
+   - No behavior changes
+   - Performance maintained
+
+Expected outputs:
+- code-review-report.md with:
+  - Improvements quantified
+  - Remaining issues (if any)
+  - Code quality score
+  - Before/after complexity comparison
+"
+```
+
+**Expected Outputs:**
+- `code-review-report.md` - Code quality validation
+
+#### Quality Gate 2: Test Verification
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to validate all tests still pass.
+
+subagent_type: "test-engineer"
+description: "Verify all tests pass and coverage maintained"
+prompt: "Validate testing after refactoring: $*
+
+Validation:
+
+1. **Test Suite Execution**
+   - Run all unit tests
+   - Run all integration tests
+   - Run all E2E tests
+   - ALL tests must pass
+
+2. **Coverage Verification**
    - Coverage maintained or improved
-   - No flaky tests
-   - Performance within baseline
-   ```
+   - No coverage regressions
+   - All critical paths covered
 
-3. **Security Check** - `security-auditor`:
-   ```
-   - No new security issues
-   - Security posture maintained
-   ```
-
-4. **Performance Check** - `performance-analyzer`:
-   ```
+3. **Performance Validation**
+   - Run performance baseline tests
+   - Verify no performance regressions
    - Performance maintained or improved
-   - No regressions
+
+4. **Test Quality**
+   - No flaky tests
+   - Tests still meaningful
+   - Tests are deterministic
+
+Expected outputs:
+- test-validation-report.md with:
+  - All test results (pass/fail)
+  - Coverage comparison (before/after)
+  - Performance comparison (before/after)
+  - Test quality assessment
+"
+```
+
+**Expected Outputs:**
+- `test-validation-report.md` - Test validation results
+
+#### Quality Gate 3: Security Check
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to verify no security regressions.
+
+subagent_type: "security-auditor"
+description: "Verify no security issues introduced"
+prompt: "Security check for refactoring: $*
+
+Security validation:
+
+1. **No New Vulnerabilities**
+   - No SQL injection risks
+   - No XSS risks
+   - Input validation maintained
+   - Authentication/authorization unchanged
+
+2. **Security Posture Maintained**
+   - No secrets exposed
+   - No security regressions
+   - Security patterns preserved
+
+Expected outputs:
+- security-check-report.md with:
+  - Security status (no issues / issues found)
+  - Comparison with pre-refactoring
+"
+```
+
+**Expected Outputs:**
+- `security-check-report.md` - Security validation
+
+#### Quality Gate 4: Performance Check
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to verify performance maintained.
+
+subagent_type: "performance-analyzer"
+description: "Verify performance maintained or improved"
+prompt: "Performance validation for refactoring: $*
+
+Performance checks:
+
+1. **Performance Maintained**
+   - Compare with baseline metrics
+   - No regressions allowed
+   - Response times maintained
    - Memory usage acceptable
-   ```
+
+2. **Benchmarking**
+   - Run performance tests
+   - Compare before/after
+   - Document improvements (if any)
+
+Expected outputs:
+- performance-validation-report.md with:
+  - Performance metrics (before/after)
+  - Regressions (if any)
+  - Improvements (if any)
+"
+```
+
+**Expected Outputs:**
+- `performance-validation-report.md` - Performance validation
+
+**Quality Gate Validation:**
+```bash
+# Validate all quality gate reports exist
+REPORTS=(
+  "code-review-report.md"
+  "test-validation-report.md"
+  "security-check-report.md"
+  "performance-validation-report.md"
+)
+
+for report in "${REPORTS[@]}"; do
+  if [ ! -f "$report" ]; then
+    echo "❌ Quality gate report missing: $report"
+    exit 1
+  fi
+done
+
+# Check for critical issues
+if grep -qE "CRITICAL|FAILED|REGRESSION" *.md; then
+  echo "❌ Critical issues found in quality gates"
+  exit 1
+fi
+
+echo "✅ All quality gates passed"
+```
+
+**Track Progress:**
+```bash
+echo "95% - Quality validation complete"
+```
 
 **CHECKPOINT**: All quality gates passed ✓
 
+---
+
 ### Phase 5: Documentation & Deployment (5%)
 
-1. **Update Documentation**
-   ```markdown
-   - Update code comments (if complex)
-   - Update README (if public API changed)
-   - Update architecture docs (if design changed)
-   - Document refactoring decisions
-   ```
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the technical-writer agent to document refactoring and prepare deployment.
 
-2. **Create Commit**
-   ```bash
-   git commit -m "$(cat <<'EOF'
-   refactor(component): improve code organization
+subagent_type: "technical-writer"
+description: "Document refactoring and prepare for deployment"
+prompt: "Document refactoring and prepare deployment: $*
+
+Documentation tasks:
+
+1. **Update Code Comments** (if complex logic)
+   - Document refactored algorithms
+   - Explain design decisions
+   - Note performance considerations
+
+2. **Update README** (if public API changed)
+   - Document any API changes
+   - Update examples if needed
+
+3. **Update Architecture Docs** (if design changed)
+   - Document new design patterns
+   - Explain refactoring rationale
+
+4. **Create Refactoring Summary**
+   - What was refactored
+   - Why it was refactored
+   - Impact (complexity reduction, etc.)
+   - Before/after metrics
+
+5. **Create Commit Message**
+   Format:
+   refactor(component): [brief description]
 
    Refactoring:
-   - Extract methods for better readability
-   - Apply SRP to large classes
-   - Eliminate code duplication
-   - Improve naming clarity
-   - Reduce cyclomatic complexity from 15 to 5
+   - [What was improved]
+   - [Complexity reduction metrics]
+   - [Code smells eliminated]
 
    Testing:
    - All tests passing
-   - Coverage maintained at 85%
+   - Coverage maintained at X%
    - Performance within baseline
 
    Impact: No behavior changes, internal improvement only
-   EOF
-   )"
-   ```
 
-3. **Deploy**
-   ```
-   1. Deploy to staging
-   2. Run full regression suite
-   3. Performance testing
-   4. Deploy to production (low-risk since no behavior change)
-   5. Monitor (should see no impact)
-   ```
+Expected outputs:
+- Updated documentation files (if applicable)
+- refactoring-summary.md
+- commit-message.txt
+"
+```
+
+**Expected Outputs:**
+- Updated documentation files
+- `refactoring-summary.md` - Refactoring summary
+- `commit-message.txt` - Prepared commit message
+
+**Quality Gate: Documentation Validation**
+```bash
+# Validate documentation exists
+if [ ! -f "refactoring-summary.md" ]; then
+  echo "❌ Refactoring summary not created"
+  exit 1
+fi
+
+if [ ! -f "commit-message.txt" ]; then
+  echo "❌ Commit message not prepared"
+  exit 1
+fi
+
+echo "✅ Documentation complete"
+```
+
+**Create Commit:**
+```bash
+# Read commit message
+COMMIT_MSG=$(cat commit-message.txt)
+
+# Create commit
+git add .
+git commit -m "$COMMIT_MSG"
+
+echo "✅ Refactoring committed"
+```
+
+**Track Progress:**
+```bash
+echo "100% - Documentation & deployment complete"
+```
 
 **CHECKPOINT**: Deployed successfully ✓
+
+---
 
 ## Common Refactoring Patterns
 

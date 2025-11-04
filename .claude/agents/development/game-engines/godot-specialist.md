@@ -4,6 +4,13 @@ description: Expert Godot Engine developer specializing in GDScript, Godot 4.x, 
 categories: [development, game-engines, godot]
 dependencies: []
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Godot Engine Specialist

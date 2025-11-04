@@ -4,6 +4,13 @@ description: Expert contract testing specialist using Pact, Spring Cloud Contrac
 categories: [quality, testing, contract-testing]
 dependencies: [test-engineer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Contract Testing Specialist

@@ -7,11 +7,41 @@ argumentHint: "[scope]"
 
 Autonomous, comprehensive security auditing from reconnaissance to remediation with compliance validation.
 
-## Execution Instructions
+## Intelligence Database Integration
 
-### Phase 1: Security Reconnaissance (15%)
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
 
-**Use `security-auditor` agent to:**
+# Initialize workflow
+workflow_id=$(db_start_workflow "security-audit" "$(date +%s)" "{\"scope\":\"$1\"}")
+
+echo "🚀 Starting Security Audit Workflow"
+echo "Scope: $1"
+echo "Workflow ID: $workflow_id"
+
+# Query similar audit patterns
+db_query_similar_workflows "security-audit" 5
+```
+
+---
+
+## Phase 1: Security Reconnaissance (0-15%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Define audit scope (components, infrastructure, dependencies, compliance)
+2. Inventory all assets (APIs, databases, external services)
+3. Create threat model (attack vectors, surfaces, adversaries)
+4. Identify compliance requirements (SOC2, GDPR, HIPAA, PCI-DSS)
+
+subagent_type: "security-auditor"
+description: "Define security audit scope and threat model"
+prompt: "Perform security reconnaissance and scoping:
+
+Audit Scope: $1
+
+Tasks:
 
 1. **Define Audit Scope**
    ```markdown
@@ -66,11 +96,82 @@ Autonomous, comprehensive security auditing from reconnaissance to remediation w
    - Infrastructure
    ```
 
-**CHECKPOINT**: Scope defined, assets inventoried, threats modeled ✓
+4. **Compliance Identification**
+   - Determine applicable compliance frameworks
+   - Map requirements to scope
+   - Identify critical controls
 
-### Phase 2: Automated Security Scanning (30%)
+Expected outputs:
+- security-scope.md - Complete audit scope definition
+- asset-inventory.md - All assets catalogued
+- threat-model.md - Threat analysis and attack surfaces
+- compliance-requirements.md - Applicable frameworks
+"
+```
 
-**Run all scans in parallel using `security-auditor`:**
+**Expected Outputs:**
+- `security-scope.md` - Audit scope definition
+- `asset-inventory.md` - Asset inventory
+- `threat-model.md` - Threat modeling analysis
+- `compliance-requirements.md` - Compliance frameworks
+
+**Quality Gate: Scope Validation**
+```bash
+# Validate scope defined
+if [ ! -f "security-scope.md" ]; then
+  echo "❌ Security scope not defined"
+  db_log_error "$workflow_id" "ValidationError" "Security scope missing" "security-audit" "phase-1" "0"
+  exit 1
+fi
+
+# Validate asset inventory exists
+if [ ! -f "asset-inventory.md" ]; then
+  echo "❌ Asset inventory not created"
+  db_log_error "$workflow_id" "ValidationError" "Asset inventory missing" "security-audit" "phase-1" "0"
+  exit 1
+fi
+
+# Validate threat model exists
+if [ ! -f "threat-model.md" ]; then
+  echo "❌ Threat model not created"
+  db_log_error "$workflow_id" "ValidationError" "Threat model missing" "security-audit" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ Security reconnaissance complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "security-reconnaissance" $TOKENS_USED "15%"
+
+# Store reconnaissance data
+db_store_knowledge "security" "reconnaissance" "$(date +%Y%m%d)" \
+  "Security audit scope and threat model" \
+  "$(head -n 30 security-scope.md)"
+```
+
+---
+
+## Phase 2: Automated Security Scanning (15-45%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Run dependency vulnerability scanning (npm, pip, maven, go, cargo)
+2. Execute static application security testing (SAST)
+3. Perform secrets detection (gitleaks, trufflehog)
+4. Scan container security (if applicable)
+5. Audit infrastructure as code security
+
+subagent_type: "security-auditor"
+description: "Execute automated security scanning tools"
+prompt: "Run comprehensive automated security scans:
+
+Scope: $1
+
+Execute all scans in parallel:
 
 #### 1. Dependency Vulnerability Scanning
 
@@ -180,11 +281,83 @@ kube-score score *.yaml --output-format json > security-reports/kube-score.json
 # - Insecure network configurations
 ```
 
-**CHECKPOINT**: All automated scans complete, results collected ✓
+Expected outputs:
+- security-reports/npm-audit.json
+- security-reports/semgrep.json
+- security-reports/gitleaks.json
+- security-reports/trivy.json (if containers)
+- security-reports/checkov.json (if IaC)
+- scan-summary.md - Aggregated scan results
+"
+```
 
-### Phase 3: OWASP Top 10 Manual Review (25%)
+**Expected Outputs:**
+- `security-reports/` directory with all scan results
+- `scan-summary.md` - Aggregated findings summary
 
-**Use `security-auditor` with `code-reviewer` for manual inspection:**
+**Quality Gate: Scan Validation**
+```bash
+# Validate reports directory exists
+if [ ! -d "security-reports" ]; then
+  echo "❌ Security reports directory missing"
+  db_log_error "$workflow_id" "ValidationError" "Security reports not generated" "security-audit" "phase-2" "0"
+  exit 1
+fi
+
+# Count scan results
+SCAN_COUNT=$(ls security-reports/*.json 2>/dev/null | wc -l)
+if [ "$SCAN_COUNT" -lt 2 ]; then
+  echo "❌ Insufficient scan results ($SCAN_COUNT files)"
+  db_log_error "$workflow_id" "ValidationError" "Too few scan results generated" "security-audit" "phase-2" "0"
+  exit 1
+fi
+
+# Validate summary exists
+if [ ! -f "scan-summary.md" ]; then
+  echo "❌ Scan summary not created"
+  db_log_error "$workflow_id" "ValidationError" "Scan summary missing" "security-audit" "phase-2" "0"
+  exit 1
+fi
+
+echo "✅ Automated scanning complete ($SCAN_COUNT scans)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=3000
+db_track_tokens "$workflow_id" "automated-scanning" $TOKENS_USED "45%"
+
+# Store scan results
+db_store_knowledge "security" "scanning" "$(date +%Y%m%d)" \
+  "Automated security scan results: $SCAN_COUNT scans" \
+  "$(head -n 50 scan-summary.md)"
+```
+
+---
+
+## Phase 3: OWASP Top 10 Manual Review (45-70%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent with code-reviewer to:
+1. Review A01:2021 - Broken Access Control
+2. Review A02:2021 - Cryptographic Failures
+3. Review A03:2021 - Injection vulnerabilities
+4. Review A04:2021 - Insecure Design
+5. Review A05:2021 - Security Misconfiguration
+6. Review A06:2021 - Vulnerable and Outdated Components
+7. Review A07:2021 - Identification and Authentication Failures
+8. Review A08:2021 - Software and Data Integrity Failures
+9. Review A09:2021 - Security Logging and Monitoring Failures
+10. Review A10:2021 - Server-Side Request Forgery (SSRF)
+
+subagent_type: "security-auditor"
+description: "Manual OWASP Top 10 security review"
+prompt: "Perform comprehensive OWASP Top 10 manual code review:
+
+Scope: $1
+
+For each OWASP category, perform manual inspection:
 
 #### A01:2021 - Broken Access Control
 
@@ -404,11 +577,72 @@ CODE REVIEW:
 - Check file upload processing
 ```
 
-**CHECKPOINT**: OWASP Top 10 review complete ✓
+Expected outputs:
+- owasp-review-report.md - Comprehensive OWASP Top 10 findings
+- vulnerability-findings.json - Structured findings data
+"
+```
 
-### Phase 4: Compliance Validation (15%)
+**Expected Outputs:**
+- `owasp-review-report.md` - OWASP Top 10 findings
+- `vulnerability-findings.json` - Structured findings
 
-**Use `security-auditor` to verify compliance requirements:**
+**Quality Gate: OWASP Review Validation**
+```bash
+# Validate OWASP review report
+if [ ! -f "owasp-review-report.md" ]; then
+  echo "❌ OWASP review report missing"
+  db_log_error "$workflow_id" "ValidationError" "OWASP review not completed" "security-audit" "phase-3" "0"
+  exit 1
+fi
+
+# Check report has content
+REPORT_LINES=$(wc -l < owasp-review-report.md)
+if [ "$REPORT_LINES" -lt 50 ]; then
+  echo "❌ OWASP review report too short ($REPORT_LINES lines)"
+  db_log_error "$workflow_id" "ValidationError" "OWASP review incomplete" "security-audit" "phase-3" "0"
+  exit 1
+fi
+
+# Validate findings structured data exists
+if [ ! -f "vulnerability-findings.json" ]; then
+  echo "❌ Vulnerability findings data missing"
+  db_log_error "$workflow_id" "ValidationError" "Findings data not generated" "security-audit" "phase-3" "0"
+  exit 1
+fi
+
+echo "✅ OWASP Top 10 review complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=8000
+db_track_tokens "$workflow_id" "owasp-review" $TOKENS_USED "70%"
+
+# Store OWASP findings
+db_store_knowledge "security" "owasp-review" "$(date +%Y%m%d)" \
+  "OWASP Top 10 manual review findings" \
+  "$(head -n 100 owasp-review-report.md)"
+```
+
+---
+
+## Phase 4: Compliance Validation (70-85%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Validate SOC2 Type II controls
+2. Check GDPR compliance (if handling EU data)
+3. Verify HIPAA requirements (if handling health data)
+4. Audit PCI-DSS requirements (if handling payment cards)
+5. Generate compliance status report
+
+subagent_type: "security-auditor"
+description: "Validate compliance requirements"
+prompt: "Validate compliance with applicable frameworks:
+
+Based on compliance-requirements.md, validate:
 
 #### SOC2 Type II
 ```
@@ -456,11 +690,64 @@ REQUIREMENTS:
 - Access control measures
 ```
 
-**CHECKPOINT**: Compliance requirements validated ✓
+Expected outputs:
+- compliance-report.md - Compliance validation results
+- compliance-gaps.json - Non-compliant items
+"
+```
 
-### Phase 5: Remediation Planning & Execution (15%)
+**Expected Outputs:**
+- `compliance-report.md` - Compliance validation results
+- `compliance-gaps.json` - Gaps and non-compliant items
 
-**Use appropriate development agents for fixes:**
+**Quality Gate: Compliance Validation**
+```bash
+# Validate compliance report exists
+if [ ! -f "compliance-report.md" ]; then
+  echo "❌ Compliance report missing"
+  db_log_error "$workflow_id" "ValidationError" "Compliance validation not completed" "security-audit" "phase-4" "0"
+  exit 1
+fi
+
+# Validate gaps analysis exists
+if [ ! -f "compliance-gaps.json" ]; then
+  echo "❌ Compliance gaps analysis missing"
+  db_log_error "$workflow_id" "ValidationError" "Gaps analysis not generated" "security-audit" "phase-4" "0"
+  exit 1
+fi
+
+echo "✅ Compliance validation complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "compliance-validation" $TOKENS_USED "85%"
+
+# Store compliance results
+db_store_knowledge "security" "compliance" "$(date +%Y%m%d)" \
+  "Compliance validation results" \
+  "$(head -n 50 compliance-report.md)"
+```
+
+---
+
+## Phase 5: Remediation Planning & Execution (85-95%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent with appropriate development agents to:
+1. Prioritize all findings by severity (Critical/High/Medium/Low)
+2. Generate detailed remediation plan for each finding
+3. Auto-remediate safe fixes (dependencies, headers, configs)
+4. Create implementation plans for complex fixes
+5. Verify all remediations
+
+subagent_type: "security-auditor"
+description: "Plan and execute security remediations"
+prompt: "Create and execute remediation plan:
+
+Based on all findings from phases 2-4:
 
 #### 1. Prioritize Findings
 
@@ -578,22 +865,85 @@ For each remediation:
 6. Documented in security log
 ```
 
-**CHECKPOINT**: Critical vulnerabilities remediated ✓
+Expected outputs:
+- remediation-plan.md - Complete remediation plan
+- auto-fixes-log.md - Log of automatic fixes applied
+- manual-fixes-required.md - Fixes needing approval
+"
+```
 
-### Phase 6: Reporting & Documentation (10%)
+**Expected Outputs:**
+- `remediation-plan.md` - Comprehensive remediation plan
+- `auto-fixes-log.md` - Automatic fixes applied
+- `manual-fixes-required.md` - Fixes requiring approval
 
-**Generate comprehensive security report:**
+**Quality Gate: Remediation Validation**
+```bash
+# Validate remediation plan exists
+if [ ! -f "remediation-plan.md" ]; then
+  echo "❌ Remediation plan missing"
+  db_log_error "$workflow_id" "ValidationError" "Remediation plan not created" "security-audit" "phase-5" "0"
+  exit 1
+fi
+
+# Validate fixes log exists
+if [ ! -f "auto-fixes-log.md" ]; then
+  echo "❌ Auto-fixes log missing"
+  db_log_error "$workflow_id" "ValidationError" "Auto-fixes log not created" "security-audit" "phase-5" "0"
+  exit 1
+fi
+
+# Check if critical vulnerabilities addressed
+CRITICAL_COUNT=$(grep -c "CRITICAL" remediation-plan.md || echo "0")
+if [ "$CRITICAL_COUNT" -gt 0 ]; then
+  echo "⚠️  Warning: $CRITICAL_COUNT critical findings require attention"
+fi
+
+echo "✅ Remediation planning complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "remediation" $TOKENS_USED "95%"
+
+# Store remediation data
+db_store_knowledge "security" "remediation" "$(date +%Y%m%d)" \
+  "Remediation plan and auto-fixes" \
+  "$(head -n 100 remediation-plan.md)"
+```
+
+---
+
+## Phase 6: Reporting & Documentation (95-100%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the technical-writer agent to:
+1. Generate executive summary with key metrics
+2. Create comprehensive security audit report
+3. Document all findings with severity levels
+4. Include OWASP Top 10 compliance status
+5. Add compliance validation results
+6. Provide recommendations and next steps
+7. Generate metrics dashboard
+
+subagent_type: "technical-writer"
+description: "Generate comprehensive security audit report"
+prompt: "Create comprehensive security audit report:
+
+Based on all findings from phases 1-5:
 
 ```markdown
 # Security Audit Report
-Date: [timestamp]
+Date: $(date +%Y-%m-%d)
 Auditor: security-auditor
-Scope: [components audited]
+Scope: $1
 
 ## Executive Summary
-- Total findings: X
-- Critical: X | High: X | Medium: X | Low: X
-- Remediated: X | Pending: X
+- Total findings: [X]
+- Critical: [X] | High: [X] | Medium: [X] | Low: [X]
+- Remediated: [X] | Pending: [X]
 - Compliance status: [Pass/Fail for each standard]
 - Overall risk level: [Critical/High/Medium/Low]
 
@@ -663,150 +1013,105 @@ Scope: [components audited]
 Recommended: [date, typically 90 days]
 ```
 
-**Store report:**
+Expected outputs:
+- security-audit-report-$(date +%Y%m%d).md
+- security-metrics.json
+"
+```
+
+**Expected Outputs:**
+- `security-audit-report-[date].md` - Comprehensive audit report
+- `security-metrics.json` - Security metrics data
+
+**Quality Gate: Report Validation**
 ```bash
-# Save report
-mkdir -p security-reports
-cat > security-reports/audit-$(date +%Y%m%d).md
+# Find the report file
+REPORT_FILE=$(ls security-audit-report-*.md 2>/dev/null | head -1)
 
-# Generate metrics dashboard
-# - Trends over time
-# - Remediation velocity
-# - Recurring issues
+# Validate report exists
+if [ -z "$REPORT_FILE" ] || [ ! -f "$REPORT_FILE" ]; then
+  echo "❌ Security audit report missing"
+  db_log_error "$workflow_id" "ValidationError" "Audit report not generated" "security-audit" "phase-6" "0"
+  exit 1
+fi
+
+# Check report completeness
+REPORT_LINES=$(wc -l < "$REPORT_FILE")
+if [ "$REPORT_LINES" -lt 100 ]; then
+  echo "❌ Audit report too short ($REPORT_LINES lines)"
+  db_log_error "$workflow_id" "ValidationError" "Report incomplete" "security-audit" "phase-6" "0"
+  exit 1
+fi
+
+# Validate metrics exist
+if [ ! -f "security-metrics.json" ]; then
+  echo "❌ Security metrics missing"
+  db_log_error "$workflow_id" "ValidationError" "Metrics not generated" "security-audit" "phase-6" "0"
+  exit 1
+fi
+
+echo "✅ Security audit report complete ($REPORT_LINES lines)"
 ```
 
-**CHECKPOINT**: Report generated and distributed ✓
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "reporting" $TOKENS_USED "100%"
 
-## Special Security Scenarios
-
-### Production Data Breach Response
-
-```
-IMMEDIATE ACTIONS (0-1 hour):
-1. Isolate affected systems
-2. Preserve evidence
-3. Assess scope of breach
-4. Activate incident response team
-
-INVESTIGATION (1-24 hours):
-1. Identify attack vector
-2. Determine data accessed
-3. Find patient zero
-4. Timeline reconstruction
-
-REMEDIATION (24-72 hours):
-1. Patch vulnerability
-2. Rotate credentials
-3. Review logs for other compromises
-4. Deploy fixes
-
-NOTIFICATION (72 hours):
-1. Notify affected users
-2. Regulatory notification (GDPR: 72 hours)
-3. Public disclosure if required
-4. Credit monitoring if needed
-
-POST-MORTEM:
-1. Root cause analysis
-2. What went wrong
-3. What went right
-4. Preventive measures
-5. Update runbooks
+# Store final report
+db_store_knowledge "security" "audit-report" "$(date +%Y%m%d)" \
+  "Final security audit report" \
+  "$(head -n 200 \"$REPORT_FILE\")"
 ```
 
-### Zero-Day Vulnerability
+---
 
-```
-1. Assess impact and exploitability
-2. Implement WAF rules as temporary mitigation
-3. Monitor for exploitation attempts
-4. Coordinate with vendor for patch
-5. Test patch in staging
-6. Deploy patch to production
-7. Verify vulnerability closed
-8. Document for future
-```
+## Workflow Complete
 
-### Supply Chain Attack
+```bash
+# Complete workflow tracking
+WORKFLOW_END=$(date +%s)
 
-```
-1. Identify compromised dependency
-2. Assess blast radius
-3. Check if vulnerable version deployed
-4. Search logs for indicators of compromise
-5. Rollback to safe version
-6. Review all dependencies from that source
-7. Implement dependency pinning
-8. Add checksum verification
-```
+db_complete_workflow "$workflow_id" "$WORKFLOW_END" "success" \
+  "Security audit complete with report: $REPORT_FILE"
 
-### API Key Leak
+echo "
+✅ SECURITY AUDIT COMPLETE
 
-```
-IMMEDIATE (within 1 hour):
-1. Rotate leaked keys
-2. Revoke old keys
-3. Search for unauthorized usage
-4. Check for data exfiltration
+Report: $REPORT_FILE
 
-INVESTIGATION:
-1. Where was it leaked? (GitHub, logs, etc.)
-2. How long was it exposed?
-3. Was it used by attackers?
-4. What data was accessed?
+Key Metrics:
+- Total Findings: [from report]
+- Critical: [count] | High: [count] | Medium: [count] | Low: [count]
+- Remediated: [count] | Pending: [count]
+- Compliance Status: [summary]
 
-PREVENTION:
-1. Implement secrets scanning
-2. Add pre-commit hooks
-3. Use secrets manager
-4. Regular key rotation
-5. Principle of least privilege
+Files Generated:
+- $REPORT_FILE
+- security-scope.md
+- asset-inventory.md
+- threat-model.md
+- scan-summary.md
+- owasp-review-report.md
+- compliance-report.md
+- remediation-plan.md
+- auto-fixes-log.md
+
+Next Steps:
+1. Review critical findings in remediation-plan.md
+2. Approve manual fixes in manual-fixes-required.md
+3. Schedule follow-up for pending remediations
+4. Set next audit date (recommended: 90 days)
+5. Implement continuous security monitoring
+"
+
+# Display metrics
+db_workflow_metrics "$workflow_id"
+db_token_savings_report "$workflow_id"
 ```
 
-## Security Testing Checklist
+## Success Criteria Checklist
 
-```
-AUTHENTICATION:
-□ Test password reset flow for account takeover
-□ Test MFA bypass techniques
-□ Test session fixation
-□ Test concurrent sessions
-□ Test logout functionality
-□ Test remember me functionality
-
-AUTHORIZATION:
-□ Test horizontal privilege escalation (user A → user B)
-□ Test vertical privilege escalation (user → admin)
-□ Test IDOR on all object references
-□ Test function-level authorization
-□ Test mass assignment vulnerabilities
-
-INPUT VALIDATION:
-□ Test SQL injection on all inputs
-□ Test XSS on all inputs (stored, reflected, DOM)
-□ Test command injection
-□ Test path traversal
-□ Test XXE (XML External Entity)
-□ Test template injection
-
-BUSINESS LOGIC:
-□ Test race conditions (parallel requests)
-□ Test negative quantities
-□ Test price manipulation
-□ Test workflow bypasses
-□ Test state machine violations
-
-API SECURITY:
-□ Test rate limiting
-□ Test authentication bypass
-□ Test mass assignment
-□ Test excessive data exposure
-□ Test lack of resources & rate limiting
-```
-
-## Success Criteria
-
-Security audit complete when:
 - ✅ All automated scans completed
 - ✅ OWASP Top 10 manually reviewed
 - ✅ Critical vulnerabilities remediated

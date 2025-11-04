@@ -22,838 +22,685 @@ This workflow provides end-to-end UI testing with autonomous issue detection and
 
 ### Phase 1: Application Launch & Discovery (10%)
 
-**Use `fullstack-developer` or `frontend-developer` to prepare:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the fullstack-developer or frontend-developer agent to:
+1. Start application locally on appropriate port
+2. Verify application is running and accessible
+3. Discover application structure (pages, routes, forms)
+4. Map navigation structure and interactive elements
+5. Identify key user flows to test
 
+subagent_type: "fullstack-developer"
+description: "Launch application and discover structure"
+prompt: "Launch and discover web application: $*
+
+Tasks:
+1. **Start Application**
+   - Detect application type (React/Next.js/Vue/Angular/static)
+   - Start development server on appropriate port
+   - Wait for application to be ready
+   - Verify accessibility with curl/wget
+   - Log application URL and startup time
+
+2. **Discover Application Structure**
+   - Use Playwright to crawl application
+   - Discover all links and routes
+   - Identify all forms and interactive elements
+   - Map buttons, inputs, images
+   - Intercept and log API calls
+   - Detect authentication flows
+
+3. **Map User Flows**
+   - Identify critical user journeys
+   - Login/signup flows
+   - Main navigation paths
+   - Form submission flows
+   - E-commerce flows (if applicable)
+   - Search functionality
+
+Expected outputs:
+- Application running on localhost
+- application-structure.json with:
+  - All discovered pages/routes
+  - All forms with field definitions
+  - All interactive elements
+  - All API endpoints detected
+  - Critical user flows identified
+"
+```
+
+**Expected Outputs:**
+- Application running and accessible
+- `application-structure.json` - Complete application map
+- List of critical user flows to test
+
+**Quality Gate: Application Ready**
 ```bash
-# Step 1: Start application locally
-cd /path/to/app
+# Validate application is running
+if ! curl -s http://localhost:3000 > /dev/null && ! curl -s http://localhost:8080 > /dev/null; then
+  echo "❌ Application not accessible"
+  exit 1
+fi
 
-# For React/Next.js
-npm run dev  # Usually http://localhost:3000
+# Validate discovery completed
+if [ ! -f "application-structure.json" ]; then
+  echo "❌ Application structure not discovered"
+  exit 1
+fi
 
-# For Vue
-npm run serve  # Usually http://localhost:8080
-
-# For Angular
-ng serve  # Usually http://localhost:4200
-
-# For vanilla/static
-python -m http.server 8000  # http://localhost:8000
-
-# Wait for application to be ready
-while ! curl -s http://localhost:3000 > /dev/null; do
-    sleep 1
-done
-echo "Application ready!"
-
-# Step 2: Discover application structure
-# Use visual-testing agent to crawl and map application
+echo "✅ Application launched and structure discovered"
 ```
 
-**Application Discovery:**
-```javascript
-// Auto-discover pages and routes
-const playwright = require('playwright');
-
-async function discoverApplication(baseUrl) {
-    const browser = await playwright.chromium.launch({ headless: false });
-    const context = await browser.newContext({
-        viewport: { width: 1920, height: 1080 }
-    });
-    const page = await context.newPage();
-
-    const discovered = {
-        pages: [],
-        forms: [],
-        buttons: [],
-        links: [],
-        images: [],
-        apis: []
-    };
-
-    await page.goto(baseUrl);
-
-    // Discover all links
-    const links = await page.$$eval('a[href]', anchors =>
-        anchors.map(a => ({
-            text: a.textContent,
-            href: a.href,
-            visible: a.offsetParent !== null
-        }))
-    );
-
-    discovered.links = links.filter(l => l.visible);
-
-    // Discover all forms
-    const forms = await page.$$eval('form', forms =>
-        forms.map((form, idx) => ({
-            id: form.id || `form-${idx}`,
-            action: form.action,
-            method: form.method,
-            fields: Array.from(form.elements).map(el => ({
-                name: el.name,
-                type: el.type,
-                required: el.required,
-                placeholder: el.placeholder
-            }))
-        }))
-    );
-
-    discovered.forms = forms;
-
-    // Discover API calls (intercept network)
-    const apis = [];
-    page.on('request', request => {
-        if (request.resourceType() === 'fetch' || request.resourceType() === 'xhr') {
-            apis.push({
-                url: request.url(),
-                method: request.method(),
-                headers: request.headers()
-            });
-        }
-    });
-
-    discovered.apis = apis;
-
-    console.log('Application Discovery:', JSON.stringify(discovered, null, 2));
-
-    return discovered;
-}
-```
+**Track Progress:** 10% complete
 
 **CHECKPOINT**: Application running and structure mapped ✓
 
+---
+
 ### Phase 2: Visual & Layout Testing (20%)
 
-**Use `visual-testing` agent:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the visual-testing agent to:
+1. Capture screenshots of all pages (mobile/tablet/desktop)
+2. Perform visual regression testing
+3. Check responsive design across viewports
+4. Detect layout issues (overflow, overlapping)
+5. Test dark mode if applicable
 
-```javascript
-// Visual regression testing with Playwright
-const { test, expect } = require('@playwright/test');
-const pixelmatch = require('pixelmatch');
-const { PNG } = require('pngjs');
-const fs = require('fs');
+subagent_type: "visual-testing"
+description: "Perform comprehensive visual testing"
+prompt: "Visual testing for application: $*
 
-test.describe('Visual Tests', () => {
-    test('Homepage visual regression', async ({ page }) => {
-        await page.goto('http://localhost:3000');
+Based on application-structure.json, perform:
 
-        // Wait for page to be fully loaded
-        await page.waitForLoadState('networkidle');
+1. **Visual Regression Testing**
+   - Take full-page screenshots of all pages
+   - Compare with baseline screenshots (if exist)
+   - Use pixelmatch for pixel-level comparison
+   - Detect visual regressions (>0.5% difference)
+   - Generate diff images for regressions
+   - Save new baselines if first run
 
-        // Take screenshot
-        const screenshot = await page.screenshot({
-            fullPage: true,
-            path: 'screenshots/homepage-current.png'
-        });
+2. **Responsive Design Testing**
+   - Test on mobile viewport (375x812 - iPhone X)
+   - Test on tablet viewport (768x1024 - iPad)
+   - Test on desktop viewport (1920x1080)
+   - Capture screenshots for each viewport
+   - Detect text overflow on mobile
+   - Verify mobile menu/navigation
+   - Check touch target sizes
 
-        // Compare with baseline (if exists)
-        if (fs.existsSync('screenshots/homepage-baseline.png')) {
-            const baseline = PNG.sync.read(fs.readFileSync('screenshots/homepage-baseline.png'));
-            const current = PNG.sync.read(screenshot);
-            const { width, height } = baseline;
-            const diff = new PNG({ width, height });
+3. **Layout Integrity**
+   - Measure Cumulative Layout Shift (CLS)
+   - Detect overlapping elements
+   - Check for horizontal scrollbars
+   - Verify z-index issues
+   - Test element positioning
+   - Validate grid/flexbox layouts
 
-            const numDiffPixels = pixelmatch(
-                baseline.data,
-                current.data,
-                diff.data,
-                width,
-                height,
-                { threshold: 0.1 }
-            );
+4. **Dark Mode Testing** (if applicable)
+   - Toggle dark mode
+   - Capture dark mode screenshots
+   - Check color contrast in dark mode
+   - Verify all elements visible
+   - Test theme transitions
 
-            // Save diff image
-            fs.writeFileSync('screenshots/homepage-diff.png', PNG.sync.write(diff));
-
-            const diffPercentage = (numDiffPixels / (width * height)) * 100;
-
-            if (diffPercentage > 0.5) {
-                console.log(`⚠️  Visual regression detected: ${diffPercentage.toFixed(2)}% difference`);
-            } else {
-                console.log(`✓ Visual regression passed: ${diffPercentage.toFixed(2)}% difference`);
-            }
-        } else {
-            // Save as baseline
-            fs.copyFileSync('screenshots/homepage-current.png', 'screenshots/homepage-baseline.png');
-            console.log('✓ Baseline screenshot saved');
-        }
-    });
-
-    test('Responsive design - Mobile', async ({ page }) => {
-        // Test mobile viewport
-        await page.setViewportSize({ width: 375, height: 812 }); // iPhone X
-        await page.goto('http://localhost:3000');
-
-        // Check for mobile menu
-        const mobileMenu = page.locator('[data-testid="mobile-menu"]');
-        await expect(mobileMenu).toBeVisible();
-
-        // Check text doesn't overflow
-        const textOverflow = await page.evaluate(() => {
-            const elements = document.querySelectorAll('*');
-            const overflowing = [];
-
-            elements.forEach(el => {
-                if (el.scrollWidth > el.clientWidth) {
-                    overflowing.push({
-                        element: el.tagName,
-                        class: el.className,
-                        text: el.textContent.substring(0, 50)
-                    });
-                }
-            });
-
-            return overflowing;
-        });
-
-        if (textOverflow.length > 0) {
-            console.log('⚠️  Text overflow detected on mobile:', textOverflow);
-        }
-
-        await page.screenshot({ path: 'screenshots/mobile.png' });
-    });
-
-    test('Responsive design - Tablet', async ({ page }) => {
-        await page.setViewportSize({ width: 768, height: 1024 }); // iPad
-        await page.goto('http://localhost:3000');
-        await page.screenshot({ path: 'screenshots/tablet.png' });
-    });
-
-    test('Responsive design - Desktop', async ({ page }) => {
-        await page.setViewportSize({ width: 1920, height: 1080 });
-        await page.goto('http://localhost:3000');
-        await page.screenshot({ path: 'screenshots/desktop.png' });
-    });
-
-    test('Dark mode (if applicable)', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        // Toggle dark mode
-        const darkModeToggle = page.locator('[data-testid="dark-mode-toggle"]');
-        if (await darkModeToggle.count() > 0) {
-            await darkModeToggle.click();
-            await page.waitForTimeout(500); // Animation
-
-            await page.screenshot({ path: 'screenshots/dark-mode.png' });
-
-            // Check contrast ratios
-            const contrastIssues = await page.evaluate(() => {
-                const issues = [];
-                const elements = document.querySelectorAll('*');
-
-                elements.forEach(el => {
-                    const styles = window.getComputedStyle(el);
-                    const bgColor = styles.backgroundColor;
-                    const textColor = styles.color;
-
-                    // Calculate contrast ratio (simplified)
-                    // Real implementation would use actual contrast calculation
-                    // This is just a placeholder
-                });
-
-                return issues;
-            });
-        }
-    });
-});
+Expected outputs:
+- screenshots/ directory with all captures
+- visual-test-report.md with:
+  - Visual regression results
+  - Responsive design issues
+  - Layout problems detected
+  - Dark mode compatibility
+  - Diff images for any regressions
+"
 ```
 
-**Layout Testing:**
-```javascript
-test('Layout integrity', async ({ page }) => {
-    await page.goto('http://localhost:3000');
+**Expected Outputs:**
+- `screenshots/` directory with all screenshots
+- `visual-test-report.md` - Visual testing results
+- Baseline screenshots created/updated
 
-    // Check for layout shifts (CLS)
-    const cls = await page.evaluate(() => {
-        return new Promise((resolve) => {
-            let clsValue = 0;
-            const observer = new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (!entry.hadRecentInput) {
-                        clsValue += entry.value;
-                    }
-                }
-            });
-            observer.observe({ type: 'layout-shift', buffered: true });
+**Quality Gate: Visual Testing**
+```bash
+# Validate screenshots captured
+if [ ! -d "screenshots" ] || [ -z "$(ls -A screenshots)" ]; then
+  echo "❌ Screenshots not captured"
+  exit 1
+fi
 
-            setTimeout(() => {
-                observer.disconnect();
-                resolve(clsValue);
-            }, 5000);
-        });
-    });
+# Validate visual report
+if [ ! -f "visual-test-report.md" ]; then
+  echo "❌ Visual test report not generated"
+  exit 1
+fi
 
-    console.log(`Cumulative Layout Shift: ${cls}`);
-    expect(cls).toBeLessThan(0.1); // Good CLS score
+# Check for critical regressions
+if grep -q "CRITICAL" visual-test-report.md; then
+  echo "⚠️  Critical visual regressions found"
+fi
 
-    // Check for overlapping elements
-    const overlaps = await page.evaluate(() => {
-        const elements = Array.from(document.querySelectorAll('*'));
-        const overlapping = [];
-
-        for (let i = 0; i < elements.length; i++) {
-            for (let j = i + 1; j < elements.length; j++) {
-                const rect1 = elements[i].getBoundingClientRect();
-                const rect2 = elements[j].getBoundingClientRect();
-
-                if (!(rect1.right < rect2.left ||
-                      rect1.left > rect2.right ||
-                      rect1.bottom < rect2.top ||
-                      rect1.top > rect2.bottom)) {
-                    // Elements overlap
-                    if (rect1.width > 0 && rect1.height > 0 &&
-                        rect2.width > 0 && rect2.height > 0) {
-                        overlapping.push({
-                            element1: elements[i].tagName,
-                            element2: elements[j].tagName
-                        });
-                    }
-                }
-            }
-        }
-
-        return overlapping;
-    });
-
-    if (overlaps.length > 0) {
-        console.log('⚠️  Overlapping elements detected:', overlaps.slice(0, 5));
-    }
-});
+echo "✅ Visual and layout testing complete"
 ```
+
+**Track Progress:** 20% complete
 
 **CHECKPOINT**: Visual and layout tests complete ✓
 
+---
+
 ### Phase 3: Functional Testing (25%)
 
-**Use `visual-testing` agent for interactions:**
-
-```javascript
-test.describe('Functional Tests', () => {
-    test('Login flow', async ({ page }) => {
-        await page.goto('http://localhost:3000/login');
-
-        // Fill form
-        await page.fill('input[name="email"]', 'test@example.com');
-        await page.fill('input[name="password"]', 'SecurePassword123!');
-
-        // Click login
-        await page.click('button[type="submit"]');
-
-        // Wait for navigation
-        await page.waitForURL('**/dashboard');
-
-        // Verify logged in
-        const userMenu = page.locator('[data-testid="user-menu"]');
-        await expect(userMenu).toBeVisible();
-
-        console.log('✓ Login flow successful');
-    });
-
-    test('Form validation', async ({ page }) => {
-        await page.goto('http://localhost:3000/signup');
-
-        // Submit empty form
-        await page.click('button[type="submit"]');
-
-        // Check for error messages
-        const emailError = page.locator('[data-testid="email-error"]');
-        await expect(emailError).toBeVisible();
-        await expect(emailError).toContainText('required');
-
-        // Fill with invalid email
-        await page.fill('input[name="email"]', 'invalid-email');
-        await page.click('button[type="submit"]');
-
-        await expect(emailError).toContainText('valid email');
-
-        console.log('✓ Form validation working');
-    });
-
-    test('Search functionality', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        // Type in search
-        const searchInput = page.locator('input[type="search"]');
-        await searchInput.fill('test query');
-
-        // Submit
-        await page.keyboard.press('Enter');
-
-        // Wait for results
-        await page.waitForSelector('[data-testid="search-results"]');
-
-        const results = await page.locator('[data-testid="search-result"]').count();
-        expect(results).toBeGreaterThan(0);
-
-        console.log(`✓ Search returned ${results} results`);
-    });
-
-    test('Pagination', async ({ page }) => {
-        await page.goto('http://localhost:3000/products');
-
-        // Click page 2
-        await page.click('[data-testid="page-2"]');
-
-        // Wait for URL to update
-        await page.waitForURL('**/products?page=2');
-
-        // Verify different content
-        const productIds = await page.$$eval('[data-testid="product-id"]', els =>
-            els.map(el => el.textContent)
-        );
-
-        expect(productIds.length).toBeGreaterThan(0);
-        console.log('✓ Pagination working');
-    });
-
-    test('Modal interactions', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        // Open modal
-        await page.click('[data-testid="open-modal"]');
-
-        // Modal should be visible
-        const modal = page.locator('[data-testid="modal"]');
-        await expect(modal).toBeVisible();
-
-        // Close with X button
-        await page.click('[data-testid="close-modal"]');
-        await expect(modal).not.toBeVisible();
-
-        // Open again
-        await page.click('[data-testid="open-modal"]');
-
-        // Close with Escape key
-        await page.keyboard.press('Escape');
-        await expect(modal).not.toBeVisible();
-
-        // Open again
-        await page.click('[data-testid="open-modal"]');
-
-        // Close by clicking outside
-        await page.click('body', { position: { x: 10, y: 10 } });
-        await expect(modal).not.toBeVisible();
-
-        console.log('✓ Modal interactions working');
-    });
-
-    test('Drag and drop', async ({ page }) => {
-        await page.goto('http://localhost:3000/board');
-
-        // Drag item to new position
-        const source = page.locator('[data-testid="draggable-item-1"]');
-        const target = page.locator('[data-testid="drop-zone-2"]');
-
-        await source.dragTo(target);
-
-        // Verify item moved
-        const itemInNewZone = page.locator('[data-testid="drop-zone-2"] [data-testid="draggable-item-1"]');
-        await expect(itemInNewZone).toBeVisible();
-
-        console.log('✓ Drag and drop working');
-    });
-});
+**⚡ EXECUTE TASK TOOL:**
 ```
+Use the visual-testing agent to:
+1. Test all user flows (login, forms, navigation)
+2. Verify form validation
+3. Test interactive elements (modals, dropdowns, drag-and-drop)
+4. Test search and filtering
+5. Verify error handling
+
+subagent_type: "visual-testing"
+description: "Test all functional user flows"
+prompt: "Functional testing for application: $*
+
+Based on application-structure.json, test:
+
+1. **Authentication Flows**
+   - Test login with valid credentials
+   - Test login with invalid credentials
+   - Verify error messages displayed
+   - Test signup/registration flow
+   - Test password reset flow
+   - Verify session persistence
+   - Test logout functionality
+
+2. **Form Validation**
+   - Submit forms with empty fields
+   - Verify required field validation
+   - Test invalid email formats
+   - Test invalid phone numbers
+   - Test password strength validation
+   - Verify error messages clear
+   - Test field character limits
+
+3. **Interactive Elements**
+   - Test modal open/close (button, X, escape, outside click)
+   - Test dropdown menus
+   - Test tabs and accordions
+   - Test drag-and-drop functionality
+   - Test tooltips and popovers
+   - Test date pickers
+   - Test file uploads
+
+4. **Search & Filtering**
+   - Test search with various queries
+   - Verify search results displayed
+   - Test empty search results
+   - Test filtering options
+   - Test sorting functionality
+   - Test pagination
+
+5. **Navigation & Routing**
+   - Test all internal links
+   - Verify correct page loads
+   - Test browser back/forward
+   - Test deep linking
+   - Verify 404 page handling
+
+Expected outputs:
+- functional-test-report.md with:
+  - All user flows tested
+  - Pass/fail status for each flow
+  - Errors/bugs detected
+  - Screenshots of failures
+  - Steps to reproduce issues
+"
+```
+
+**Expected Outputs:**
+- `functional-test-report.md` - Functional testing results
+- Screenshots of any failures
+- Detailed reproduction steps for bugs
+
+**Quality Gate: Functional Testing**
+```bash
+# Validate functional report
+if [ ! -f "functional-test-report.md" ]; then
+  echo "❌ Functional test report not generated"
+  exit 1
+fi
+
+# Check for critical failures
+FAILURES=$(grep -c "FAIL" functional-test-report.md || echo "0")
+if [ "$FAILURES" -gt 0 ]; then
+  echo "⚠️  $FAILURES functional test failures detected"
+fi
+
+echo "✅ Functional testing complete"
+```
+
+**Track Progress:** 45% complete
 
 **CHECKPOINT**: Functional tests complete ✓
 
+---
+
 ### Phase 4: Accessibility Testing (20%)
 
-**Use `accessibility-tester` agent:**
-
-```javascript
-const { injectAxe, checkA11y, getViolations } = require('axe-playwright');
-
-test.describe('Accessibility Tests (WCAG 2.1 AA)', () => {
-    test('Homepage accessibility', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-        await injectAxe(page);
-
-        const violations = await getViolations(page);
-
-        if (violations.length > 0) {
-            console.log(`⚠️  Found ${violations.length} accessibility violations:`);
-
-            violations.forEach((violation, idx) => {
-                console.log(`\n${idx + 1}. ${violation.id}: ${violation.description}`);
-                console.log(`   Impact: ${violation.impact}`);
-                console.log(`   Help: ${violation.helpUrl}`);
-                console.log(`   Affected elements: ${violation.nodes.length}`);
-
-                violation.nodes.slice(0, 3).forEach(node => {
-                    console.log(`   - ${node.html}`);
-                    console.log(`     Fix: ${node.failureSummary}`);
-                });
-            });
-        } else {
-            console.log('✓ No accessibility violations found');
-        }
-
-        // Assert no critical violations
-        const criticalViolations = violations.filter(v => v.impact === 'critical');
-        expect(criticalViolations).toHaveLength(0);
-    });
-
-    test('Keyboard navigation', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        // Tab through interactive elements
-        const focusableSelectors = 'a, button, input, select, textarea, [tabindex]:not([tabindex="-1"])';
-        const focusableElements = await page.$$eval(focusableSelectors, els => els.length);
-
-        console.log(`Found ${focusableElements} focusable elements`);
-
-        // Tab through all
-        for (let i = 0; i < focusableElements; i++) {
-            await page.keyboard.press('Tab');
-
-            // Get currently focused element
-            const focusedElement = await page.evaluate(() => {
-                const el = document.activeElement;
-                return {
-                    tag: el.tagName,
-                    text: el.textContent?.substring(0, 30),
-                    hasVisibleFocus: window.getComputedStyle(el, ':focus').outlineWidth !== '0px'
-                };
-            });
-
-            if (!focusedElement.hasVisibleFocus) {
-                console.log(`⚠️  Element has no visible focus indicator: ${focusedElement.tag}`);
-            }
-        }
-
-        console.log('✓ Keyboard navigation complete');
-    });
-
-    test('Screen reader compatibility', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        // Check for proper ARIA labels
-        const missingLabels = await page.$$eval('button, input, select, textarea', elements => {
-            return elements.filter(el => {
-                const hasLabel = el.labels && el.labels.length > 0;
-                const hasAriaLabel = el.hasAttribute('aria-label');
-                const hasAriaLabelledby = el.hasAttribute('aria-labelledby');
-
-                return !hasLabel && !hasAriaLabel && !hasAriaLabelledby;
-            }).map(el => ({
-                tag: el.tagName,
-                type: el.type,
-                text: el.textContent?.substring(0, 30)
-            }));
-        });
-
-        if (missingLabels.length > 0) {
-            console.log('⚠️  Elements missing labels:', missingLabels);
-        }
-
-        // Check for alt text on images
-        const missingAlt = await page.$$eval('img', imgs =>
-            imgs.filter(img => !img.alt).map(img => ({
-                src: img.src.substring(0, 50)
-            }))
-        );
-
-        if (missingAlt.length > 0) {
-            console.log('⚠️  Images missing alt text:', missingAlt);
-        }
-    });
-
-    test('Color contrast', async ({ page }) => {
-        await page.goto('http://localhost:3000');
-
-        const contrastIssues = await page.evaluate(() => {
-            function getLuminance(rgb) {
-                const [r, g, b] = rgb.match(/\d+/g).map(Number);
-                const [rs, gs, bs] = [r, g, b].map(c => {
-                    c = c / 255;
-                    return c <= 0.03928 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
-                });
-                return 0.2126 * rs + 0.7152 * gs + 0.0722 * bs;
-            }
-
-            function getContrast(rgb1, rgb2) {
-                const lum1 = getLuminance(rgb1);
-                const lum2 = getLuminance(rgb2);
-                const brightest = Math.max(lum1, lum2);
-                const darkest = Math.min(lum1, lum2);
-                return (brightest + 0.05) / (darkest + 0.05);
-            }
-
-            const issues = [];
-            const elements = document.querySelectorAll('*');
-
-            elements.forEach(el => {
-                const styles = window.getComputedStyle(el);
-                const color = styles.color;
-                const bgColor = styles.backgroundColor;
-
-                if (color && bgColor && bgColor !== 'rgba(0, 0, 0, 0)') {
-                    const contrast = getContrast(color, bgColor);
-
-                    // WCAG AA requires 4.5:1 for normal text, 3:1 for large text
-                    const fontSize = parseFloat(styles.fontSize);
-                    const threshold = fontSize >= 24 || (fontSize >= 19 && styles.fontWeight === 'bold') ? 3 : 4.5;
-
-                    if (contrast < threshold) {
-                        issues.push({
-                            element: el.tagName,
-                            text: el.textContent?.substring(0, 30),
-                            contrast: contrast.toFixed(2),
-                            required: threshold,
-                            color,
-                            bgColor
-                        });
-                    }
-                }
-            });
-
-            return issues;
-        });
-
-        if (contrastIssues.length > 0) {
-            console.log('⚠️  Color contrast issues:', contrastIssues.slice(0, 5));
-        }
-    });
-});
+**⚡ EXECUTE TASK TOOL:**
 ```
+Use the accessibility-tester agent to:
+1. Run axe-core accessibility audit (WCAG 2.1 AA)
+2. Test keyboard navigation
+3. Verify screen reader compatibility
+4. Check color contrast ratios
+5. Validate ARIA labels and semantic HTML
+
+subagent_type: "accessibility-tester"
+description: "Audit accessibility compliance"
+prompt: "Accessibility testing for application: $*
+
+Perform comprehensive accessibility audit:
+
+1. **WCAG 2.1 AA Compliance**
+   - Run axe-core on all pages
+   - Detect violations by severity (critical/serious/moderate/minor)
+   - Check all 4 WCAG principles:
+     - Perceivable: alt text, captions, adaptable
+     - Operable: keyboard accessible, enough time
+     - Understandable: readable, predictable, input assistance
+     - Robust: compatible with assistive tech
+   - Generate detailed violation reports
+
+2. **Keyboard Navigation**
+   - Tab through all interactive elements
+   - Verify logical tab order
+   - Check visible focus indicators
+   - Test keyboard shortcuts
+   - Verify no keyboard traps
+   - Test escape key handling
+   - Verify skip links
+
+3. **Screen Reader Compatibility**
+   - Check semantic HTML usage
+   - Verify ARIA labels on interactive elements
+   - Check form labels and error messages
+   - Verify landmark regions (header, nav, main, footer)
+   - Test image alt text
+   - Verify heading hierarchy (h1-h6)
+   - Check button/link text clarity
+
+4. **Color Contrast**
+   - Calculate contrast ratios for all text
+   - Verify text meets 4.5:1 minimum
+   - Verify large text meets 3:1 minimum
+   - Check UI component contrast (3:1)
+   - Test in dark mode if applicable
+   - Identify low contrast issues
+
+5. **Form Accessibility**
+   - Verify all inputs have labels
+   - Check error message association
+   - Test required field indicators
+   - Verify fieldset/legend for groups
+   - Check autocomplete attributes
+
+Expected outputs:
+- accessibility-report.md with:
+  - WCAG compliance level achieved
+  - All violations by severity
+  - Affected elements and line numbers
+  - Remediation recommendations
+  - Accessibility score (0-100)
+  - Keyboard navigation results
+  - Screen reader compatibility issues
+"
+```
+
+**Expected Outputs:**
+- `accessibility-report.md` - Comprehensive accessibility audit
+- List of violations with remediation steps
+- Accessibility score
+
+**Quality Gate: Accessibility**
+```bash
+# Validate accessibility report
+if [ ! -f "accessibility-report.md" ]; then
+  echo "❌ Accessibility report not generated"
+  exit 1
+fi
+
+# Check for critical violations
+CRITICAL=$(grep -c "CRITICAL" accessibility-report.md || echo "0")
+if [ "$CRITICAL" -gt 0 ]; then
+  echo "❌ $CRITICAL critical accessibility violations found"
+  exit 1
+fi
+
+# Check for serious violations
+SERIOUS=$(grep -c "SERIOUS" accessibility-report.md || echo "0")
+if [ "$SERIOUS" -gt 5 ]; then
+  echo "⚠️  $SERIOUS serious accessibility violations found"
+fi
+
+echo "✅ Accessibility testing complete"
+```
+
+**Track Progress:** 65% complete
 
 **CHECKPOINT**: Accessibility tests complete ✓
 
+---
+
 ### Phase 5: Performance Testing (15%)
 
-```javascript
-test('Core Web Vitals', async ({ page }) => {
-    await page.goto('http://localhost:3000');
-
-    const metrics = await page.evaluate(() => {
-        return new Promise((resolve) => {
-            const vitals = {};
-
-            // Largest Contentful Paint (LCP)
-            new PerformanceObserver((list) => {
-                const entries = list.getEntries();
-                vitals.lcp = entries[entries.length - 1].renderTime;
-            }).observe({ type: 'largest-contentful-paint', buffered: true });
-
-            // First Input Delay (FID)
-            new PerformanceObserver((list) => {
-                vitals.fid = list.getEntries()[0].processingStart - list.getEntries()[0].startTime;
-            }).observe({ type: 'first-input', buffered: true });
-
-            // Cumulative Layout Shift (CLS)
-            let cls = 0;
-            new PerformanceObserver((list) => {
-                for (const entry of list.getEntries()) {
-                    if (!entry.hadRecentInput) {
-                        cls += entry.value;
-                    }
-                }
-                vitals.cls = cls;
-            }).observe({ type: 'layout-shift', buffered: true });
-
-            // First Contentful Paint (FCP)
-            const paintEntries = performance.getEntriesByType('paint');
-            vitals.fcp = paintEntries.find(e => e.name === 'first-contentful-paint')?.startTime;
-
-            // Time to Interactive (TTI)
-            vitals.tti = performance.timing.domInteractive - performance.timing.navigationStart;
-
-            setTimeout(() => resolve(vitals), 5000);
-        });
-    });
-
-    console.log('Core Web Vitals:');
-    console.log(`  LCP: ${metrics.lcp}ms (target: <2500ms) ${metrics.lcp < 2500 ? '✓' : '⚠️'}`);
-    console.log(`  FID: ${metrics.fid}ms (target: <100ms) ${metrics.fid < 100 ? '✓' : '⚠️'}`);
-    console.log(`  CLS: ${metrics.cls} (target: <0.1) ${metrics.cls < 0.1 ? '✓' : '⚠️'}`);
-    console.log(`  FCP: ${metrics.fcp}ms (target: <1800ms) ${metrics.fcp < 1800 ? '✓' : '⚠️'}`);
-    console.log(`  TTI: ${metrics.tti}ms (target: <3800ms) ${metrics.tti < 3800 ? '✓' : '⚠️'}`);
-
-    // Assert performance targets
-    expect(metrics.lcp).toBeLessThan(2500);
-    expect(metrics.cls).toBeLessThan(0.1);
-});
+**⚡ EXECUTE TASK TOOL:**
 ```
+Use the performance-analyzer agent to:
+1. Measure Core Web Vitals (LCP, FID, CLS)
+2. Analyze page load performance
+3. Check JavaScript/CSS coverage
+4. Detect performance bottlenecks
+5. Measure Time to Interactive (TTI)
+
+subagent_type: "performance-analyzer"
+description: "Analyze web performance metrics"
+prompt: "Performance testing for application: $*
+
+Measure and analyze performance:
+
+1. **Core Web Vitals**
+   - Largest Contentful Paint (LCP) - target <2.5s
+   - First Input Delay (FID) - target <100ms
+   - Cumulative Layout Shift (CLS) - target <0.1
+   - First Contentful Paint (FCP) - target <1.8s
+   - Time to Interactive (TTI) - target <3.8s
+   - Measure on all key pages
+   - Compare against targets
+
+2. **Page Load Performance**
+   - Measure total page load time
+   - Break down by resource types
+   - Identify render-blocking resources
+   - Check resource sizes
+   - Verify compression enabled
+   - Test cache headers
+   - Measure DNS/TCP/SSL time
+
+3. **JavaScript & CSS Coverage**
+   - Enable code coverage in Chrome DevTools
+   - Measure unused JavaScript
+   - Measure unused CSS
+   - Calculate coverage percentages
+   - Identify large bundles
+   - Suggest code splitting opportunities
+
+4. **Performance Bottlenecks**
+   - Profile JavaScript execution
+   - Identify long tasks (>50ms)
+   - Check main thread blocking
+   - Detect memory leaks
+   - Measure bundle sizes
+   - Check image optimization
+   - Verify lazy loading
+
+5. **Lighthouse Audit**
+   - Run Lighthouse performance audit
+   - Capture performance score (0-100)
+   - Review all recommendations
+   - Identify quick wins
+
+Expected outputs:
+- performance-report.md with:
+  - Core Web Vitals results
+  - Performance scores
+  - Bottlenecks identified
+  - Resource analysis
+  - Code coverage stats
+  - Optimization recommendations
+  - Before/after comparisons
+"
+```
+
+**Expected Outputs:**
+- `performance-report.md` - Performance analysis
+- Core Web Vitals measurements
+- Optimization recommendations
+
+**Quality Gate: Performance**
+```bash
+# Validate performance report
+if [ ! -f "performance-report.md" ]; then
+  echo "❌ Performance report not generated"
+  exit 1
+fi
+
+# Check Core Web Vitals (simplified)
+if grep -q "LCP.*[3-9][0-9][0-9][0-9]ms" performance-report.md; then
+  echo "⚠️  LCP exceeds 2500ms target"
+fi
+
+if grep -q "CLS.*0\.[2-9]" performance-report.md; then
+  echo "⚠️  CLS exceeds 0.1 target"
+fi
+
+echo "✅ Performance testing complete"
+```
+
+**Track Progress:** 80% complete
 
 **CHECKPOINT**: Performance tests complete ✓
 
+---
+
 ### Phase 6: Browser DevTools Integration & Debugging (20%)
 
-**Use `ui-debugger` agent with Chrome DevTools Protocol:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ui-debugger agent to:
+1. Monitor console for errors and warnings
+2. Detect network failures
+3. Analyze JavaScript coverage
+4. Debug detected issues
+5. Suggest fixes for common problems
 
-```javascript
-test('Debug layout issues', async ({ page }) => {
-    // Enable CDP
-    const client = await page.context().newCDPSession(page);
+subagent_type: "ui-debugger"
+description: "Debug issues using Chrome DevTools Protocol"
+prompt: "Debug web application using DevTools: $*
 
-    // Enable coverage
-    await client.send('Profiler.enable');
-    await client.send('CSS.enable');
-    await client.send('CSS.startRuleUsageTracking');
+Use Chrome DevTools Protocol to:
 
-    await page.goto('http://localhost:3000');
+1. **Console Error Detection**
+   - Monitor console.error messages
+   - Capture JavaScript exceptions
+   - Log page errors
+   - Track console warnings
+   - Identify source files/line numbers
+   - Navigate through app to trigger errors
 
-    // Get unused CSS
-    const { ruleUsage } = await client.send('CSS.stopRuleUsageTracking');
-    const unusedCSS = ruleUsage.filter(rule => !rule.used);
+2. **Network Monitoring**
+   - Track failed requests (4xx, 5xx)
+   - Monitor request/response times
+   - Check for 404 resources
+   - Verify CORS errors
+   - Detect slow API calls
+   - Log redirects
 
-    console.log(`Unused CSS rules: ${unusedCSS.length}`);
+3. **Code Coverage Analysis**
+   - Enable JavaScript profiler
+   - Enable CSS coverage
+   - Calculate unused code percentage
+   - Identify dead code
+   - Suggest bundle optimizations
+   - Recommend code splitting
 
-    // Get JavaScript coverage
-    await client.send('Profiler.startPreciseCoverage', { callCount: true, detailed: true });
-    await page.waitForTimeout(5000);
-    const { result } = await client.send('Profiler.takePreciseCoverage');
+4. **Issue Debugging**
+   - For each detected issue:
+     - Identify root cause
+     - Locate source code
+     - Suggest fix
+     - Categorize severity
+   - Create issue tracker file
 
-    let totalBytes = 0;
-    let usedBytes = 0;
+5. **Auto-Fix Common Issues** (if --fix-issues flag)
+   - Missing alt text: generate from filename
+   - Missing ARIA labels: generate from context
+   - Low contrast: suggest color adjustments
+   - Update source files with fixes
 
-    result.forEach(entry => {
-        totalBytes += entry.functions.reduce((acc, fn) => acc + (fn.ranges[0]?.endOffset - fn.ranges[0]?.startOffset || 0), 0);
-        usedBytes += entry.functions.reduce((acc, fn) => {
-            return acc + fn.ranges.reduce((sum, range) => sum + (range.count > 0 ? range.endOffset - range.startOffset : 0), 0);
-        }, 0);
-    });
-
-    const coverage = (usedBytes / totalBytes * 100).toFixed(2);
-    console.log(`JavaScript coverage: ${coverage}%`);
-
-    if (coverage < 50) {
-        console.log('⚠️  High amount of unused JavaScript. Consider code splitting.');
-    }
-});
-
-test('Console errors detection', async ({ page }) => {
-    const consoleErrors = [];
-    const networkErrors = [];
-
-    page.on('console', msg => {
-        if (msg.type() === 'error') {
-            consoleErrors.push(msg.text());
-        }
-    });
-
-    page.on('pageerror', error => {
-        consoleErrors.push(error.message);
-    });
-
-    page.on('requestfailed', request => {
-        networkErrors.push({
-            url: request.url(),
-            failure: request.failure().errorText
-        });
-    });
-
-    await page.goto('http://localhost:3000');
-
-    // Navigate through app
-    await page.click('a[href="/about"]');
-    await page.waitForTimeout(1000);
-
-    if (consoleErrors.length > 0) {
-        console.log('⚠️  Console errors detected:', consoleErrors);
-    }
-
-    if (networkErrors.length > 0) {
-        console.log('⚠️  Network errors detected:', networkErrors);
-    }
-
-    expect(consoleErrors).toHaveLength(0);
-    expect(networkErrors).toHaveLength(0);
-});
+Expected outputs:
+- debugging-report.md with:
+  - All console errors/warnings
+  - Network failures
+  - Code coverage statistics
+  - Issues categorized by severity
+  - Root cause analysis
+  - Fix recommendations
+- issues.json with structured issue data
+- (if --fix-issues) List of auto-applied fixes
+"
 ```
 
-**Auto-Fix Common Issues:**
-```javascript
-async function autoFixIssues(page, issues) {
-    for (const issue of issues) {
-        if (issue.type === 'missing-alt-text') {
-            // Generate alt text using image recognition or file name
-            const altText = generateAltText(issue.src);
+**Expected Outputs:**
+- `debugging-report.md` - All detected issues
+- `issues.json` - Structured issue data
+- Auto-applied fixes (if --fix-issues flag)
 
-            // Update the code
-            await updateFile(issue.file, issue.line, `alt="${altText}"`);
-        }
+**Quality Gate: Debugging**
+```bash
+# Validate debugging report
+if [ ! -f "debugging-report.md" ]; then
+  echo "❌ Debugging report not generated"
+  exit 1
+fi
 
-        if (issue.type === 'missing-aria-label') {
-            // Generate appropriate ARIA label
-            const ariaLabel = generateAriaLabel(issue.element);
+# Check for console errors
+ERRORS=$(grep -c "console.error\|JavaScript exception" debugging-report.md || echo "0")
+if [ "$ERRORS" -gt 0 ]; then
+  echo "⚠️  $ERRORS console errors detected"
+fi
 
-            await updateFile(issue.file, issue.line, `aria-label="${ariaLabel}"`);
-        }
+# Check for network failures
+NETWORK_FAILS=$(grep -c "404\|500\|failed request" debugging-report.md || echo "0")
+if [ "$NETWORK_FAILS" -gt 0 ]; then
+  echo "⚠️  $NETWORK_FAILS network failures detected"
+fi
 
-        if (issue.type === 'low-contrast') {
-            // Suggest color with better contrast
-            const newColor = adjustContrast(issue.color, issue.bgColor);
-
-            console.log(`Suggested fix: Change ${issue.color} to ${newColor}`);
-        }
-    }
-}
+echo "✅ Debugging complete, issues identified"
 ```
+
+**Track Progress:** 90% complete
 
 **CHECKPOINT**: Debugging complete, issues identified ✓
 
+---
+
 ### Phase 7: Automated Test Generation (10%)
 
-```javascript
-// Generate test suite from recorded user interactions
-async function generateTests(page) {
-    const interactions = [];
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Generate Playwright/Cypress test suite
+2. Create tests for all critical user flows
+3. Include visual regression tests
+4. Add accessibility tests
+5. Generate test configuration
 
-    // Record all interactions
-    await page.exposeFunction('recordInteraction', (interaction) => {
-        interactions.push(interaction);
-    });
+subagent_type: "test-engineer"
+description: "Generate automated test suite"
+prompt: "Generate automated test suite for application: $*
 
-    await page.evaluate(() => {
-        document.addEventListener('click', (e) => {
-            window.recordInteraction({
-                type: 'click',
-                selector: e.target.getAttribute('data-testid') || e.target.className,
-                text: e.target.textContent.substring(0, 30)
-            });
-        });
+Based on all testing performed, generate:
 
-        document.addEventListener('input', (e) => {
-            window.recordInteraction({
-                type: 'input',
-                selector: e.target.name || e.target.id,
-                value: e.target.value
-            });
-        });
-    });
+1. **Test Suite Structure**
+   - Create tests/ directory
+   - Organize by test type:
+     - tests/visual/ - Visual regression tests
+     - tests/functional/ - User flow tests
+     - tests/accessibility/ - A11y tests
+     - tests/performance/ - Performance tests
+   - Add test configuration files
 
-    // User performs actions...
-    await page.waitForTimeout(60000); // Record for 1 minute
+2. **Visual Regression Tests**
+   - Generate screenshot comparison tests
+   - Test all viewports (mobile/tablet/desktop)
+   - Include dark mode tests
+   - Use baseline screenshots
 
-    // Generate test code
-    const testCode = `
-import { test, expect } from '@playwright/test';
+3. **Functional Tests**
+   - Generate tests for each user flow from functional-test-report.md
+   - Include login/signup flows
+   - Test form submissions
+   - Test navigation
+   - Test interactive elements
+   - Add proper assertions
 
-test('Generated user flow', async ({ page }) => {
-    await page.goto('http://localhost:3000');
+4. **Accessibility Tests**
+   - Generate axe-core integration tests
+   - Add keyboard navigation tests
+   - Include ARIA validation
+   - Test color contrast
 
-    ${interactions.map(i => {
-        if (i.type === 'click') {
-            return `await page.click('[data-testid="${i.selector}"]');`;
-        } else if (i.type === 'input') {
-            return `await page.fill('input[name="${i.selector}"]', '${i.value}');`;
-        }
-    }).join('\n    ')}
+5. **Performance Tests**
+   - Generate Lighthouse CI tests
+   - Add Core Web Vitals assertions
+   - Test bundle sizes
+   - Monitor performance budgets
 
-    await page.screenshot({ path: 'test-results/user-flow.png' });
-});
-`;
+6. **Test Configuration**
+   - Create playwright.config.js or cypress.config.js
+   - Configure browsers
+   - Set timeouts and retries
+   - Add reporters
+   - Configure CI integration
 
-    // Save to file
-    fs.writeFileSync('tests/generated/user-flow.spec.js', testCode);
-    console.log('✓ Test suite generated');
-}
+Expected outputs:
+- tests/ directory with complete test suite
+- playwright.config.js or cypress.config.js
+- package.json with test scripts
+- test-suite-readme.md with:
+  - How to run tests
+  - Test coverage summary
+  - CI integration guide
+"
 ```
 
+**Expected Outputs:**
+- `tests/` directory with automated test suite
+- Test configuration files
+- `test-suite-readme.md` - Test documentation
+
+**Quality Gate: Test Generation**
+```bash
+# Validate test suite created
+if [ ! -d "tests" ]; then
+  echo "❌ Test suite not generated"
+  exit 1
+fi
+
+# Check for test files
+TEST_COUNT=$(find tests -name "*.spec.js" -o -name "*.spec.ts" | wc -l)
+if [ "$TEST_COUNT" -lt 1 ]; then
+  echo "❌ No test files generated"
+  exit 1
+fi
+
+# Validate config exists
+if [ ! -f "playwright.config.js" ] && [ ! -f "cypress.config.js" ]; then
+  echo "⚠️  Test configuration file not found"
+fi
+
+echo "✅ Test suite generated ($TEST_COUNT test files)"
+```
+
+**Track Progress:** 100% complete
+
 **CHECKPOINT**: Test suite generated ✓
+
+---
 
 ## Success Criteria
 
@@ -867,6 +714,9 @@ Web UI testing complete when:
 - ✅ No console errors
 - ✅ No broken links or failed requests
 - ✅ Automated test suite generated
+- ✅ All reports generated and documented
+
+---
 
 ## Example Usage
 
@@ -905,5 +755,19 @@ Web UI testing complete when:
 7. Re-runs tests automatically on file change
 
 **Time: 5-10 minutes (continuous)**
+
+---
+
+## Reports Generated
+
+- `application-structure.json` - Application discovery
+- `visual-test-report.md` - Visual and layout testing
+- `functional-test-report.md` - User flow testing
+- `accessibility-report.md` - WCAG compliance audit
+- `performance-report.md` - Core Web Vitals and performance
+- `debugging-report.md` - Console errors and network issues
+- `issues.json` - Structured issue data
+- `test-suite-readme.md` - Generated test documentation
+- `screenshots/` - All captured screenshots
 
 Autonomous, comprehensive web UI testing that detects, debugs, and fixes frontend issues automatically.

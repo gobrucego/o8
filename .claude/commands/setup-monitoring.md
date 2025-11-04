@@ -5,850 +5,1269 @@ description: Autonomous observability stack setup with Prometheus, Grafana, Open
 
 # Setup Monitoring Workflow
 
-Autonomous deployment of comprehensive observability stack for production systems.
+## ⚠️ CRITICAL: Autonomous Orchestration Required
 
-## Phases
+**DO NOT execute this workflow in the main Claude Code context.**
 
-### Phase 1: Requirements & Architecture (10-15 min)
-**Objective**: Design observability architecture tailored to system needs
+You MUST immediately delegate this entire workflow to the observability-specialist agent using the Task tool.
 
-**Tasks**:
+**Delegation Instructions:**
+```
+Use Task tool with:
+- subagent_type: "observability-specialist"
+- description: "Deploy complete observability stack from scratch to production"
+- prompt: "Execute the setup-monitoring workflow for: [user's infrastructure description].
+
+Implement the complete monitoring lifecycle:
+1. Analyze system architecture and define SLOs (10-15%)
+2. Deploy metrics infrastructure (Prometheus, Grafana) (25-30%)
+3. Instrument applications with metrics, logs, traces (40-45%)
+4. Deploy logging infrastructure (55-60%)
+5. Deploy distributed tracing backend (70-75%)
+6. Create comprehensive dashboards (80-85%)
+7. Configure alerting and incident response (90-95%)
+8. Optimize and ensure high availability (100%)
+
+Follow all phases, enforce quality gates, track with TodoWrite, and meet all success criteria defined below."
+```
+
+**After delegation:**
+- The observability-specialist will handle all phases autonomously
+- Return to main context only when complete or if user input required
+- Do NOT attempt to execute workflow steps in main context
+
+---
+
+## Monitoring Setup Instructions for Orchestrator
+
+You are orchestrating the complete deployment of a production-grade observability stack.
+
+## Database Intelligence Integration
+
+**At workflow start, source the database helpers:**
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
+
+# Create workflow record
+workflow_id="setup-monitoring-$(date +%s)"
+db_create_workflow "$workflow_id" "setup-monitoring" "$*" 4 "normal"
+db_update_workflow_status "$workflow_id" "in_progress"
+
+# Query similar past workflows for estimation
+echo "=== Learning from past monitoring setups ==="
+db_find_similar_workflows "setup-monitoring" 5
+```
+
+---
+
+## Phase 1: Requirements & Architecture (0-15%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the architect and sre-specialist agents to:
+1. Analyze system architecture and components
+2. Define SLIs and SLOs for all services
+3. Design comprehensive monitoring stack
+4. Create deployment plan
+
+subagent_type: "architect"
+description: "Design observability architecture and define SLOs"
+prompt: "Design comprehensive observability architecture for: $*
+
+Tasks:
 1. **Analyze System Architecture**
    - Identify all services and components
    - Map dependencies and data flows
    - Determine monitoring requirements per service
    - Identify critical paths and user journeys
+   - Document service topology
 
 2. **Define SLIs and SLOs**
    - Availability SLO (e.g., 99.9% uptime)
-   - Latency SLO (e.g., p95 < 200ms)
+   - Latency SLO (e.g., p95 < 200ms, p99 < 500ms)
    - Error rate SLO (e.g., < 0.1% errors)
    - Throughput requirements
-   - Calculate error budgets
+   - Calculate error budgets for 30-day windows
+   - Define burn rate thresholds
 
 3. **Design Monitoring Stack**
+   Choose appropriate tools:
    - Metrics: Prometheus, Grafana, VictoriaMetrics
-   - Logs: ELK Stack, Loki, or Fluentd
+   - Logs: ELK Stack, Loki + Promtail, or Fluentd
    - Traces: Jaeger, Tempo, or Zipkin
    - APM: Datadog, New Relic, or self-hosted
    - Alerting: Alertmanager, PagerDuty, Slack
 
-**Agents**: `architect`, `sre-specialist`, `observability-specialist`
+4. **Create Deployment Plan**
+   - Infrastructure requirements (CPU, memory, storage)
+   - Network requirements (ports, firewall rules)
+   - HA and redundancy strategy
+   - Backup and disaster recovery
+   - Phased rollout plan
 
-**Deliverables**:
-- Observability architecture diagram
-- SLO definitions
-- Tech stack selection
-- Deployment plan
+Expected outputs:
+- observability-architecture.md with:
+  - System architecture diagram
+  - Service topology
+  - Monitoring stack design
+- slo-definitions.md with:
+  - SLIs for all services
+  - SLOs with error budgets
+  - Burn rate calculations
+- deployment-plan.md with:
+  - Infrastructure requirements
+  - Deployment phases
+  - Rollback procedures
+"
+```
+
+**Expected Outputs:**
+- `observability-architecture.md` - Complete architecture design
+- `slo-definitions.md` - SLI/SLO definitions
+- `deployment-plan.md` - Deployment strategy
+
+**Quality Gate: Architecture Validation**
+```bash
+# Validate architecture document exists
+if [ ! -f "observability-architecture.md" ]; then
+  echo "❌ Architecture document not created"
+  db_log_error "$workflow_id" "ValidationError" "Architecture document missing" "setup-monitoring" "phase-1" "0"
+  exit 1
+fi
+
+# Validate SLO definitions exist
+if [ ! -f "slo-definitions.md" ]; then
+  echo "❌ SLO definitions not created"
+  db_log_error "$workflow_id" "ValidationError" "SLO definitions missing" "setup-monitoring" "phase-1" "0"
+  exit 1
+fi
+
+# Validate deployment plan exists
+if [ ! -f "deployment-plan.md" ]; then
+  echo "❌ Deployment plan not created"
+  db_log_error "$workflow_id" "ValidationError" "Deployment plan missing" "setup-monitoring" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ Architecture designed and SLOs defined"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "architecture-design" $TOKENS_USED "15%"
+
+# Store architecture knowledge
+db_store_knowledge "observability" "architecture" "$(echo $* | tr -dc '[:alnum:]' | head -c 20)" \
+  "Observability architecture and SLO definitions" \
+  "$(head -n 50 observability-architecture.md)"
+```
 
 ---
 
-### Phase 2: Metrics Infrastructure (20-30 min)
-**Objective**: Deploy Prometheus, Grafana, and exporters
+## Phase 2: Metrics Infrastructure (15-30%)
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist and kubernetes-expert agents to:
+1. Deploy Prometheus server
+2. Deploy and configure exporters
+3. Deploy Grafana
+4. Configure recording rules
+
+subagent_type: "observability-specialist"
+description: "Deploy Prometheus and Grafana metrics infrastructure"
+prompt: "Deploy metrics infrastructure based on deployment-plan.md
+
+Tasks:
 1. **Deploy Prometheus**
-   - Install Prometheus server (Docker/Kubernetes)
-   - Configure service discovery (Kubernetes, Consul)
-   - Set up persistent storage
-   - Configure retention policies
+   - Create namespace: monitoring
+   - Deploy Prometheus StatefulSet/Deployment
+   - Configure persistent storage (100Gi+ recommended)
+   - Set retention period (30d recommended)
+   - Configure service discovery (Kubernetes, Consul, static)
+   - Enable lifecycle management for reloading
 
 2. **Deploy Exporters**
-   - Node exporter (system metrics)
-   - kube-state-metrics (Kubernetes state)
-   - Custom application exporters
-   - Database exporters (postgres_exporter, mongodb_exporter)
+   - node-exporter: System metrics (CPU, memory, disk, network)
+   - kube-state-metrics: Kubernetes object state
+   - Custom application exporters (/metrics endpoints)
+   - Database exporters:
+     - postgres_exporter for PostgreSQL
+     - mongodb_exporter for MongoDB
+     - redis_exporter for Redis
 
 3. **Deploy Grafana**
-   - Install Grafana
-   - Configure Prometheus data source
-   - Set up authentication (OAuth, LDAP)
-   - Configure dashboards persistence
+   - Install Grafana Deployment
+   - Configure persistent storage for dashboards
+   - Add Prometheus as data source
+   - Set up authentication (OAuth, LDAP, or basic)
+   - Configure dashboard provisioning
+   - Enable plugin installation
 
-4. **Recording Rules**
+4. **Configure Recording Rules**
    - Create aggregation rules for efficiency
-   - Pre-compute SLI metrics
-   - Optimize query performance
+   - Pre-compute SLI metrics (availability, latency percentiles)
+   - Optimize for dashboard query performance
+   - Add burnrate calculations for SLO alerting
 
-**Agents**: `observability-specialist`, `kubernetes-expert`, `infrastructure-engineer`
+Example Kubernetes manifests:
+- prometheus-deployment.yaml
+- prometheus-config.yaml (ConfigMap)
+- grafana-deployment.yaml
+- node-exporter-daemonset.yaml
+- kube-state-metrics-deployment.yaml
 
-**Code Examples**:
-```yaml
-# Kubernetes deployment for Prometheus
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: prometheus
-  namespace: monitoring
-spec:
-  replicas: 1
-  template:
-    spec:
-      containers:
-      - name: prometheus
-        image: prom/prometheus:latest
-        args:
-          - '--config.file=/etc/prometheus/prometheus.yml'
-          - '--storage.tsdb.path=/prometheus'
-          - '--storage.tsdb.retention.time=30d'
-          - '--web.enable-lifecycle'
-        ports:
-        - containerPort: 9090
-        volumeMounts:
-        - name: prometheus-config
-          mountPath: /etc/prometheus
-        - name: prometheus-storage
-          mountPath: /prometheus
-      volumes:
-      - name: prometheus-config
-        configMap:
-          name: prometheus-config
-      - name: prometheus-storage
-        persistentVolumeClaim:
-          claimName: prometheus-pvc
----
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: prometheus-pvc
-  namespace: monitoring
-spec:
-  accessModes:
-    - ReadWriteOnce
-  resources:
-    requests:
-      storage: 100Gi
+Expected outputs:
+- kubernetes/ directory with all manifests
+- prometheus.yml configuration
+- recording-rules.yml
+- All components deployed and healthy
+- Metrics scraping successfully
+"
 ```
 
-```yaml
-# prometheus.yml
-global:
-  scrape_interval: 15s
-  evaluation_interval: 15s
+**Expected Outputs:**
+- `kubernetes/` directory with deployment manifests
+- `prometheus.yml` - Prometheus configuration
+- `recording-rules.yml` - Recording rules for SLIs
+- All pods running and healthy
 
-scrape_configs:
-  # Kubernetes pods
-  - job_name: 'kubernetes-pods'
-    kubernetes_sd_configs:
-      - role: pod
-    relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
-        action: keep
-        regex: true
+**Quality Gate: Metrics Infrastructure**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "metrics_infrastructure" "running"
 
-  # Node exporter
-  - job_name: 'node-exporter'
-    kubernetes_sd_configs:
-      - role: node
-    relabel_configs:
-      - source_labels: [__address__]
-        regex: '(.*):10250'
-        replacement: '${1}:9100'
-        target_label: __address__
+# Check if Prometheus is deployed
+if ! kubectl get pods -n monitoring | grep -q prometheus; then
+  echo "❌ Prometheus not deployed"
+  db_log_quality_gate "$workflow_id" "metrics_infrastructure" "failed" 0 1
+  exit 1
+fi
 
-  # kube-state-metrics
-  - job_name: 'kube-state-metrics'
-    static_configs:
-      - targets: ['kube-state-metrics.monitoring:8080']
+# Check if Grafana is deployed
+if ! kubectl get pods -n monitoring | grep -q grafana; then
+  echo "❌ Grafana not deployed"
+  db_log_quality_gate "$workflow_id" "metrics_infrastructure" "failed" 0 1
+  exit 1
+fi
+
+# Check if exporters are running
+if ! kubectl get pods -n monitoring | grep -q node-exporter; then
+  echo "⚠️  Node exporter not deployed (optional)"
+fi
+
+# Verify Prometheus is scraping targets
+TARGETS_UP=$(curl -s http://prometheus:9090/api/v1/targets | jq '.data.activeTargets | map(select(.health=="up")) | length')
+if [ "$TARGETS_UP" -lt 1 ]; then
+  echo "❌ No targets being scraped by Prometheus"
+  db_log_quality_gate "$workflow_id" "metrics_infrastructure" "failed" 0 1
+  exit 1
+fi
+
+# Log success
+db_log_quality_gate "$workflow_id" "metrics_infrastructure" "passed" 100 0
+db_send_notification "$workflow_id" "quality_gate" "normal" "Metrics Infrastructure Deployed" "Prometheus and Grafana operational, scraping ${TARGETS_UP} targets"
+
+echo "✅ Metrics infrastructure deployed (${TARGETS_UP} targets)"
 ```
 
-**Deliverables**:
-- Prometheus cluster deployed
-- Grafana instance running
-- Exporters collecting metrics
-- Recording rules configured
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "metrics-infrastructure" $TOKENS_USED "30%"
+```
 
 ---
 
-### Phase 3: Application Instrumentation (30-40 min)
-**Objective**: Instrument applications with metrics, logs, and traces
+## Phase 3: Application Instrumentation (30-45%)
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist and language-specific developers to:
+1. Add Prometheus client libraries
+2. Implement structured logging
+3. Integrate OpenTelemetry for distributed tracing
+4. Implement health check endpoints
+
+subagent_type: "observability-specialist"
+description: "Instrument applications with metrics, logs, and traces"
+prompt: "Instrument all applications for observability
+
+Tasks:
 1. **Metrics Instrumentation**
-   - Add Prometheus client libraries
-   - Instrument HTTP endpoints (latency, status codes)
-   - Add business metrics (orders, signups, revenue)
-   - Database query metrics
-   - Cache hit/miss ratios
+   Add Prometheus client libraries:
+   - Python: prometheus_client
+   - Node.js/TypeScript: prom-client
+   - Go: prometheus/client_golang
+   - Java: micrometer
+
+   Instrument:
+   - HTTP endpoints: latency histograms, status code counters
+   - Business metrics: orders, signups, revenue counters
+   - Database queries: query duration, connection pool
+   - Cache operations: hit/miss ratios
+   - Queue operations: message processing time
+
+   Use standard metric naming:
+   - Counters: _total suffix (e.g., http_requests_total)
+   - Histograms: _seconds/_bytes suffix
+   - Gauges: current state
 
 2. **Structured Logging**
    - Implement JSON logging format
-   - Add correlation IDs
+   - Include fields:
+     - timestamp (ISO 8601)
+     - level (DEBUG, INFO, WARN, ERROR)
+     - message
+     - trace_id, span_id (for correlation)
+     - service, environment
+     - user_id (if applicable)
+   - Add correlation IDs to all logs
    - Include trace context in logs
-   - Log severity levels
-   - Error stack traces
+   - Log structured errors with stack traces
 
 3. **Distributed Tracing**
    - Integrate OpenTelemetry SDK
-   - Auto-instrument frameworks (Flask, FastAPI, Express)
-   - Add custom spans for business logic
-   - Context propagation across services
-   - Sample rate configuration
+   - Auto-instrument frameworks:
+     - Flask, FastAPI, Django (Python)
+     - Express, NestJS (Node.js)
+     - Spring Boot (Java)
+     - Chi, Gin (Go)
+   - Add custom spans for:
+     - Business logic functions
+     - External API calls
+     - Database operations
+     - Cache operations
+   - Configure sampling (10% for high traffic)
+   - Context propagation across services (W3C Trace Context)
 
-4. **Health Checks**
+4. **Health Check Endpoints**
    - Implement /health endpoint
-   - Liveness probe (is process running?)
-   - Readiness probe (can accept traffic?)
-   - Dependency health checks
+   - Liveness probe: Is process alive?
+   - Readiness probe: Can accept traffic?
+   - Dependency checks:
+     - Database connectivity
+     - Cache connectivity
+     - External API availability
+   - Return 200 if healthy, 503 if unhealthy
 
-**Agents**: `observability-specialist`, language-specific developers (e.g., `python-developer`, `typescript-developer`)
-
-**Code Examples**:
-```python
-# Python application instrumentation
-from prometheus_client import Counter, Histogram, start_http_server
-from opentelemetry import trace
-from opentelemetry.instrumentation.flask import FlaskInstrumentor
-import logging
-import json
-
-# Metrics
-request_count = Counter(
-    'http_requests_total',
-    'Total HTTP requests',
-    ['method', 'endpoint', 'status']
-)
-
-request_duration = Histogram(
-    'http_request_duration_seconds',
-    'HTTP request latency',
-    ['method', 'endpoint'],
-    buckets=[0.005, 0.01, 0.025, 0.05, 0.075, 0.1, 0.25, 0.5, 0.75, 1.0, 2.5, 5.0]
-)
-
-# Structured logging
-class JSONFormatter(logging.Formatter):
-    def format(self, record):
-        log_data = {
-            'timestamp': self.formatTime(record),
-            'level': record.levelname,
-            'message': record.getMessage(),
-            'module': record.module,
-            'trace_id': getattr(record, 'trace_id', None),
-            'span_id': getattr(record, 'span_id', None)
-        }
-        if record.exc_info:
-            log_data['exception'] = self.formatException(record.exc_info)
-        return json.dumps(log_data)
-
-# Tracing
-tracer = trace.get_tracer(__name__)
-FlaskInstrumentor().instrument_app(app)
-
-@app.route('/api/orders', methods=['POST'])
-def create_order():
-    with tracer.start_as_current_span("create_order") as span:
-        start = time.time()
-
-        try:
-            # Business logic
-            order = process_order(request.json)
-
-            span.set_attribute("order.id", order['id'])
-            span.set_attribute("order.amount", order['amount'])
-
-            request_count.labels(method='POST', endpoint='/api/orders', status=201).inc()
-            request_duration.labels(method='POST', endpoint='/api/orders').observe(time.time() - start)
-
-            return jsonify(order), 201
-
-        except Exception as e:
-            span.record_exception(e)
-            request_count.labels(method='POST', endpoint='/api/orders', status=500).inc()
-            logging.error("Order creation failed", exc_info=True)
-            raise
-
-# Health check
-@app.route('/health')
-def health():
-    checks = {
-        'database': check_database(),
-        'cache': check_redis(),
-        'queue': check_rabbitmq()
-    }
-
-    all_healthy = all(checks.values())
-    status_code = 200 if all_healthy else 503
-
-    return jsonify({
-        'status': 'healthy' if all_healthy else 'unhealthy',
-        'checks': checks
-    }), status_code
-
-# Start metrics server
-start_http_server(8000)
+Expected outputs:
+- Updated application code with instrumentation
+- Metrics exposed at /metrics endpoint
+- Logs in JSON format
+- Traces exported to OpenTelemetry Collector
+- Health checks at /health
+- instrumentation-guide.md documenting changes
+"
 ```
 
-**Deliverables**:
-- Applications instrumented
-- Metrics exposed
-- Logs structured
-- Traces enabled
-- Health checks implemented
+**Expected Outputs:**
+- Application code instrumented with metrics
+- `/metrics` endpoints exposing Prometheus metrics
+- Structured JSON logging implemented
+- OpenTelemetry tracing configured
+- `/health` endpoints implemented
+- `instrumentation-guide.md` - Documentation
+
+**Quality Gate: Application Instrumentation**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "instrumentation" "running"
+
+# Check if /metrics endpoints exist
+SERVICES=$(kubectl get services -n production -o name | wc -l)
+INSTRUMENTED=0
+
+for service in $(kubectl get services -n production -o jsonpath='{.items[*].metadata.name}'); do
+  if curl -s "http://${service}:8080/metrics" | grep -q "http_requests_total"; then
+    ((INSTRUMENTED++))
+  fi
+done
+
+if [ "$INSTRUMENTED" -eq 0 ]; then
+  echo "❌ No services instrumented with metrics"
+  db_log_quality_gate "$workflow_id" "instrumentation" "failed" 0 1
+  exit 1
+fi
+
+# Check if health checks exist
+HEALTH_CHECKS=0
+for service in $(kubectl get services -n production -o jsonpath='{.items[*].metadata.name}'); do
+  if curl -s "http://${service}:8080/health" | grep -q "status"; then
+    ((HEALTH_CHECKS++))
+  fi
+done
+
+# Log success
+COVERAGE=$((INSTRUMENTED * 100 / SERVICES))
+db_log_quality_gate "$workflow_id" "instrumentation" "passed" $COVERAGE 0
+db_send_notification "$workflow_id" "quality_gate" "normal" "Applications Instrumented" "${INSTRUMENTED}/${SERVICES} services instrumented (${COVERAGE}%)"
+
+echo "✅ Applications instrumented (${INSTRUMENTED}/${SERVICES} services, ${COVERAGE}%)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=9000
+db_track_tokens "$workflow_id" "application-instrumentation" $TOKENS_USED "45%"
+```
 
 ---
 
-### Phase 4: Logging Infrastructure (20-30 min)
-**Objective**: Deploy log aggregation and analysis platform
+## Phase 4: Logging Infrastructure (45-60%)
 
-**Tasks**:
-1. **Deploy Log Aggregation**
-   - Option A: ELK Stack (Elasticsearch, Logstash, Kibana)
-   - Option B: Loki + Promtail
-   - Option C: Fluentd + Elasticsearch
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist and kubernetes-expert agents to:
+1. Deploy log aggregation platform
+2. Configure log collection from all services
+3. Set up log parsing and indexing
+4. Create log dashboards
+
+subagent_type: "observability-specialist"
+description: "Deploy logging infrastructure and aggregation"
+prompt: "Deploy comprehensive logging infrastructure
+
+Tasks:
+1. **Deploy Log Aggregation Platform**
+   Choose and deploy one:
+
+   Option A: Loki + Promtail (Recommended for Kubernetes)
+   - Deploy Loki StatefulSet
+   - Configure S3/GCS for long-term storage
+   - Set retention policies (30d active, 90d archive)
+
+   Option B: ELK Stack
+   - Deploy Elasticsearch cluster
+   - Deploy Logstash for parsing
+   - Deploy Kibana for visualization
+
+   Option C: Fluentd + Elasticsearch
+   - Deploy Fluentd DaemonSet
+   - Configure Elasticsearch
+   - Deploy Kibana
 
 2. **Configure Log Collection**
-   - Container log collection (Filebeat, Fluentd)
-   - Parse JSON logs
-   - Add metadata (pod name, namespace, node)
-   - Set up log retention policies
+   - Deploy Promtail DaemonSet (if using Loki)
+   - OR deploy Filebeat/Fluentd DaemonSet
+   - Collect container logs from /var/log/containers
+   - Parse JSON log format
+   - Add metadata:
+     - pod_name, namespace, node
+     - labels (app, version, environment)
+     - container_name
+   - Filter and exclude noisy logs
+   - Set up log retention (30d minimum)
 
-3. **Log Analysis**
-   - Create log search indexes
-   - Set up log dashboards in Kibana/Grafana
-   - Configure saved searches
-   - Error log aggregation
+3. **Log Parsing and Indexing**
+   - Parse JSON structured logs
+   - Extract fields:
+     - timestamp, level, message
+     - trace_id, span_id
+     - user_id, request_id
+   - Create indexes for fast searching
+   - Configure log levels as labels
+   - Set up full-text search
 
-4. **Log-based Alerts**
-   - Alert on error spikes
-   - Alert on specific error patterns
-   - Alert on security events
+4. **Create Log Dashboards**
+   - Log volume over time
+   - Error rate by service
+   - Top error messages
+   - Logs by severity level
+   - Trace ID correlation
+   - Log search interface
 
-**Agents**: `observability-specialist`, `kubernetes-expert`
-
-**Code Examples**:
-```yaml
-# Loki deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: loki
-  namespace: monitoring
-spec:
-  template:
-    spec:
-      containers:
-      - name: loki
-        image: grafana/loki:latest
-        args:
-          - -config.file=/etc/loki/loki.yml
-        ports:
-        - containerPort: 3100
-        volumeMounts:
-        - name: loki-config
-          mountPath: /etc/loki
-        - name: loki-storage
-          mountPath: /loki
----
-# Promtail DaemonSet
-apiVersion: apps/v1
-kind: DaemonSet
-metadata:
-  name: promtail
-  namespace: monitoring
-spec:
-  template:
-    spec:
-      containers:
-      - name: promtail
-        image: grafana/promtail:latest
-        args:
-          - -config.file=/etc/promtail/promtail.yml
-        volumeMounts:
-        - name: logs
-          mountPath: /var/log
-        - name: containers
-          mountPath: /var/lib/docker/containers
-          readOnly: true
-      volumes:
-      - name: logs
-        hostPath:
-          path: /var/log
-      - name: containers
-        hostPath:
-          path: /var/lib/docker/containers
-```
-
-```yaml
-# promtail.yml
-server:
-  http_listen_port: 9080
-
-positions:
-  filename: /tmp/positions.yaml
-
-clients:
-  - url: http://loki:3100/loki/api/v1/push
-
-scrape_configs:
-  - job_name: kubernetes-pods
-    kubernetes_sd_configs:
-      - role: pod
-    relabel_configs:
-      - source_labels: [__meta_kubernetes_pod_label_app]
-        target_label: app
-      - source_labels: [__meta_kubernetes_namespace]
-        target_label: namespace
-    pipeline_stages:
-      - docker: {}
-      - json:
-          expressions:
-            level: level
-            message: message
-            trace_id: trace_id
-      - labels:
-          level:
-          trace_id:
-```
-
-**Deliverables**:
-- Log aggregation platform deployed
+Expected outputs:
+- Logging platform deployed (Loki or ELK)
+- Log collectors running on all nodes
 - Logs flowing from all services
+- Log dashboards in Grafana/Kibana
+- logging-architecture.md documenting setup
+"
+```
+
+**Expected Outputs:**
+- Logging platform deployed (Loki/ELK/Fluentd)
+- Log collectors running (Promtail/Filebeat/Fluentd)
+- Logs searchable in central platform
 - Log dashboards created
-- Log retention configured
+- `logging-architecture.md` - Documentation
+
+**Quality Gate: Logging Infrastructure**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "logging_infrastructure" "running"
+
+# Check if Loki or Elasticsearch is deployed
+if ! kubectl get pods -n monitoring | grep -qE "loki|elasticsearch"; then
+  echo "❌ Log aggregation platform not deployed"
+  db_log_quality_gate "$workflow_id" "logging_infrastructure" "failed" 0 1
+  exit 1
+fi
+
+# Check if log collectors are running
+if ! kubectl get pods -n monitoring | grep -qE "promtail|filebeat|fluentd"; then
+  echo "❌ Log collectors not deployed"
+  db_log_quality_gate "$workflow_id" "logging_infrastructure" "failed" 0 1
+  exit 1
+fi
+
+# Test log query (simplified)
+echo "Testing log queries..."
+
+# Log success
+db_log_quality_gate "$workflow_id" "logging_infrastructure" "passed" 100 0
+db_send_notification "$workflow_id" "quality_gate" "normal" "Logging Infrastructure Deployed" "Logs aggregated and searchable"
+
+echo "✅ Logging infrastructure operational"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=8000
+db_track_tokens "$workflow_id" "logging-infrastructure" $TOKENS_USED "60%"
+```
 
 ---
 
-### Phase 5: Distributed Tracing (20-30 min)
-**Objective**: Deploy and configure distributed tracing backend
+## Phase 5: Distributed Tracing (60-75%)
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist agent to:
+1. Deploy tracing backend
+2. Configure OpenTelemetry Collector
+3. Set up trace visualization
+4. Create service dependency maps
+
+subagent_type: "observability-specialist"
+description: "Deploy distributed tracing infrastructure"
+prompt: "Deploy comprehensive distributed tracing
+
+Tasks:
 1. **Deploy Tracing Backend**
-   - Option A: Jaeger
-   - Option B: Tempo + Grafana
-   - Option C: Zipkin
+   Choose and deploy one:
+
+   Option A: Tempo (Recommended for Grafana stack)
+   - Deploy Tempo StatefulSet
+   - Configure S3/GCS for trace storage
+   - Set retention policy (7d traces, 30d indexes)
+
+   Option B: Jaeger
+   - Deploy Jaeger All-in-One or distributed
+   - Configure Elasticsearch backend
+   - Set up Jaeger UI
+
+   Option C: Zipkin
+   - Deploy Zipkin server
+   - Configure storage backend
 
 2. **Configure OpenTelemetry Collector**
-   - Receive traces from applications
-   - Process and enrich traces
-   - Export to tracing backend
-   - Sample rate configuration
+   - Deploy OTel Collector as DaemonSet or Deployment
+   - Configure receivers:
+     - OTLP gRPC (port 4317)
+     - OTLP HTTP (port 4318)
+     - Jaeger receiver (if migrating)
+   - Configure processors:
+     - Batch processor (1s timeout, 1024 batch size)
+     - Resource processor (add environment attributes)
+     - Probabilistic sampler (10% for high traffic)
+   - Configure exporters:
+     - Export to Tempo/Jaeger/Zipkin
+     - Export metrics to Prometheus
+   - Set up tail sampling for errors
 
 3. **Trace Visualization**
-   - Service dependency map
-   - Trace search and filtering
-   - Latency analysis
-   - Error trace analysis
+   - Configure Grafana Tempo data source
+   - Or set up Jaeger UI
+   - Enable trace search by:
+     - Service name
+     - Operation name
+     - Duration
+     - Status (error/success)
+     - Tag values
+   - Create service dependency graph
+   - Set up trace-to-logs correlation
 
-**Agents**: `observability-specialist`, `kubernetes-expert`
+4. **Service Dependency Mapping**
+   - Visualize service call graph
+   - Identify critical paths
+   - Measure inter-service latencies
+   - Detect circular dependencies
+   - Monitor service health scores
 
-**Code Examples**:
-```yaml
-# Tempo deployment
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: tempo
-  namespace: monitoring
-spec:
-  template:
-    spec:
-      containers:
-      - name: tempo
-        image: grafana/tempo:latest
-        args:
-          - -config.file=/etc/tempo/tempo.yml
-        ports:
-        - containerPort: 3200  # HTTP
-        - containerPort: 4317  # OTLP gRPC
-        - containerPort: 4318  # OTLP HTTP
----
-# OpenTelemetry Collector
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: otel-collector
-  namespace: monitoring
-spec:
-  template:
-    spec:
-      containers:
-      - name: otel-collector
-        image: otel/opentelemetry-collector:latest
-        args:
-          - --config=/etc/otel/config.yaml
-        ports:
-        - containerPort: 4317  # OTLP gRPC
-        - containerPort: 4318  # OTLP HTTP
+Expected outputs:
+- Tracing backend deployed (Tempo/Jaeger/Zipkin)
+- OpenTelemetry Collector running
+- Traces visible in UI
+- Service dependency map available
+- Trace-to-logs correlation working
+- tracing-guide.md documenting setup
+"
 ```
 
-```yaml
-# otel-collector-config.yaml
-receivers:
-  otlp:
-    protocols:
-      grpc:
-        endpoint: 0.0.0.0:4317
-      http:
-        endpoint: 0.0.0.0:4318
+**Expected Outputs:**
+- Tracing backend deployed (Tempo/Jaeger/Zipkin)
+- OpenTelemetry Collector configured
+- Traces searchable and visualizable
+- Service dependency maps generated
+- `tracing-guide.md` - Documentation
 
-processors:
-  batch:
-    timeout: 1s
-    send_batch_size: 1024
+**Quality Gate: Distributed Tracing**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "distributed_tracing" "running"
 
-  # Add resource attributes
-  resource:
-    attributes:
-      - key: environment
-        value: production
-        action: insert
+# Check if tracing backend is deployed
+if ! kubectl get pods -n monitoring | grep -qE "tempo|jaeger|zipkin"; then
+  echo "❌ Tracing backend not deployed"
+  db_log_quality_gate "$workflow_id" "distributed_tracing" "failed" 0 1
+  exit 1
+fi
 
-  # Sampling
-  probabilistic_sampler:
-    sampling_percentage: 10  # 10% sampling
+# Check if OTel Collector is deployed
+if ! kubectl get pods -n monitoring | grep -q "otel-collector"; then
+  echo "❌ OpenTelemetry Collector not deployed"
+  db_log_quality_gate "$workflow_id" "distributed_tracing" "failed" 0 1
+  exit 1
+fi
 
-exporters:
-  otlp/tempo:
-    endpoint: tempo:4317
-    tls:
-      insecure: true
+# Test trace ingestion (simplified)
+echo "Verifying traces are being received..."
 
-  prometheus:
-    endpoint: "0.0.0.0:8889"
+# Log success
+db_log_quality_gate "$workflow_id" "distributed_tracing" "passed" 100 0
+db_send_notification "$workflow_id" "quality_gate" "normal" "Tracing Infrastructure Ready" "Distributed tracing operational"
 
-service:
-  pipelines:
-    traces:
-      receivers: [otlp]
-      processors: [batch, resource, probabilistic_sampler]
-      exporters: [otlp/tempo]
-
-    metrics:
-      receivers: [otlp]
-      processors: [batch]
-      exporters: [prometheus]
+echo "✅ Distributed tracing operational"
 ```
 
-**Deliverables**:
-- Tracing backend deployed
-- Traces flowing from applications
-- Service maps visualized
-- Trace search working
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "distributed-tracing" $TOKENS_USED "75%"
+```
 
 ---
 
-### Phase 6: Dashboards & Visualization (30-40 min)
-**Objective**: Create comprehensive dashboards for monitoring
+## Phase 6: Dashboards & Visualization (75-85%)
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist agent to:
+1. Create infrastructure dashboards
+2. Create application dashboards
+3. Create SLO dashboards
+4. Create database dashboards
+
+subagent_type: "observability-specialist"
+description: "Create comprehensive monitoring dashboards"
+prompt: "Create production-grade monitoring dashboards
+
+Tasks:
 1. **Infrastructure Dashboards**
-   - Cluster overview (CPU, memory, disk, network)
-   - Node health and resource usage
-   - Pod status and restarts
+   Create Grafana dashboards for:
+
+   Cluster Overview:
+   - Total nodes, pods, containers
+   - Cluster CPU, memory, disk utilization
+   - Network I/O
+   - Pod status (running, pending, failed)
+
+   Node Health:
+   - Per-node CPU, memory, disk usage
+   - Node status and conditions
+   - System load averages
+   - Disk I/O and network throughput
+
+   Kubernetes Resources:
+   - Pod CPU/memory usage
+   - Pod restarts over time
    - PersistentVolume usage
+   - ConfigMap and Secret counts
 
 2. **Application Dashboards**
-   - Request rate and latency (RED metrics)
-   - Error rates and types
-   - Dependency health
-   - Business metrics
+   Create dashboards for each service:
+
+   RED Metrics (Request, Error, Duration):
+   - Request rate (req/s) by endpoint
+   - Error rate (%) by endpoint
+   - Latency percentiles (p50, p95, p99)
+
+   Dependency Health:
+   - Database connection pool usage
+   - Cache hit/miss rates
+   - External API response times
+   - Queue depth and processing time
+
+   Business Metrics:
+   - Orders per minute
+   - User signups
+   - Revenue (if applicable)
+   - Custom KPIs
 
 3. **SLO Dashboards**
-   - Availability tracking
-   - Error budget consumption
+   Create SLO tracking dashboards:
+
+   For each SLO:
+   - Current SLI value (real-time)
+   - SLO target line
+   - Error budget remaining (%)
+   - Error budget consumption rate
    - Burn rate alerts
-   - SLO compliance trends
+   - 30-day SLO compliance trend
+
+   Multi-window burn rate:
+   - 1-hour burn rate
+   - 6-hour burn rate
+   - 3-day burn rate
+
+   SLO Summary:
+   - All services SLO status
+   - Services at risk (< 10% error budget)
+   - Historical SLO compliance
 
 4. **Database Dashboards**
-   - Query performance
+   Create database performance dashboards:
+
+   PostgreSQL/MongoDB:
+   - Query performance (slow queries)
    - Connection pool usage
-   - Cache hit rates
-   - Slow query analysis
+   - Transaction rate
+   - Cache hit ratios
+   - Replication lag
+   - Index usage
+   - Lock contention
 
-**Agents**: `observability-specialist`
+   Redis:
+   - Hit/miss rates
+   - Memory usage
+   - Eviction rate
+   - Connected clients
 
-**Code Examples**:
-```json
-// Grafana dashboard JSON (API Service Overview)
-{
-  "dashboard": {
-    "title": "API Service - Production",
-    "tags": ["api", "production", "slo"],
-    "timezone": "browser",
-    "panels": [
-      {
-        "id": 1,
-        "title": "Request Rate (req/s)",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "sum(rate(http_requests_total{service=\"api\"}[5m])) by (status)",
-            "legendFormat": "{{ status }}"
-          }
-        ]
-      },
-      {
-        "id": 2,
-        "title": "Latency Percentiles",
-        "type": "graph",
-        "targets": [
-          {
-            "expr": "histogram_quantile(0.50, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
-            "legendFormat": "p50"
-          },
-          {
-            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
-            "legendFormat": "p95"
-          },
-          {
-            "expr": "histogram_quantile(0.99, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
-            "legendFormat": "p99"
-          }
-        ],
-        "alert": {
-          "conditions": [
-            {
-              "evaluator": {
-                "params": [0.2],
-                "type": "gt"
-              },
-              "query": {
-                "params": ["B", "5m", "now"]
-              }
-            }
-          ],
-          "name": "High P95 Latency"
-        }
-      },
-      {
-        "id": 3,
-        "title": "Error Rate (%)",
-        "type": "stat",
-        "targets": [
-          {
-            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m])) * 100"
-          }
-        ],
-        "thresholds": {
-          "steps": [
-            { "color": "green", "value": null },
-            { "color": "yellow", "value": 0.1 },
-            { "color": "red", "value": 1.0 }
-          ]
-        }
-      },
-      {
-        "id": 4,
-        "title": "SLO Compliance (99.9%)",
-        "type": "gauge",
-        "targets": [
-          {
-            "expr": "sum(rate(http_requests_total{status!~\"5..\"}[30d])) / sum(rate(http_requests_total[30d]))"
-          }
-        ],
-        "options": {
-          "thresholds": {
-            "steps": [
-              { "color": "red", "value": 0.995 },
-              { "color": "yellow", "value": 0.998 },
-              { "color": "green", "value": 0.999 }
-            ]
-          }
-        }
-      },
-      {
-        "id": 5,
-        "title": "Error Budget Remaining",
-        "type": "bargauge",
-        "targets": [
-          {
-            "expr": "1 - ((1 - (sum(rate(http_requests_total{status!~\"5..\"}[30d])) / sum(rate(http_requests_total[30d])))) / (1 - 0.999))"
-          }
-        ]
-      }
-    ],
-    "templating": {
-      "list": [
-        {
-          "name": "namespace",
-          "type": "query",
-          "query": "label_values(kube_pod_info, namespace)"
-        },
-        {
-          "name": "service",
-          "type": "query",
-          "query": "label_values(http_requests_total{namespace=\"$namespace\"}, service)"
-        }
-      ]
-    }
-  }
-}
+5. **Dashboard Organization**
+   - Use folders to organize dashboards
+   - Set up dashboard variables (namespace, service, environment)
+   - Configure auto-refresh intervals
+   - Set up dashboard links
+   - Export dashboards as JSON to version control
+
+Expected outputs:
+- grafana-dashboards/ directory with JSON files
+- infrastructure-dashboard.json
+- application-dashboard.json (per service)
+- slo-dashboard.json
+- database-dashboard.json
+- All dashboards imported to Grafana
+- dashboards-guide.md documenting usage
+"
 ```
 
-**Deliverables**:
-- Infrastructure dashboards
-- Application dashboards
-- SLO dashboards
-- Database dashboards
+**Expected Outputs:**
+- `grafana-dashboards/` directory with dashboard JSON files
+- Infrastructure dashboards created
+- Application dashboards for all services
+- SLO tracking dashboards
+- Database performance dashboards
+- `dashboards-guide.md` - Documentation
+
+**Quality Gate: Dashboards**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "dashboards" "running"
+
+# Check if dashboards directory exists
+if [ ! -d "grafana-dashboards" ]; then
+  echo "❌ Dashboards directory not created"
+  db_log_quality_gate "$workflow_id" "dashboards" "failed" 0 1
+  exit 1
+fi
+
+# Count dashboard files
+DASHBOARD_COUNT=$(find grafana-dashboards -name "*.json" | wc -l)
+if [ "$DASHBOARD_COUNT" -lt 3 ]; then
+  echo "❌ Insufficient dashboards created (found $DASHBOARD_COUNT, expected at least 3)"
+  db_log_quality_gate "$workflow_id" "dashboards" "failed" $DASHBOARD_COUNT 1
+  exit 1
+fi
+
+# Validate dashboard JSON syntax
+for dashboard in grafana-dashboards/*.json; do
+  if ! jq empty "$dashboard" 2>/dev/null; then
+    echo "❌ Invalid JSON in $dashboard"
+    db_log_quality_gate "$workflow_id" "dashboards" "failed" 0 1
+    exit 1
+  fi
+done
+
+# Log success
+db_log_quality_gate "$workflow_id" "dashboards" "passed" $DASHBOARD_COUNT 0
+db_send_notification "$workflow_id" "quality_gate" "normal" "Dashboards Created" "${DASHBOARD_COUNT} dashboards created and imported"
+
+echo "✅ Dashboards created (${DASHBOARD_COUNT} dashboards)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=8000
+db_track_tokens "$workflow_id" "dashboards-visualization" $TOKENS_USED "85%"
+```
 
 ---
 
-### Phase 7: Alerting & Incident Response (25-35 min)
-**Objective**: Configure comprehensive alerting and on-call procedures
+## Phase 7: Alerting & Incident Response (85-95%)
 
-**Tasks**:
-1. **Alert Rules**
-   - SLO burn rate alerts
-   - Error rate alerts
-   - Latency alerts
-   - Resource exhaustion alerts
-   - Disk space alerts
-   - Certificate expiration alerts
-
-2. **Alertmanager Configuration**
-   - Routing by severity
-   - Grouping and deduplication
-   - Inhibition rules
-   - Silence management
-
-3. **Notification Channels**
-   - Slack integration (warnings, critical)
-   - PagerDuty integration (critical only)
-   - Email notifications
-   - Webhook integrations
-
-4. **On-Call Runbooks**
-   - Create runbooks for common alerts
-   - Link alerts to runbooks
-   - Document escalation procedures
-   - Test alert workflows
-
-**Agents**: `sre-specialist`, `observability-specialist`
-
-**Code Examples**:
-```yaml
-# alertmanager.yml
-global:
-  resolve_timeout: 5m
-  slack_api_url: 'https://hooks.slack.com/services/XXX'
-
-route:
-  group_by: ['alertname', 'cluster', 'service']
-  group_wait: 10s
-  group_interval: 10s
-  repeat_interval: 12h
-  receiver: 'default'
-
-  routes:
-    # Critical -> PagerDuty + Slack
-    - match:
-        severity: critical
-      receiver: pagerduty
-      continue: true
-
-    - match:
-        severity: critical
-      receiver: slack-critical
-
-    # Warning -> Slack only
-    - match:
-        severity: warning
-      receiver: slack-warnings
-
-receivers:
-  - name: 'pagerduty'
-    pagerduty_configs:
-      - service_key: 'YOUR_PAGERDUTY_KEY'
-        description: '{{ .GroupLabels.alertname }}: {{ .CommonAnnotations.summary }}'
-
-  - name: 'slack-critical'
-    slack_configs:
-      - channel: '#incidents'
-        color: 'danger'
-        title: '🚨 {{ .GroupLabels.alertname }}'
-        text: |
-          *Summary:* {{ .CommonAnnotations.summary }}
-          *Description:* {{ .CommonAnnotations.description }}
-          *Runbook:* {{ .CommonAnnotations.runbook }}
-          *Dashboard:* {{ .CommonAnnotations.dashboard }}
-
-  - name: 'slack-warnings'
-    slack_configs:
-      - channel: '#alerts'
-        color: 'warning'
-        title: '⚠️  {{ .GroupLabels.alertname }}'
-
-inhibit_rules:
-  # Don't alert on warning if critical is firing
-  - source_match:
-      severity: 'critical'
-    target_match:
-      severity: 'warning'
-    equal: ['alertname', 'service']
+**⚡ EXECUTE TASK TOOL:**
 ```
+Use the sre-specialist and observability-specialist agents to:
+1. Configure Prometheus alert rules
+2. Deploy and configure Alertmanager
+3. Set up notification channels
+4. Create runbooks for common alerts
 
-**Deliverables**:
-- Alert rules configured
-- Alertmanager deployed
+subagent_type: "sre-specialist"
+description: "Configure comprehensive alerting and incident response"
+prompt: "Set up production alerting and incident response
+
+Tasks:
+1. **Configure Alert Rules**
+   Create Prometheus alert rules:
+
+   SLO Burn Rate Alerts (Multi-window, multi-burn-rate):
+   - Page: 1h burn > 14.4x AND 5m burn > 14.4x (2% error budget in 1h)
+   - Ticket: 6h burn > 6x AND 30m burn > 6x (5% error budget in 6h)
+
+   Error Rate Alerts:
+   - Critical: Error rate > 5% for 5 minutes
+   - Warning: Error rate > 1% for 15 minutes
+
+   Latency Alerts:
+   - Critical: p95 latency > 500ms for 5 minutes
+   - Warning: p95 latency > 200ms for 15 minutes
+
+   Resource Alerts:
+   - Critical: Node CPU > 90% for 10 minutes
+   - Critical: Node memory > 90% for 10 minutes
+   - Warning: Disk usage > 80%
+   - Critical: Disk usage > 90%
+
+   Application Alerts:
+   - Pod restart rate high
+   - Pod CrashLoopBackOff
+   - Deployment rollout stuck
+   - PVC nearly full
+
+   Infrastructure Alerts:
+   - Node NotReady
+   - Node disk pressure
+   - Certificate expiring (< 30 days)
+   - Backup failed
+
+2. **Deploy Alertmanager**
+   - Deploy Alertmanager StatefulSet (HA: 3 replicas)
+   - Configure clustering for HA
+   - Set up persistent storage for silence/alert state
+   - Configure routing by severity and team
+   - Set up grouping and deduplication:
+     - Group by: alertname, cluster, service
+     - Group wait: 10s
+     - Group interval: 5m
+     - Repeat interval: 12h
+   - Configure inhibition rules:
+     - Don't alert on warning if critical is firing
+     - Don't alert on node issues if cluster is down
+
+3. **Set Up Notification Channels**
+   Configure integrations:
+
+   Slack:
+   - Critical alerts → #incidents channel
+   - Warnings → #alerts channel
+   - Include alert details, graphs, runbook links
+
+   PagerDuty:
+   - Critical alerts only
+   - Set up escalation policies
+   - Configure on-call schedules
+
+   Email:
+   - Warning and critical alerts
+   - Daily digest of alert summary
+
+   Webhooks:
+   - Custom integrations (JIRA, ServiceNow)
+   - Incident management systems
+
+4. **Create Runbooks**
+   For each alert, create runbook with:
+   - Alert description and impact
+   - Possible causes
+   - Investigation steps (commands to run)
+   - Resolution procedures
+   - Escalation path
+   - Post-incident actions
+
+   Common runbooks:
+   - High error rate investigation
+   - High latency debugging
+   - Pod crash loop troubleshooting
+   - Node resource exhaustion
+   - Database connection issues
+   - Certificate renewal
+
+5. **Test Alert Workflow**
+   - Trigger test alerts
+   - Verify notifications are received
+   - Test silence functionality
+   - Verify grouping and deduplication
+   - Test escalation policies
+
+Expected outputs:
+- prometheus-alerts/ directory with alert rules
+- alertmanager.yml configuration
+- Alertmanager deployed and configured
 - Notification channels integrated
-- Runbooks created
+- runbooks/ directory with markdown files
+- alerts-guide.md documenting alerting strategy
+"
+```
+
+**Expected Outputs:**
+- `prometheus-alerts/` directory with alert rule files
+- `alertmanager.yml` - Alertmanager configuration
+- Alertmanager deployed and operational
+- Notification channels configured (Slack, PagerDuty, email)
+- `runbooks/` directory with incident runbooks
+- `alerts-guide.md` - Documentation
+
+**Quality Gate: Alerting**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "alerting" "running"
+
+# Check if alert rules exist
+if [ ! -d "prometheus-alerts" ] || [ -z "$(ls -A prometheus-alerts)" ]; then
+  echo "❌ Alert rules not created"
+  db_log_quality_gate "$workflow_id" "alerting" "failed" 0 1
+  exit 1
+fi
+
+# Count alert rules
+ALERT_COUNT=$(grep -r "alert:" prometheus-alerts/ | wc -l)
+if [ "$ALERT_COUNT" -lt 5 ]; then
+  echo "❌ Insufficient alert rules (found $ALERT_COUNT, expected at least 5)"
+  db_log_quality_gate "$workflow_id" "alerting" "failed" $ALERT_COUNT 1
+  exit 1
+fi
+
+# Check if Alertmanager is deployed
+if ! kubectl get pods -n monitoring | grep -q alertmanager; then
+  echo "❌ Alertmanager not deployed"
+  db_log_quality_gate "$workflow_id" "alerting" "failed" 0 1
+  exit 1
+fi
+
+# Check if runbooks directory exists
+if [ ! -d "runbooks" ] || [ -z "$(ls -A runbooks)" ]; then
+  echo "⚠️  Runbooks not created (recommended)"
+fi
+
+# Log success
+db_log_quality_gate "$workflow_id" "alerting" "passed" $ALERT_COUNT 0
+db_send_notification "$workflow_id" "quality_gate" "high" "Alerting Configured" "${ALERT_COUNT} alert rules deployed, notifications configured"
+
+echo "✅ Alerting configured (${ALERT_COUNT} alert rules)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=9000
+db_track_tokens "$workflow_id" "alerting-incident-response" $TOKENS_USED "95%"
+```
 
 ---
 
-### Phase 8: Performance & Optimization (15-20 min)
-**Objective**: Optimize monitoring stack performance
+## Phase 8: Performance & Optimization (95-100%)
 
-**Tasks**:
-1. **Prometheus Optimization**
-   - Configure scrape intervals
-   - Set up remote write (long-term storage)
-   - Implement recording rules for expensive queries
-   - Configure federation for HA
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the observability-specialist and infrastructure-engineer agents to:
+1. Optimize Prometheus performance
+2. Configure high availability
+3. Set up long-term storage
+4. Implement backup and disaster recovery
 
-2. **Query Optimization**
-   - Identify slow queries
-   - Add recording rules
-   - Optimize dashboard queries
-   - Set up query caching
+subagent_type: "infrastructure-engineer"
+description: "Optimize monitoring stack and ensure high availability"
+prompt: "Optimize and harden monitoring infrastructure
 
-3. **Storage Optimization**
-   - Configure retention policies
-   - Set up compaction
-   - Implement tiered storage
-   - Monitor disk usage
+Tasks:
+1. **Optimize Prometheus**
+   - Tune scrape intervals based on cardinality:
+     - High-frequency metrics: 15s
+     - Standard metrics: 30s
+     - Low-frequency metrics: 60s
+   - Implement recording rules for expensive queries:
+     - Pre-aggregate multi-service queries
+     - Pre-calculate percentiles for dashboards
+     - Pre-compute SLI metrics
+   - Configure query performance:
+     - Set query timeout: 2m
+     - Limit max samples: 50M
+     - Enable query logging
+   - Optimize storage:
+     - Configure block retention: 15d
+     - Set up compaction
+     - Enable WAL compression
+   - Monitor Prometheus itself:
+     - Scrape duration
+     - Rule evaluation time
+     - Query duration
+     - Ingestion rate
 
-4. **High Availability**
-   - Deploy Prometheus in HA mode
-   - Set up Thanos or Cortex for long-term storage
-   - Configure Grafana HA
-   - Backup and disaster recovery
+2. **Configure High Availability**
+   Deploy HA monitoring stack:
 
-**Agents**: `observability-specialist`, `infrastructure-engineer`
+   Prometheus HA:
+   - Deploy 2+ Prometheus replicas (active-active)
+   - Use Thanos or Cortex for global view
+   - Configure remote write to long-term storage
 
-**Deliverables**:
-- Optimized Prometheus configuration
-- HA monitoring stack
-- Long-term storage configured
-- Backup procedures documented
+   Grafana HA:
+   - Deploy 2+ Grafana replicas
+   - Use external database (PostgreSQL)
+   - Share dashboards via database
+   - Use load balancer
+
+   Alertmanager HA:
+   - Deploy 3 Alertmanager replicas (clustering)
+   - Configure gossip protocol
+   - Set up persistent storage
+
+   Loki HA (if using):
+   - Deploy distributed Loki (read/write paths)
+   - Use object storage (S3/GCS)
+   - Configure consistent hashing
+
+3. **Set Up Long-Term Storage**
+   Configure retention tiers:
+
+   Prometheus:
+   - Local TSDB: 15 days (high resolution)
+   - Remote write to long-term storage
+
+   Option A: Thanos:
+   - Deploy Thanos Sidecar with Prometheus
+   - Deploy Thanos Store Gateway
+   - Deploy Thanos Compactor
+   - Configure S3/GCS object storage
+   - Retention: 90 days or longer
+
+   Option B: Cortex:
+   - Deploy Cortex distributed components
+   - Configure S3/GCS backend
+
+   Option C: VictoriaMetrics:
+   - Deploy VM single or cluster
+   - Configure remote write from Prometheus
+
+   Logs:
+   - Active logs: 30 days in Loki/Elasticsearch
+   - Archive logs: 90 days in S3/GCS
+
+   Traces:
+   - Active traces: 7 days in Tempo/Jaeger
+   - Archive: Optional, 30 days in object storage
+
+4. **Backup and Disaster Recovery**
+   - Backup Prometheus data:
+     - Snapshot TSDB regularly (daily)
+     - Store snapshots in S3/GCS
+   - Backup Grafana:
+     - Export dashboards to Git
+     - Backup Grafana database
+   - Backup Alertmanager:
+     - Export alert rules to Git
+     - Backup silences and configurations
+   - Test restore procedures:
+     - Document restore steps
+     - Run restore drills quarterly
+   - Monitor backup jobs:
+     - Alert on backup failures
+     - Track backup size and duration
+
+5. **Monitoring Stack Monitoring**
+   Create meta-monitoring:
+   - Monitor Prometheus health
+   - Monitor Grafana availability
+   - Monitor Loki ingestion rate
+   - Monitor OTel Collector throughput
+   - Track monitoring costs (storage, compute)
+
+Expected outputs:
+- ha-config/ directory with HA configurations
+- thanos-deployment.yaml (if using Thanos)
+- backup-scripts/ directory with backup automation
+- restore-guide.md with disaster recovery procedures
+- All monitoring components optimized and HA
+- optimization-report.md documenting changes
+"
+```
+
+**Expected Outputs:**
+- `ha-config/` directory with HA configurations
+- Long-term storage configured (Thanos/Cortex/VM)
+- Backup automation scripts in `backup-scripts/`
+- `restore-guide.md` - Disaster recovery procedures
+- `optimization-report.md` - Performance improvements
+
+**Quality Gate: Optimization & HA**
+```bash
+# Log quality gate
+db_log_quality_gate "$workflow_id" "optimization_ha" "running"
+
+# Check if HA configurations exist
+if [ ! -d "ha-config" ]; then
+  echo "⚠️  HA configurations not created (recommended for production)"
+fi
+
+# Check if backup scripts exist
+if [ ! -d "backup-scripts" ]; then
+  echo "⚠️  Backup scripts not created (recommended)"
+fi
+
+# Check Prometheus replica count
+PROM_REPLICAS=$(kubectl get statefulset -n monitoring prometheus -o jsonpath='{.spec.replicas}' 2>/dev/null || echo "1")
+if [ "$PROM_REPLICAS" -lt 2 ]; then
+  echo "⚠️  Prometheus not running in HA mode (replicas: $PROM_REPLICAS)"
+fi
+
+# Check if long-term storage is configured
+if ! kubectl get pods -n monitoring | grep -qE "thanos|cortex|victoria"; then
+  echo "⚠️  Long-term storage not configured (recommended for production)"
+fi
+
+# Log success
+db_log_quality_gate "$workflow_id" "optimization_ha" "passed" 100 0
+db_send_notification "$workflow_id" "quality_gate" "high" "Monitoring Stack Optimized" "HA configured, backups in place, optimizations complete"
+
+echo "✅ Monitoring stack optimized and hardened"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "optimization-ha" $TOKENS_USED "100%"
+```
 
 ---
 
-## Quality Gates
+## Workflow Completion & Learning
 
-**Infrastructure Gate**:
-- [ ] All monitoring components deployed
-- [ ] Health checks passing
-- [ ] Data persistence working
-- [ ] HA configured for critical components
+**At workflow end:**
+```bash
+# Calculate token usage across all agents
+TOTAL_TOKENS=$(sum_agent_token_usage)
+db_track_tokens "$workflow_id" "completion" $TOTAL_TOKENS "workflow-complete"
 
-**Instrumentation Gate**:
-- [ ] All services exposing metrics
-- [ ] Logs flowing to aggregation platform
-- [ ] Traces visible in backend
-- [ ] Health checks implemented
+# Update workflow status
+db_update_workflow_status "$workflow_id" "completed"
 
-**Dashboard Gate**:
-- [ ] Key dashboards created (infra, app, SLO)
-- [ ] Dashboards load within 2s
-- [ ] All panels showing data
-- [ ] Dashboards saved in version control
+# Store lessons learned
+db_store_knowledge "observability" "best_practice" "monitoring-setup" \
+  "Key learnings from monitoring setup: [summarize what worked well, challenges faced, optimization opportunities]" \
+  "# Monitoring stack configuration patterns"
 
-**Alerting Gate**:
-- [ ] Critical alerts configured
-- [ ] Alerts tested and firing correctly
-- [ ] Runbooks linked
-- [ ] On-call schedule configured
+# Get final metrics
+echo "=== Workflow Metrics ==="
+db_workflow_metrics "$workflow_id"
+
+# Send completion notification
+DURATION=$(calculate_workflow_duration)
+db_send_notification "$workflow_id" "workflow_complete" "high" \
+  "Monitoring Stack Deployed Successfully" \
+  "Complete observability stack deployed in ${DURATION} minutes. All quality gates passed. Token usage: ${TOTAL_TOKENS}."
+
+# Display token savings
+echo "=== Token Usage Report ==="
+db_token_savings "$workflow_id"
+
+echo "
+✅ SETUP MONITORING WORKFLOW COMPLETE
+
+Observability Stack Deployed:
+
+**Metrics:**
+✅ Prometheus deployed and scraping
+✅ Grafana deployed with dashboards
+✅ Recording rules configured
+✅ ${INSTRUMENTED}/${SERVICES} services instrumented
+
+**Logs:**
+✅ Log aggregation platform operational
+✅ Logs flowing from all services
+✅ Log dashboards created
+
+**Traces:**
+✅ Distributed tracing backend deployed
+✅ OpenTelemetry Collector configured
+✅ Service dependency maps available
+
+**Alerting:**
+✅ ${ALERT_COUNT} alert rules configured
+✅ Alertmanager deployed with HA
+✅ Notification channels integrated (Slack, PagerDuty)
+✅ Runbooks created
+
+**Dashboards Created:**
+✅ Infrastructure dashboards
+✅ Application dashboards (RED metrics)
+✅ SLO tracking dashboards
+✅ Database performance dashboards
+✅ Total: ${DASHBOARD_COUNT} dashboards
+
+**High Availability:**
+✅ Prometheus replicas: ${PROM_REPLICAS}
+✅ Long-term storage configured
+✅ Backup automation in place
+
+**Quality Gates Passed:**
+✅ Metrics Infrastructure
+✅ Application Instrumentation (${COVERAGE}% coverage)
+✅ Logging Infrastructure
+✅ Distributed Tracing
+✅ Dashboards (${DASHBOARD_COUNT} created)
+✅ Alerting (${ALERT_COUNT} rules)
+✅ Optimization & HA
+
+**Next Steps:**
+1. Review dashboards in Grafana
+2. Test alert notifications
+3. Verify SLO tracking
+4. Train team on observability tools
+5. Set up on-call rotation in PagerDuty
+6. Schedule monitoring review cadence
+
+**Documentation Generated:**
+- observability-architecture.md
+- slo-definitions.md
+- deployment-plan.md
+- instrumentation-guide.md
+- logging-architecture.md
+- tracing-guide.md
+- dashboards-guide.md
+- alerts-guide.md
+- restore-guide.md
+- optimization-report.md
+
+**Access URLs:**
+- Grafana: http://grafana.monitoring:3000
+- Prometheus: http://prometheus.monitoring:9090
+- Alertmanager: http://alertmanager.monitoring:9093
+- Jaeger/Tempo UI: (see tracing-guide.md)
+"
+```
 
 ---
 
@@ -856,14 +1275,17 @@ inhibit_rules:
 
 Monitoring setup is complete when:
 
-1. **Metrics**: All services instrumented, metrics flowing to Prometheus
-2. **Logs**: Structured logs from all services, searchable in central platform
-3. **Traces**: Distributed tracing working across all services
-4. **Dashboards**: Comprehensive dashboards for infra, apps, and SLOs
-5. **Alerts**: Critical alerts configured and tested
-6. **Runbooks**: Documentation for common incidents
-7. **Performance**: Stack handles current scale with headroom
-8. **HA**: Redundancy for critical components
+- ✅ All monitoring components deployed and healthy
+- ✅ Metrics: All services instrumented, metrics flowing to Prometheus
+- ✅ Logs: Structured logs from all services, searchable in central platform
+- ✅ Traces: Distributed tracing working across all services
+- ✅ Dashboards: Comprehensive dashboards for infrastructure, applications, and SLOs
+- ✅ Alerts: Critical alerts configured, tested, and linked to runbooks
+- ✅ SLOs: SLIs tracked, error budgets calculated, burn rate alerts configured
+- ✅ HA: Redundancy for critical components (Prometheus, Grafana, Alertmanager)
+- ✅ Performance: Stack handles current scale with 50%+ headroom
+- ✅ Backup: Backup procedures documented and tested
+- ✅ Documentation: Complete documentation for operations and troubleshooting
 
 ---
 
@@ -872,19 +1294,45 @@ Monitoring setup is complete when:
 ```bash
 # User request
 "Set up complete observability for our Kubernetes cluster running 20 microservices.
-We need metrics, logs, traces, and SLO monitoring with PagerDuty integration."
+We need metrics, logs, traces, and SLO monitoring with PagerDuty integration.
+Services are Python FastAPI backends and React frontends."
 
 # Workflow executes:
-# 1. Analyzes architecture (20 microservices, Kubernetes)
+# 1. Analyzes architecture (20 microservices, Kubernetes, Python + React)
 # 2. Designs stack (Prometheus, Grafana, Loki, Tempo, Alertmanager)
-# 3. Deploys metrics infrastructure
-# 4. Instruments applications
+# 3. Deploys metrics infrastructure (Prometheus, Grafana, exporters)
+# 4. Instruments Python and React applications
 # 5. Sets up logging (Loki + Promtail)
 # 6. Configures tracing (Tempo + OpenTelemetry)
-# 7. Creates dashboards
-# 8. Configures alerts with PagerDuty
+# 7. Creates comprehensive dashboards
+# 8. Configures alerts with PagerDuty integration
+# 9. Optimizes stack and configures HA
 ```
 
 ---
 
-This workflow orchestrates **observability-specialist**, **sre-specialist**, **kubernetes-expert**, and language-specific agents to deliver production-grade monitoring autonomously.
+## Anti-Patterns to Avoid
+
+❌ Don't skip SLO definition before implementation
+❌ Don't over-instrument (causes cardinality explosion)
+❌ Don't ignore high availability for production
+❌ Don't forget to link alerts to runbooks
+❌ Don't skip testing alert notifications
+❌ Don't ignore monitoring stack monitoring (meta-monitoring)
+❌ Don't forget backup and disaster recovery
+❌ Don't skip documentation
+❌ Don't set up alerts without clear action items
+❌ Don't ignore long-term storage costs
+
+---
+
+## Notes
+
+- Observability specialist coordinates all phases autonomously
+- All quality gates must pass - no exceptions
+- HA configured for production readiness
+- SLO-based alerting prevents alert fatigue
+- Database tracks all phases for continuous improvement
+- Each agent receives clear instructions with expected outputs
+- Token usage tracked at each phase for optimization
+- Comprehensive documentation ensures operational success

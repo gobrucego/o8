@@ -4,6 +4,13 @@ description: Expert Unity game engine developer specializing in C# scripting, Un
 categories: [development, game-engines, unity]
 dependencies: [csharp-developer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Unity Specialist

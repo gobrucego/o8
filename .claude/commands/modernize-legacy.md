@@ -7,342 +7,831 @@ description: Autonomous legacy code modernization from assessment to migration w
 
 Autonomous transformation of legacy codebases to modern patterns, languages, and architectures.
 
-## Phases
+## Intelligence Database Integration
 
-### Phase 1: Assessment & Strategy (20-30 min)
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
+
+# Initialize workflow
+workflow_id=$(db_start_workflow "modernize-legacy" "$(date +%s)" "{\"target\":\"$1\"}")
+
+echo "🚀 Starting Legacy Modernization Workflow"
+echo "Target: $1"
+echo "Workflow ID: $workflow_id"
+
+# Query similar modernization patterns
+db_query_similar_workflows "modernize-legacy" 5
+```
+
+---
+
+## Phase 1: Assessment & Strategy (0-20%)
+
 **Objective**: Analyze legacy system and create modernization roadmap
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-archaeologist agent to:
+1. Identify technologies, frameworks, versions
+2. Calculate code metrics (lines, complexity, test coverage)
+3. Map dependencies and architecture
+4. Identify deprecated APIs and libraries
+5. Assess security vulnerabilities
+6. Create risk assessment
+7. Develop modernization strategy
+
+subagent_type: "code-archaeologist"
+description: "Analyze legacy codebase and create modernization roadmap"
+prompt: "Analyze legacy system for modernization: $1
+
+Tasks:
+
 1. **Codebase Analysis**
-   - Identify technologies, frameworks, versions
-   - Calculate code metrics (lines, complexity, test coverage)
-   - Map dependencies and architecture
-   - Identify deprecated APIs and libraries
-   - Assess security vulnerabilities
+   - Identify all technologies and frameworks in use
+   - Detect language versions (e.g., Python 2.7, Java 8, Node 10)
+   - Calculate code metrics:
+     \`\`\`bash
+     # Lines of code
+     find . -name '*.py' -o -name '*.js' -o -name '*.java' | xargs wc -l
+
+     # Cyclomatic complexity
+     radon cc . -a  # Python
+     # or appropriate tool for language
+
+     # Test coverage
+     pytest --cov=. --cov-report=term  # Python
+     # or appropriate test runner
+     \`\`\`
+   - Map dependency tree
+   - Generate architecture diagram
+   - Identify deprecated APIs via:
+     \`\`\`bash
+     # Check for deprecated dependencies
+     npm audit  # Node.js
+     pip check  # Python
+     mvn versions:display-dependency-updates  # Java
+     \`\`\`
 
 2. **Risk Assessment**
-   - Business-critical paths identification
-   - Data migration complexity
-   - Integration touchpoints
-   - Downtime tolerance
-   - Rollback requirements
+   - Identify business-critical code paths
+   - Assess data migration complexity
+   - Map integration touchpoints (external APIs, services)
+   - Determine downtime tolerance
+   - Define rollback requirements
+   - Create risk matrix (likelihood × impact)
 
 3. **Modernization Strategy**
-   - Incremental vs big-bang approach
-   - Technology stack selection
-   - Migration phases prioritization
-   - Success metrics definition
-   - Timeline estimation
+   - Choose approach:
+     * Strangler Fig (recommended for large systems)
+     * Branch by Abstraction
+     * Parallel Run
+     * Big Bang (only for small systems)
+   - Select target technology stack
+   - Prioritize migration phases
+   - Define success metrics (performance, maintainability, test coverage)
+   - Estimate timeline and effort
 
-**Agents**: `code-archaeologist`, `architect`, `dependency-analyzer`
+Expected outputs:
+- code-analysis-report.md with:
+  - Technology inventory
+  - Code metrics dashboard
+  - Complexity hotspots
+  - Test coverage gaps
+  - Deprecated API list
+  - Security vulnerabilities
+- dependency-graph.png (visualization)
+- migration-strategy.md with:
+  - Chosen approach and rationale
+  - Target stack
+  - Phase prioritization
+  - Timeline (weeks/months)
+- risk-matrix.md (risks with mitigation plans)
+"
+```
 
-**Deliverables**:
-- Code analysis report with metrics
-- Dependency graph
-- Migration strategy document
-- Risk matrix
-- Project timeline
+**Expected Outputs:**
+- `code-analysis-report.md` - Complete analysis with metrics
+- `dependency-graph.png` - Dependency visualization
+- `migration-strategy.md` - Detailed modernization strategy
+- `risk-matrix.md` - Risk assessment with mitigations
+
+**Quality Gate: Assessment Validation**
+```bash
+# Validate analysis report exists
+if [ ! -f "code-analysis-report.md" ]; then
+  echo "❌ Code analysis report not created"
+  db_log_error "ValidationError" "Analysis report missing" "modernize-legacy" "phase-1" "0"
+  exit 1
+fi
+
+# Validate strategy document exists
+if [ ! -f "migration-strategy.md" ]; then
+  echo "❌ Migration strategy not created"
+  db_log_error "ValidationError" "Strategy document missing" "modernize-legacy" "phase-1" "0"
+  exit 1
+fi
+
+# Validate risk assessment exists
+if [ ! -f "risk-matrix.md" ]; then
+  echo "❌ Risk matrix not created"
+  db_log_error "ValidationError" "Risk assessment missing" "modernize-legacy" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ Assessment and strategy complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=6000
+db_track_tokens "$workflow_id" "assessment-strategy" $TOKENS_USED "20%"
+
+# Store assessment results
+db_store_knowledge "legacy-modernization" "assessment" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Legacy system assessment and strategy" \
+  "$(head -n 50 code-analysis-report.md)"
+```
 
 ---
 
-### Phase 2: Test Coverage Establishment (30-45 min)
+## Phase 2: Test Coverage Establishment (20-40%)
+
 **Objective**: Create comprehensive test suite for legacy code
 
-**Tasks**:
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Create characterization tests documenting current behavior
+2. Create snapshot tests for critical paths
+3. Implement integration tests for external dependencies
+4. Implement end-to-end tests for business workflows
+5. Establish performance baselines
+
+subagent_type: "test-engineer"
+description: "Create comprehensive test suite for legacy code"
+prompt: "Create test coverage for legacy system: $1
+
+Based on code-analysis-report.md, implement:
+
 1. **Characterization Tests**
-   - Document current behavior
-   - Create snapshot tests for critical paths
-   - Test edge cases and error conditions
+   - Document current behavior before changes
+   - Test all critical code paths identified in analysis
+   - Include edge cases and error conditions
    - Establish performance baselines
 
+   Example:
+   \`\`\`python
+   # Characterization test - captures current behavior
+   def test_legacy_calculation_behavior():
+       '''Test documents current behavior before refactoring'''
+       assert legacy_calculate(100, 10) == 110  # Current output
+       assert legacy_calculate(0, 5) == 5
+       assert legacy_calculate(-10, 10) == 0
+
+       # Edge cases
+       assert legacy_calculate(None, 5) == 5  # Handles None
+       assert legacy_calculate(100, None) == 100
+
+   # Approval testing for complex outputs
+   import approvaltests
+   @approvaltests.verify()
+   def test_legacy_report_generation():
+       return legacy_generate_report(sample_data)
+   \`\`\`
+
 2. **Integration Tests**
-   - Test external dependencies
-   - Database operations
-   - API integrations
-   - File system operations
+   - Test database operations (CRUD operations)
+   - Test external API integrations
+   - Test file system operations
+   - Test message queue interactions
+   - Mock external dependencies appropriately
 
 3. **End-to-End Tests**
-   - Critical user journeys
-   - Business workflows
-   - Data integrity checks
+   - Test critical user journeys end-to-end
+   - Test business workflows completely
+   - Validate data integrity across system
+   - Test error handling and recovery
 
-**Agents**: `test-engineer`, `debugger`
+4. **Performance Baselines**
+   \`\`\`python
+   import time
+   import pytest
 
-**Code Examples**:
-```python
-# Characterization test - document current behavior
-def test_legacy_calculation_behavior():
-    """Test captures current behavior before refactoring"""
-    # Test various inputs
-    assert legacy_calculate(100, 10) == 110  # Current behavior
-    assert legacy_calculate(0, 5) == 5
-    assert legacy_calculate(-10, 10) == 0
+   def test_performance_baseline():
+       start = time.time()
+       result = legacy_fetch_users(limit=1000)
+       execution_time = time.time() - start
 
-    # Edge cases
-    assert legacy_calculate(None, 5) == 5  # Handles None
-    assert legacy_calculate(100, None) == 100
+       # Record baseline (will compare after modernization)
+       pytest.baseline_time = execution_time
+       assert execution_time < 5.0  # Max acceptable time
+   \`\`\`
 
-# Approval testing for complex outputs
-@approvals.verify()
-def test_legacy_report_generation():
-    return legacy_generate_report(sample_data)
-    # First run creates approved file, subsequent runs compare
+5. **Coverage Analysis**
+   \`\`\`bash
+   # Run coverage
+   pytest --cov=. --cov-report=html --cov-report=term
+
+   # Target: 80%+ coverage on critical paths
+   \`\`\`
+
+Expected outputs:
+- tests/characterization/ - Characterization test suite
+- tests/integration/ - Integration test suite
+- tests/e2e/ - End-to-end test suite
+- performance-baselines.json - Performance metrics
+- coverage-report/ - HTML coverage report
+"
 ```
 
-**Quality Gate**:
-- [ ] 80%+ code coverage on critical paths
-- [ ] All integration tests passing
-- [ ] E2E tests for business-critical flows
+**Expected Outputs:**
+- `tests/characterization/` - Characterization tests
+- `tests/integration/` - Integration tests
+- `tests/e2e/` - End-to-end tests
+- `performance-baselines.json` - Performance metrics
+- `coverage-report/` - HTML coverage report
+
+**Quality Gate: Test Coverage Validation**
+```bash
+# Validate test directories exist
+if [ ! -d "tests/characterization" ]; then
+  echo "❌ Characterization tests not created"
+  db_log_error "ValidationError" "Characterization tests missing" "modernize-legacy" "phase-2" "0"
+  exit 1
+fi
+
+# Run tests to ensure they pass
+if ! pytest tests/ -v; then
+  echo "❌ Tests failing"
+  db_log_error "TestFailure" "Test suite has failures" "modernize-legacy" "phase-2" "0"
+  exit 1
+fi
+
+# Check coverage (target: 80%+ on critical paths)
+COVERAGE=$(pytest --cov=. --cov-report=term | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
+if [ "$COVERAGE" -lt 80 ]; then
+  echo "⚠️  Coverage below 80%: ${COVERAGE}%"
+  echo "Continue with caution"
+fi
+
+echo "✅ Test coverage established (${COVERAGE}%)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "test-coverage" $TOKENS_USED "40%"
+
+# Store test suite info
+db_store_knowledge "legacy-modernization" "testing" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Test suite with ${COVERAGE}% coverage" \
+  "Characterization, integration, and e2e tests created"
+```
 
 ---
 
-### Phase 3: Incremental Modernization (varies by scope)
+## Phase 3: Incremental Modernization (40-70%)
+
 **Objective**: Modernize codebase incrementally with continuous validation
 
-**Common Modernization Patterns**:
-
-#### Pattern 1: Strangler Fig (recommended for large systems)
-```python
-# Step 1: Create new implementation alongside old
-class ModernUserService:
-    def create_user(self, data: UserCreateDTO) -> User:
-        # Modern implementation with validation
-        validated_data = UserCreateSchema.validate(data)
-        return self.repository.create(validated_data)
-
-# Step 2: Route traffic conditionally
-class UserServiceRouter:
-    def create_user(self, data):
-        if feature_flags.use_modern_user_service():
-            return modern_user_service.create_user(data)
-        else:
-            return legacy_user_service.create_user(data)
-
-# Step 3: Gradually increase traffic to new service
-# Step 4: Remove legacy code once 100% migrated
+**⚡ EXECUTE TASK TOOL:**
 ```
+Use the appropriate language specialist agent to:
+1. Implement modernization strategy (from migration-strategy.md)
+2. Apply appropriate pattern (Strangler Fig, Branch by Abstraction, Parallel Run)
+3. Modernize incrementally with continuous testing
+4. Handle language upgrades, framework migrations, or architecture refactoring
+5. Validate at each increment
 
-#### Pattern 2: Branch by Abstraction
-```typescript
-// Step 1: Extract interface from legacy code
-interface PaymentProcessor {
-  process(amount: number, card: CardDetails): Promise<PaymentResult>;
-}
+subagent_type: "[python-developer|typescript-developer|java-developer|go-developer|rust-developer|architect]"
+description: "Modernize legacy code incrementally"
+prompt: "Modernize legacy system incrementally: $1
 
-// Step 2: Implement interface with legacy code
-class LegacyPaymentProcessor implements PaymentProcessor {
-  async process(amount: number, card: CardDetails): Promise<PaymentResult> {
-    return legacyProcessPayment(amount, card); // Wrapper
-  }
-}
+Based on migration-strategy.md, implement modernization:
 
-// Step 3: Create modern implementation
-class StripePaymentProcessor implements PaymentProcessor {
-  async process(amount: number, card: CardDetails): Promise<PaymentResult> {
-    return this.stripe.charges.create({ amount, source: card.token });
-  }
-}
+**Modernization Patterns:**
 
-// Step 4: Switch implementations
-const processor: PaymentProcessor = config.useModernPayment
-  ? new StripePaymentProcessor()
-  : new LegacyPaymentProcessor();
-```
+1. **Strangler Fig Pattern** (recommended for large systems):
+   \`\`\`python
+   # Step 1: Create modern implementation alongside legacy
+   class ModernUserService:
+       def create_user(self, data: UserCreateDTO) -> User:
+           validated_data = UserCreateSchema.validate(data)
+           return self.repository.create(validated_data)
 
-#### Pattern 3: Parallel Run
-```java
-// Run both implementations and compare results
-public class ParallelRunMigration {
-    public Result processOrder(Order order) {
-        Result legacyResult = legacyOrderProcessor.process(order);
+   # Step 2: Route traffic conditionally
+   class UserServiceRouter:
+       def create_user(self, data):
+           if feature_flags.use_modern_user_service():
+               return modern_user_service.create_user(data)
+           else:
+               return legacy_user_service.create_user(data)
 
-        CompletableFuture.runAsync(() -> {
-            try {
-                Result modernResult = modernOrderProcessor.process(order);
+   # Step 3: Gradually increase traffic to modern service
+   # Step 4: Remove legacy code once 100% migrated
+   \`\`\`
 
-                // Compare results
-                if (!legacyResult.equals(modernResult)) {
-                    logger.warn("Discrepancy detected: {} vs {}",
-                        legacyResult, modernResult);
-                    metrics.incrementDiscrepancies();
-                }
-            } catch (Exception e) {
-                logger.error("Modern implementation failed", e);
-                metrics.incrementModernFailures();
-            }
-        });
+2. **Branch by Abstraction**:
+   \`\`\`typescript
+   // Step 1: Extract interface
+   interface PaymentProcessor {
+     process(amount: number, card: CardDetails): Promise<PaymentResult>;
+   }
 
-        // Return legacy result (safe fallback)
-        return legacyResult;
-    }
-}
-```
+   // Step 2: Legacy wrapper
+   class LegacyPaymentProcessor implements PaymentProcessor {
+     async process(amount: number, card: CardDetails): Promise<PaymentResult> {
+       return legacyProcessPayment(amount, card);
+     }
+   }
 
-**Tasks by Modernization Type**:
+   // Step 3: Modern implementation
+   class StripePaymentProcessor implements PaymentProcessor {
+     async process(amount: number, card: CardDetails): Promise<PaymentResult> {
+       return this.stripe.charges.create({ amount, source: card.token });
+     }
+   }
 
-**Language Upgrade** (e.g., Python 2→3, Java 8→17):
-1. Update syntax (`print` statements → functions)
+   // Step 4: Switch implementations via config
+   const processor: PaymentProcessor = config.useModernPayment
+     ? new StripePaymentProcessor()
+     : new LegacyPaymentProcessor();
+   \`\`\`
+
+3. **Parallel Run**:
+   \`\`\`java
+   public class ParallelRunMigration {
+       public Result processOrder(Order order) {
+           Result legacyResult = legacyOrderProcessor.process(order);
+
+           CompletableFuture.runAsync(() -> {
+               try {
+                   Result modernResult = modernOrderProcessor.process(order);
+
+                   if (!legacyResult.equals(modernResult)) {
+                       logger.warn(\"Discrepancy: {} vs {}\", legacyResult, modernResult);
+                       metrics.incrementDiscrepancies();
+                   }
+               } catch (Exception e) {
+                   logger.error(\"Modern implementation failed\", e);
+               }
+           });
+
+           return legacyResult;  // Safe fallback
+       }
+   }
+   \`\`\`
+
+**Modernization by Type:**
+
+**A. Language Upgrade** (e.g., Python 2→3, Java 8→17):
+1. Update syntax (print statements → functions)
 2. Replace deprecated APIs
 3. Update dependencies
-4. Fix type annotations
-5. Run automated migration tools (2to3, OpenRewrite)
+4. Add/fix type annotations
+5. Run automated tools (2to3, OpenRewrite)
+   \`\`\`bash
+   # Python 2 to 3
+   2to3 --print-diff src/  # Preview changes
+   2to3 -w src/  # Apply changes
+   pytest tests/  # Validate
+   \`\`\`
 
-**Framework Migration** (e.g., Django 2→4, React class→hooks):
+**B. Framework Migration** (e.g., Django 2→4, React class→hooks):
 1. Update routing/middleware
 2. Migrate ORM changes
-3. Update template syntax
+3. Update template/component syntax
 4. Replace deprecated components
-5. Update authentication/session handling
+5. Update auth/session handling
 
-**Architecture Refactoring** (e.g., Monolith→Microservices):
+**C. Architecture Refactoring** (e.g., Monolith→Microservices):
 1. Identify bounded contexts
 2. Extract domain logic
 3. Create service interfaces
 4. Implement event-driven communication
-5. Deploy incrementally
+5. Deploy services incrementally
 
-**Agents**: Language-specific developers, `architect`, `code-reviewer`
+**Incremental Process:**
+For each increment:
+1. Make small, focused change
+2. Run full test suite
+3. Validate no regressions
+4. Commit
+5. Move to next increment
 
-**Quality Gates** (per increment):
-- [ ] All existing tests still passing
-- [ ] New code has 80%+ coverage
-- [ ] Performance not degraded
-- [ ] Security scan clean
-- [ ] Code review approved
+Expected outputs:
+- Modernized codebase (incremental commits)
+- All tests passing after each increment
+- Feature flag configuration (if using flags)
+- Migration log documenting changes
+"
+```
+
+**Expected Outputs:**
+- Modernized codebase with incremental commits
+- All tests passing
+- `feature-flags.yaml` - Feature flag configuration (if applicable)
+- `migration-log.md` - Detailed change log
+
+**Quality Gate: Modernization Validation**
+```bash
+# Run full test suite
+if ! pytest tests/ -v; then
+  echo "❌ Tests failing after modernization"
+  db_log_error "TestFailure" "Modernization broke tests" "modernize-legacy" "phase-3" "0"
+  exit 1
+fi
+
+# Check coverage hasn't decreased
+CURRENT_COVERAGE=$(pytest --cov=. --cov-report=term | grep "TOTAL" | awk '{print $4}' | sed 's/%//')
+if [ "$CURRENT_COVERAGE" -lt "$COVERAGE" ]; then
+  echo "❌ Coverage decreased from ${COVERAGE}% to ${CURRENT_COVERAGE}%"
+  db_log_error "ValidationError" "Test coverage decreased" "modernize-legacy" "phase-3" "0"
+  exit 1
+fi
+
+# Security scan
+if command -v bandit &> /dev/null; then
+  if ! bandit -r . -ll; then
+    echo "❌ Security issues detected"
+    db_log_error "SecurityError" "Security scan failed" "modernize-legacy" "phase-3" "0"
+    exit 1
+  fi
+fi
+
+echo "✅ Modernization complete with all tests passing"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=10000
+db_track_tokens "$workflow_id" "modernization" $TOKENS_USED "70%"
+
+# Store modernization results
+db_store_knowledge "legacy-modernization" "implementation" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Modernized with ${CURRENT_COVERAGE}% coverage" \
+  "$(tail -n 50 migration-log.md)"
+```
 
 ---
 
-### Phase 4: Data Migration (if applicable, 15-30 min)
-**Objective**: Migrate data with zero data loss
+## Phase 4: Data Migration (70-80%)
 
-**Tasks**:
-1. **Schema Migration**
-   - Design new schema
-   - Create migration scripts
+**Objective**: Migrate data with zero data loss (if applicable)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the database-specialist agent to:
+1. Design new database schema
+2. Create migration scripts
+3. Implement dual-write strategy
+4. Create data transformation pipelines
+5. Plan cutover strategy
+
+subagent_type: "database-specialist"
+description: "Migrate data with zero data loss"
+prompt: "Implement data migration for modernization: $1
+
+Based on code-analysis-report.md and migration-strategy.md:
+
+1. **Schema Migration Design**
+   - Design new schema matching modern architecture
+   - Create migration scripts (up/down)
+   - Plan for data type changes
+   - Design indexes for performance
    - Test on production-like data
 
 2. **Data Transformation**
-   - ETL pipelines for data transformation
-   - Data validation and integrity checks
-   - Handle edge cases and null values
+   - Create ETL pipelines
+   - Handle data type conversions
+   - Validate data integrity
+   - Handle nulls and edge cases
+   - Implement data quality checks
 
 3. **Dual-Write Strategy**
-   ```python
+   \`\`\`python
    def save_user(user_data):
-       # Write to both old and new database
-       legacy_db.save_user(transform_to_legacy(user_data))
-       new_db.save_user(user_data)
+       # Write to both databases during transition
+       try:
+           legacy_db.save_user(transform_to_legacy(user_data))
+           new_db.save_user(user_data)
+       except Exception as e:
+           # Rollback both on failure
+           logger.error(f\"Dual-write failed: {e}\")
+           raise
 
    def get_user(user_id):
        # Read from new, fallback to legacy
        user = new_db.get_user(user_id)
        if not user:
            user = legacy_db.get_user(user_id)
-           # Backfill new DB
-           new_db.save_user(user)
+           if user:
+               # Backfill new DB
+               new_db.save_user(user)
        return user
-   ```
+   \`\`\`
 
 4. **Cutover Plan**
-   - Stop writes to legacy DB
-   - Migrate remaining data
-   - Switch reads to new DB
-   - Keep legacy as backup
+   - Phase 1: Start dual-write (writes to both DBs)
+   - Phase 2: Backfill data from legacy to new
+   - Phase 3: Verify data consistency
+   - Phase 4: Switch reads to new DB
+   - Phase 5: Stop writes to legacy DB
+   - Phase 6: Keep legacy as backup for rollback
 
-**Agents**: `database-specialist`, `data-engineer`
+5. **Data Validation**
+   \`\`\`bash
+   # Compare record counts
+   legacy_count=\$(psql -c \"SELECT COUNT(*) FROM users\" legacy_db)
+   new_count=\$(psql -c \"SELECT COUNT(*) FROM users\" new_db)
 
----
+   # Sample validation
+   # Compare random samples from both DBs
+   \`\`\`
 
-### Phase 5: Performance Optimization (15-20 min)
-**Objective**: Ensure modern code performs better than legacy
+Expected outputs:
+- migration-scripts/ - Database migration files
+- data-transformation.py - ETL pipeline
+- validation-report.md - Data consistency validation
+- cutover-plan.md - Step-by-step cutover procedure
+- rollback-plan.md - Emergency rollback procedure
+"
+```
 
-**Tasks**:
-1. **Benchmark Comparison**
-   - Legacy vs modern response times
-   - Memory usage
-   - Throughput
-   - Database queries
+**Expected Outputs:**
+- `migration-scripts/` - Database migration files
+- `data-transformation.py` - ETL pipeline
+- `validation-report.md` - Data consistency checks
+- `cutover-plan.md` - Cutover procedure
+- `rollback-plan.md` - Rollback procedure
 
-2. **Optimization**
-   - Add caching
-   - Optimize queries (N+1 fixes)
-   - Lazy loading
-   - Connection pooling
+**Quality Gate: Data Migration Validation**
+```bash
+# Validate migration scripts exist (if schema changes needed)
+if grep -q "database schema" migration-strategy.md; then
+  if [ ! -d "migration-scripts" ]; then
+    echo "❌ Migration scripts not created"
+    db_log_error "ValidationError" "Migration scripts missing" "modernize-legacy" "phase-4" "0"
+    exit 1
+  fi
 
-3. **Load Testing**
-   - Simulate production traffic
-   - Identify bottlenecks
-   - Stress testing
+  # Test migrations
+  if ! bash migration-scripts/test-migrations.sh; then
+    echo "❌ Migration tests failed"
+    db_log_error "MigrationError" "Migration validation failed" "modernize-legacy" "phase-4" "0"
+    exit 1
+  fi
+fi
 
-**Agents**: `performance-analyzer`, database specialists
+echo "✅ Data migration prepared and validated"
+```
 
-**Code Example**:
-```python
-import pytest
-import time
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "data-migration" $TOKENS_USED "80%"
 
-def test_performance_comparison():
-    # Legacy implementation
-    start = time.time()
-    legacy_result = legacy_fetch_users(limit=1000)
-    legacy_time = time.time() - start
-
-    # Modern implementation
-    start = time.time()
-    modern_result = modern_fetch_users(limit=1000)
-    modern_time = time.time() - start
-
-    # Assert modern is not slower
-    assert modern_time <= legacy_time * 1.2  # Allow 20% variance
-    assert len(modern_result) == len(legacy_result)
+# Store migration info
+db_store_knowledge "legacy-modernization" "data-migration" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Data migration with dual-write strategy" \
+  "$(head -n 30 cutover-plan.md)"
 ```
 
 ---
 
-### Phase 6: Documentation & Knowledge Transfer (10-15 min)
-**Objective**: Document changes and train team
+## Phase 5: Performance Optimization (80-90%)
 
-**Tasks**:
-1. **Technical Documentation**
-   - Architecture diagrams
-   - API changes
-   - Database schema changes
-   - Deployment procedures
+**Objective**: Ensure modern code performs better than legacy
 
-2. **Migration Guide**
-   - What changed and why
-   - Breaking changes
-   - Migration path for remaining code
-   - Troubleshooting guide
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to:
+1. Benchmark modern vs legacy performance
+2. Identify bottlenecks
+3. Implement optimizations (caching, query optimization)
+4. Run load testing
+5. Validate performance improvements
 
-3. **Runbooks**
-   - Deployment checklist
-   - Rollback procedure
-   - Monitoring and alerts
-   - Common issues and fixes
+subagent_type: "performance-analyzer"
+description: "Optimize performance and validate improvements"
+prompt: "Optimize modernized codebase performance: $1
 
-**Agents**: `technical-writer`, `architecture-documenter`
+Based on performance-baselines.json:
+
+1. **Benchmark Comparison**
+   \`\`\`python
+   import pytest
+   import time
+
+   def test_performance_comparison():
+       # Load baseline from characterization tests
+       baseline_time = pytest.baseline_time
+
+       # Modern implementation
+       start = time.time()
+       modern_result = modern_fetch_users(limit=1000)
+       modern_time = time.time() - start
+
+       # Assert improvement or parity
+       assert modern_time <= baseline_time * 1.2  # Allow 20% variance
+
+       print(f\"Legacy: {baseline_time:.2f}s, Modern: {modern_time:.2f}s\")
+       print(f\"Improvement: {((baseline_time - modern_time) / baseline_time * 100):.1f}%\")
+   \`\`\`
+
+2. **Identify Bottlenecks**
+   \`\`\`bash
+   # Profile application
+   python -m cProfile -o profile.stats app.py
+   python -m pstats profile.stats
+
+   # Or use py-spy for production
+   py-spy record -o profile.svg -- python app.py
+   \`\`\`
+
+3. **Optimization Implementation**
+   - Add caching (Redis, Memcached)
+   - Optimize database queries (fix N+1 problems)
+   - Add database indexes
+   - Implement lazy loading
+   - Use connection pooling
+   - Compress responses
+   - Enable CDN for static assets
+
+4. **Load Testing**
+   \`\`\`bash
+   # Use k6, Locust, or JMeter
+   k6 run --vus 100 --duration 30s load-test.js
+   \`\`\`
+
+5. **Memory Analysis**
+   - Check for memory leaks
+   - Profile memory usage
+   - Optimize resource cleanup
+
+Expected outputs:
+- performance-report.md with:
+  - Benchmark comparisons (legacy vs modern)
+  - Identified bottlenecks
+  - Optimization strategies implemented
+  - Load testing results
+- profile-analysis/ - Profiling data
+- optimization-log.md - Changes made for performance
+"
+```
+
+**Expected Outputs:**
+- `performance-report.md` - Performance analysis
+- `profile-analysis/` - Profiling data
+- `optimization-log.md` - Optimization changes
+- `load-test-results/` - Load testing data
+
+**Quality Gate: Performance Validation**
+```bash
+# Validate performance report exists
+if [ ! -f "performance-report.md" ]; then
+  echo "❌ Performance report not created"
+  db_log_error "ValidationError" "Performance report missing" "modernize-legacy" "phase-5" "0"
+  exit 1
+fi
+
+# Run performance tests
+if ! pytest tests/performance/ -v; then
+  echo "⚠️  Performance tests failed"
+  echo "Review performance-report.md for details"
+fi
+
+echo "✅ Performance optimization complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "performance-optimization" $TOKENS_USED "90%"
+
+# Store performance results
+db_store_knowledge "legacy-modernization" "performance" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Performance optimized" \
+  "$(head -n 30 performance-report.md)"
+```
 
 ---
 
-### Phase 7: Deployment & Monitoring (20-30 min)
-**Objective**: Deploy modernized code with zero downtime
+## Phase 6: Documentation & Deployment (90-100%)
 
-**Strategies**:
+**Objective**: Document changes, create runbooks, and deploy with zero downtime
 
-**Blue-Green Deployment**:
-1. Deploy modern version (Green)
-2. Run smoke tests on Green
-3. Switch traffic to Green
-4. Keep Blue as instant rollback
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the technical-writer agent to:
+1. Create comprehensive technical documentation
+2. Write migration guide for team
+3. Create deployment runbooks
+4. Document rollback procedures
+5. Create monitoring and alerting guide
 
-**Canary Deployment**:
-1. Deploy to 5% of servers
-2. Monitor for 24h
-3. Gradually increase (5% → 25% → 50% → 100%)
-4. Rollback if issues detected
+subagent_type: "technical-writer"
+description: "Create documentation and deployment guides"
+prompt: "Document modernization and create deployment guides: $1
 
-**Feature Flags**:
+Based on all previous phases:
+
+1. **Technical Documentation**
+   - Architecture diagrams (before/after)
+   - API changes documentation
+   - Database schema changes
+   - Configuration changes
+   - Performance improvements
+   - Security enhancements
+
+2. **Migration Guide**
+   - What changed and why
+   - Breaking changes (if any)
+   - Migration path for remaining legacy code
+   - Code examples (old vs new)
+   - Troubleshooting guide
+   - FAQ
+
+3. **Deployment Runbooks**
+   - Pre-deployment checklist
+   - Blue-Green deployment procedure
+   - Canary deployment procedure
+   - Feature flag configuration
+   - Smoke testing procedures
+   - Post-deployment validation
+
+4. **Rollback Procedures**
+   - When to rollback
+   - Emergency rollback steps
+   - Database rollback procedures
+   - Feature flag rollback
+   - Communication plan
+
+5. **Monitoring & Alerting**
+   - Key metrics to monitor
+   - Alert thresholds
+   - Dashboard configurations
+   - Log aggregation queries
+   - On-call procedures
+
+Expected outputs:
+- docs/architecture.md - Architecture documentation
+- docs/migration-guide.md - Team migration guide
+- docs/deployment-runbook.md - Deployment procedures
+- docs/rollback-procedures.md - Emergency procedures
+- docs/monitoring-guide.md - Observability setup
+"
+```
+
+**Expected Outputs:**
+- `docs/architecture.md` - Architecture documentation
+- `docs/migration-guide.md` - Migration guide
+- `docs/deployment-runbook.md` - Deployment procedures
+- `docs/rollback-procedures.md` - Rollback procedures
+- `docs/monitoring-guide.md` - Monitoring setup
+
+**Quality Gate: Documentation Validation**
+```bash
+# Validate documentation exists
+REQUIRED_DOCS=(
+  "docs/architecture.md"
+  "docs/migration-guide.md"
+  "docs/deployment-runbook.md"
+  "docs/rollback-procedures.md"
+)
+
+for doc in "${REQUIRED_DOCS[@]}"; do
+  if [ ! -f "$doc" ]; then
+    echo "❌ Required documentation missing: $doc"
+    db_log_error "ValidationError" "Documentation incomplete: $doc" "modernize-legacy" "phase-6" "0"
+    exit 1
+  fi
+done
+
+echo "✅ Documentation complete"
+```
+
+**Deployment Strategy:**
+
+After documentation, implement zero-downtime deployment:
+
+**Option A: Blue-Green Deployment**
+```bash
+# 1. Deploy modern version (Green)
+# 2. Run smoke tests on Green
+# 3. Switch traffic to Green
+# 4. Keep Blue as instant rollback
+```
+
+**Option B: Canary Deployment**
+```bash
+# 1. Deploy to 5% of servers
+# 2. Monitor for 24h
+# 3. Gradually increase: 5% → 25% → 50% → 100%
+# 4. Rollback if issues detected
+```
+
+**Option C: Feature Flags**
 ```typescript
 if (featureFlags.isEnabled('modern_user_service', userId)) {
   return modernUserService.getUser(userId);
@@ -351,13 +840,98 @@ if (featureFlags.isEnabled('modern_user_service', userId)) {
 }
 ```
 
-**Monitoring**:
-- Error rates comparison (legacy vs modern)
-- Performance metrics
-- User experience metrics
-- Business metrics (conversion, revenue)
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "documentation-deployment" $TOKENS_USED "100%"
 
-**Agents**: `ci-cd-engineer`, `sre-specialist`, `observability-specialist`
+# Store documentation
+db_store_knowledge "legacy-modernization" "documentation" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Complete documentation and deployment guides" \
+  "$(ls -lh docs/)"
+```
+
+---
+
+## Workflow Complete
+
+```bash
+# Complete workflow tracking
+WORKFLOW_END=$(date +%s)
+
+db_complete_workflow "$workflow_id" "$WORKFLOW_END" "success" \
+  "Legacy system modernization complete: $1"
+
+echo "
+✅ LEGACY MODERNIZATION COMPLETE
+
+Target System: $1
+
+Deliverables:
+- ✅ Code analysis report
+- ✅ Migration strategy
+- ✅ Risk assessment
+- ✅ Comprehensive test suite (${CURRENT_COVERAGE}% coverage)
+- ✅ Modernized codebase
+- ✅ Data migration scripts (if applicable)
+- ✅ Performance optimization
+- ✅ Complete documentation
+- ✅ Deployment runbooks
+
+Quality Gates Passed:
+- ✅ All tests passing
+- ✅ Code coverage ≥ 80%
+- ✅ Performance equal or better
+- ✅ Security scan clean
+- ✅ Documentation complete
+
+Files Created:
+- code-analysis-report.md
+- migration-strategy.md
+- risk-matrix.md
+- tests/ (characterization, integration, e2e)
+- migration-log.md
+- performance-report.md
+- docs/ (architecture, migration guide, runbooks)
+
+Next Steps:
+1. Review deployment-runbook.md
+2. Configure monitoring and alerts
+3. Schedule deployment window
+4. Execute deployment with team
+5. Monitor metrics during rollout
+6. Celebrate successful modernization! 🎉
+"
+
+# Display metrics
+db_workflow_metrics "$workflow_id"
+db_token_savings_report "$workflow_id"
+```
+
+---
+
+## Success Criteria Checklist
+
+- ✅ Legacy system analyzed with metrics and dependency mapping
+- ✅ Modernization strategy chosen (Strangler Fig, Branch by Abstraction, etc.)
+- ✅ Risk assessment completed with mitigation plans
+- ✅ Comprehensive test suite created (80%+ coverage)
+- ✅ Characterization tests documenting current behavior
+- ✅ Integration and E2E tests passing
+- ✅ Code modernized incrementally with continuous validation
+- ✅ All tests passing after modernization
+- ✅ Data migration strategy implemented (if applicable)
+- ✅ Dual-write and cutover plan validated
+- ✅ Performance benchmarked and optimized
+- ✅ Modern code performs equal to or better than legacy
+- ✅ Technical documentation complete
+- ✅ Migration guide created for team
+- ✅ Deployment runbooks created
+- ✅ Rollback procedures documented
+- ✅ Monitoring and alerting configured
+- ✅ Zero-downtime deployment strategy selected
+- ✅ Security vulnerabilities addressed
+- ✅ Ready for production deployment
 
 ---
 
@@ -365,17 +939,17 @@ if (featureFlags.isEnabled('modern_user_service', userId)) {
 
 ### Scenario 1: Python 2 → Python 3
 ```bash
-# Phase 1: Assessment
+# Assessment
 2to3 --print-diff src/
 
-# Phase 2: Tests
+# Test Coverage
 pytest tests/ --cov=src/
 
-# Phase 3: Migration
+# Migration
 2to3 -w src/
-# Fix print statements, unicode, iterators, exceptions
+# Fix: print statements, unicode, iterators, exceptions
 
-# Phase 4: Validation
+# Validation
 pytest tests/
 mypy src/
 ```
@@ -399,7 +973,7 @@ function UserList({ users }) {
 
 ### Scenario 3: Monolith → Microservices
 ```
-1. Identify bounded context (Users, Orders, Payments)
+1. Identify bounded contexts (Users, Orders, Payments)
 2. Extract domain logic into modules
 3. Create API layer for each module
 4. Deploy as separate services
@@ -409,31 +983,53 @@ function UserList({ users }) {
 
 ---
 
-## Quality Gates Summary
+## Rollback Plan
 
-**Overall Success Criteria**:
-- [ ] All tests passing (legacy + new)
-- [ ] Code coverage ≥ 80%
-- [ ] Performance equal or better
-- [ ] Zero data loss
-- [ ] Security vulnerabilities addressed
-- [ ] Documentation complete
-- [ ] Team trained
-- [ ] Deployed to production
-- [ ] Monitoring in place
+If issues arise during deployment:
+
+1. **Immediate Rollback**
+   - Feature flag to legacy code (instant)
+   - Blue-Green: Switch traffic back to Blue
+   - Canary: Reduce traffic to 0%
+
+2. **Database Rollback**
+   - Revert schema migrations
+   - Switch back to legacy database
+   - Verify data integrity
+
+3. **Investigation**
+   - Review logs and metrics
+   - Identify root cause
+   - Document issue
+
+4. **Fix & Retry**
+   - Address issues in development
+   - Re-test thoroughly
+   - Schedule new deployment
 
 ---
 
-## Rollback Plan
+## Anti-Patterns to Avoid
 
-If issues arise:
-1. **Immediate**: Feature flag to legacy code
-2. **Blue-Green**: Switch traffic back to Blue
-3. **Canary**: Reduce traffic to 0%
-4. **Database**: Revert schema migrations
-5. **Investigate**: Review logs, metrics, traces
-6. **Fix**: Address issues in development
-7. **Redeploy**: Try again with fixes
+**DO NOT:**
+- ❌ Skip test coverage creation (high risk of breaking functionality)
+- ❌ Big-bang rewrite without incremental validation
+- ❌ Ignore performance baselines
+- ❌ Deploy without rollback plan
+- ❌ Skip documentation
+- ❌ Modernize without understanding why legacy code exists
+- ❌ Ignore business-critical code paths
+- ❌ Deploy during peak hours
+
+**DO:**
+- ✅ Create comprehensive tests before any changes
+- ✅ Modernize incrementally with continuous validation
+- ✅ Use feature flags for gradual rollout
+- ✅ Monitor metrics during deployment
+- ✅ Keep legacy as fallback during transition
+- ✅ Document all changes and decisions
+- ✅ Communicate with stakeholders
+- ✅ Celebrate wins with the team
 
 ---
 
@@ -443,13 +1039,13 @@ If issues arise:
 /modernize-legacy "Migrate Django 2.2 app to Django 4.2. Database: PostgreSQL with 10M+ records. Zero downtime required."
 
 # Workflow executes:
-# 1. Analyzes Django 2.2 app, identifies deprecated APIs
-# 2. Creates comprehensive test suite
-# 3. Incrementally updates (2.2 → 3.0 → 3.2 → 4.0 → 4.2)
-# 4. Migrates database schema with dual-write
-# 5. Performance testing and optimization
-# 6. Documentation and runbooks
-# 7. Canary deployment with monitoring
+# 1. Analyzes Django 2.2 app, identifies deprecated APIs (20%)
+# 2. Creates comprehensive test suite with 85% coverage (40%)
+# 3. Incrementally updates 2.2 → 3.0 → 3.2 → 4.0 → 4.2 (70%)
+# 4. Migrates database schema with dual-write strategy (80%)
+# 5. Performance testing and optimization (90%)
+# 6. Documentation and runbooks (95%)
+# 7. Canary deployment with monitoring (100%)
 ```
 
 ---

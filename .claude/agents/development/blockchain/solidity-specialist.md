@@ -4,6 +4,13 @@ description: Expert Solidity developer specializing in smart contract developmen
 categories: [development, blockchain, solidity, web3]
 dependencies: []
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Solidity Specialist

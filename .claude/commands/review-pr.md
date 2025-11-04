@@ -7,6 +7,22 @@ argumentHint: "<PR-number>"
 
 You are orchestrating a comprehensive pull request review with multi-stage code analysis, GitHub integration, and automated feedback delivery.
 
+## Intelligence Database Integration
+
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
+
+# Initialize workflow
+workflow_id=$(db_start_workflow "review-pr" "$(date +%s)" "{\"pr_number\":\"$1\"}")
+
+echo "🚀 Starting PR Review Workflow"
+echo "PR Number: $1"
+echo "Workflow ID: $workflow_id"
+
+# Query similar PR review patterns
+db_query_similar_workflows "review-pr" 5
+```
+
 ## Workflow Overview
 
 This workflow provides thorough PR review by:
@@ -16,28 +32,41 @@ This workflow provides thorough PR review by:
 4. Requesting changes or approving based on findings
 5. Supporting iterative review cycles
 
-## Execution Steps
+---
 
-### Phase 1: PR Context Gathering (10%)
+## Phase 1: PR Context Gathering (0-10%)
 
-**Fetch PR Information:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-archaeologist agent to:
+1. Fetch PR details from GitHub (number, title, body, author, branches)
+2. Get PR diff and identify all changed files
+3. Categorize files by type (frontend, backend, tests, config, docs)
+4. Analyze PR context (size, change type, risk level, related issues)
+5. Create review plan with TodoWrite
 
-1. **Get PR details:**
-   ```bash
+subagent_type: "code-archaeologist"
+description: "Gather PR context and metadata"
+prompt: "Fetch and analyze Pull Request #$1:
+
+Tasks:
+
+1. **Get PR Details**
+   \`\`\`bash
    # Fetch PR metadata
-   gh pr view <PR-NUMBER> --json number,title,body,author,headRefName,baseRefName,state,isDraft,commits,files
+   gh pr view $1 --json number,title,body,author,headRefName,baseRefName,state,isDraft,commits,files
 
    # Get PR diff
-   gh pr diff <PR-NUMBER>
+   gh pr diff $1
 
    # Get PR commits
-   gh pr view <PR-NUMBER> --json commits
-   ```
+   gh pr view $1 --json commits
+   \`\`\`
 
-2. **Identify changed files:**
-   ```bash
+2. **Identify Changed Files**
+   \`\`\`bash
    # List all files changed in PR
-   gh pr diff <PR-NUMBER> --name-only
+   gh pr diff $1 --name-only
 
    # Categorize files by type
    # Frontend: *.tsx, *.jsx, *.vue, *.svelte
@@ -45,15 +74,15 @@ This workflow provides thorough PR review by:
    # Tests: *.test.*, *.spec.*
    # Config: *.json, *.yaml, *.yml
    # Docs: *.md
-   ```
+   \`\`\`
 
-3. **Analyze PR context:**
+3. **Analyze PR Context**
    - PR size (lines changed, files modified)
    - Change type (feature, bugfix, refactor, docs)
    - Risk level (high for auth/security, medium for business logic, low for docs)
    - Related issues/tickets
 
-4. **Create review plan:**
+4. **Create Review Plan**
    Use TodoWrite to track review stages:
    - [ ] Validate PR metadata (title, description, linked issues)
    - [ ] Stage 1: Style & Readability Review
@@ -64,14 +93,71 @@ This workflow provides thorough PR review by:
    - [ ] Generate review summary
    - [ ] Post review to GitHub
 
+Expected outputs:
+- pr-context-$1.json - PR metadata
+- changed-files-$1.txt - List of changed files
+- review-plan-$1.md - Structured review plan
+"
+```
+
+**Expected Outputs:**
+- `pr-context-<PR#>.json` - PR metadata and context
+- `changed-files-<PR#>.txt` - List of changed files with categories
+- `review-plan-<PR#>.md` - Structured review plan
+
+**Quality Gate: Context Validation**
+```bash
+PR_NUMBER="$1"
+
+# Validate PR exists
+if ! gh pr view "$PR_NUMBER" &>/dev/null; then
+  echo "❌ PR #$PR_NUMBER not found"
+  db_log_error "$workflow_id" "PRNotFound" "Pull request does not exist" "review-pr" "phase-1" "0"
+  exit 1
+fi
+
+# Validate context files created
+if [ ! -f "pr-context-$PR_NUMBER.json" ]; then
+  echo "❌ PR context not gathered"
+  db_log_error "$workflow_id" "ContextMissing" "PR context file not created" "review-pr" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ PR context gathered successfully"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=3000
+db_track_tokens "$workflow_id" "context-gathering" $TOKENS_USED "10%"
+
+# Store PR metadata
+db_store_knowledge "pr-review" "context" "pr-$PR_NUMBER" \
+  "PR #$PR_NUMBER context and metadata" \
+  "$(head -n 50 pr-context-$PR_NUMBER.json)"
+```
+
 ---
 
-### Phase 2: PR Metadata Validation (5%)
+## Phase 2: PR Metadata Validation (10-15%)
 
-**Check PR Quality:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-reviewer agent to:
+1. Validate PR title follows Conventional Commits format
+2. Check PR description quality (what, why, testing notes)
+3. Verify linked issues/tickets
+4. Check for screenshots if UI changes
+5. Validate metadata (labels, reviewers, milestone)
+
+subagent_type: "code-reviewer"
+description: "Validate PR metadata quality"
+prompt: "Validate metadata for PR #$PR_NUMBER:
+
+Validation Checklist:
 
 1. **Title Validation:**
-   - [ ] Follows Conventional Commits format (`feat:`, `fix:`, `docs:`, etc.)
+   - [ ] Follows Conventional Commits format (feat:, fix:, docs:, etc.)
    - [ ] Clear and descriptive
    - [ ] References ticket/issue if applicable
 
@@ -88,10 +174,9 @@ This workflow provides thorough PR review by:
    - [ ] Milestone set (if applicable)
    - [ ] Not a draft (or marked WIP)
 
-**If Validation Fails:**
-Post comment requesting improvements:
-```bash
-gh pr comment <PR-NUMBER> --body "## PR Metadata Issues
+If validation fails, generate comment requesting improvements:
+\`\`\`bash
+gh pr comment $PR_NUMBER --body \"## PR Metadata Issues
 
 Please address the following before review:
 - [ ] Add conventional commit prefix to title (feat:, fix:, etc.)
@@ -99,328 +184,584 @@ Please address the following before review:
 - [ ] Link related issue/ticket
 - [ ] Add testing notes
 
-Use \`gh pr edit <PR-NUMBER>\` to update."
+Use \\\`gh pr edit $PR_NUMBER\\\` to update.\"
+\`\`\`
+
+Expected outputs:
+- metadata-validation-$PR_NUMBER.md - Validation results
+- metadata-issues-$PR_NUMBER.txt - List of issues (if any)
+"
+```
+
+**Expected Outputs:**
+- `metadata-validation-<PR#>.md` - Validation results
+- `metadata-issues-<PR#>.txt` - Issues found (empty if valid)
+
+**Quality Gate: Metadata Validation**
+```bash
+# Check if metadata validation passed
+if [ -s "metadata-issues-$PR_NUMBER.txt" ]; then
+  echo "⚠️ PR metadata has issues, posting comment"
+  gh pr comment "$PR_NUMBER" --body-file "metadata-issues-$PR_NUMBER.txt"
+  echo "Continuing with code review..."
+fi
+
+echo "✅ Metadata validation complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=2000
+db_track_tokens "$workflow_id" "metadata-validation" $TOKENS_USED "15%"
 ```
 
 ---
 
-### Phase 3: Multi-Stage Code Review (70%)
+## Phase 3: Multi-Stage Code Review (15-85%)
 
-**Invoke code-review-orchestrator for comprehensive analysis:**
+This phase executes 5 parallel review stages for comprehensive analysis.
 
+### Stage 1: Style & Readability (15-30%)
+
+**⚡ EXECUTE TASK TOOL:**
 ```
-Use Task tool to invoke code-review-orchestrator with:
-- Scope: PR changed files only
-- Mode: pr-review
-- Context: PR number, title, description
-- Integration: github
-```
+Use the code-reviewer agent to:
+1. Review changed files for code style issues
+2. Check naming conventions and readability
+3. Verify consistent formatting
+4. Identify complex functions (cyclomatic complexity)
+5. Generate line-level style feedback
 
-The orchestrator executes all stages:
+subagent_type: "code-reviewer"
+description: "Review code style and readability"
+prompt: "Review style and readability for PR #$PR_NUMBER:
 
-#### Stage 1: Style & Readability (Parallel)
-```
-Agent: code-reviewer
-Focus: Changed files only
-Output: Line-level style issues with file:line references
-```
+Changed files: $(cat changed-files-$PR_NUMBER.txt)
 
-#### Stage 2: Logic & Correctness (Parallel)
-```
-Agent: [language]-developer (auto-detected from file extensions)
-Focus: Business logic in changed files
-Output: Logic errors, edge cases, correctness issues
-```
+Review Focus:
+- Code style consistency
+- Variable/function naming clarity
+- Code complexity (cyclomatic complexity < 10)
+- Comment quality
+- Code organization
 
-#### Stage 3: Security Audit (Parallel)
-```
-Agent: security-auditor
-Focus: Security implications of changes
-Special attention to:
-- Auth/authz changes
-- Input validation
-- New dependencies
-- Secret exposure
-Output: Security vulnerabilities by severity
-```
+For each issue found:
+- File path and line number
+- Severity (critical/high/medium/low)
+- Description of issue
+- Suggested fix
 
-#### Stage 4: Performance Analysis
-```
-Agent: [language]-developer with performance focus
-Focus: Performance impact of changes
-Check for:
-- New database queries (N+1 issues)
-- Algorithm complexity changes
-- Resource leaks
-Output: Performance concerns and recommendations
-```
-
-#### Stage 5: Architecture Review
-```
-Agent: architect
-Focus: Integration with existing system
-Check for:
-- Pattern consistency
-- SOLID principles
-- Coupling/cohesion
-- Scalability impact
-Output: Architectural feedback
-```
-
----
-
-### Phase 4: Review Summary Generation (10%)
-
-**Generate PR Review Summary:**
-
-Create comprehensive review formatted for GitHub:
-
-```markdown
-# Code Review Summary
-
-**Reviewed by:** code-review-orchestrator (AI)
-**Review Date:** [Timestamp]
-**PR:** #<NUMBER> - [Title]
-**Files Reviewed:** X files, Y lines changed (+additions, -deletions)
-
----
-
-## Overall Assessment
-
-**Verdict:** [APPROVE ✅ | APPROVE WITH MINOR CHANGES 🟡 | REQUEST CHANGES 🔴]
-
-**Quality Score:** [X/10]
-
-**Issues by Severity:**
-- 🔴 Critical: X (must fix)
-- 🟠 High: Y (should fix before merge)
-- 🟡 Medium: Z (fix soon)
-- 🔵 Low: W (nice to fix)
-- 💡 Suggestions: V (consider)
-
-**Review Stages:**
-- Style & Readability: [✅ PASS | ❌ ISSUES]
-- Logic & Correctness: [✅ PASS | ❌ ISSUES]
-- Security: [✅ PASS | ❌ ISSUES]
-- Performance: [✅ PASS | ❌ ISSUES]
-- Architecture: [✅ PASS | ❌ ISSUES]
-
----
-
-## Critical Issues 🔴 (Must Fix Before Merge)
-
-<details>
-<summary>1. SQL Injection Vulnerability - <code>src/api/users.ts:42</code></summary>
-
-**Stage:** Security
-**Severity:** Critical 🔴
-
-**Problem:**
-User input is directly concatenated into SQL query, allowing SQL injection attacks.
-
-**Code:**
-```typescript
-const query = `SELECT * FROM users WHERE id = ${req.params.id}`;
-```
-
-**Impact:**
-Attackers could execute arbitrary SQL queries, leading to data theft or deletion.
-
-**Fix:**
-Use parameterized queries:
-```typescript
-const query = `SELECT * FROM users WHERE id = ?`;
-const result = await db.execute(query, [req.params.id]);
-```
-
-**References:**
-- [OWASP SQL Injection](https://owasp.org/www-community/attacks/SQL_Injection)
-- CWE-89
-
-</details>
-
----
-
-## High Priority Issues 🟠 (Should Fix Before Merge)
-
-<details>
-<summary>2. N+1 Query Problem - <code>src/services/orders.ts:123</code></summary>
-
-**Stage:** Performance
-**Severity:** High 🟠
-
-**Problem:**
-Loop executes a database query for each order item, causing N+1 queries.
-
-**Code:**
-```typescript
-for (const order of orders) {
-  const items = await getOrderItems(order.id);  // N queries
+Output format:
+\`\`\`json
+{
+  \"stage\": \"style\",
+  \"issues\": [
+    {
+      \"file\": \"src/file.ts\",
+      \"line\": 42,
+      \"severity\": \"medium\",
+      \"issue\": \"Function too complex (complexity: 15)\",
+      \"suggestion\": \"Break into smaller functions\"
+    }
+  ]
 }
+\`\`\`
+
+Expected outputs:
+- style-review-$PR_NUMBER.json - Style issues found
+"
 ```
 
-**Impact:**
-Significant performance degradation with large datasets. For 100 orders, this makes 101 queries instead of 2.
+**Expected Outputs:**
+- `style-review-<PR#>.json` - Style and readability issues
 
-**Fix:**
-Use eager loading or batch fetch:
-```typescript
-const orderIds = orders.map(o => o.id);
-const items = await getOrderItemsForOrders(orderIds);  // 1 query
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "style-review" $TOKENS_USED "30%"
 ```
 
-</details>
+### Stage 2: Logic & Correctness (30-45%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the appropriate language specialist agent to:
+1. Analyze business logic in changed files
+2. Identify potential logic errors
+3. Check edge case handling
+4. Verify error handling
+5. Validate correctness of implementation
+
+subagent_type: "typescript-specialist"
+description: "Review logic and correctness"
+prompt: "Review logic and correctness for PR #$PR_NUMBER:
+
+Changed files: $(cat changed-files-$PR_NUMBER.txt)
+PR context: $(cat pr-context-$PR_NUMBER.json)
+
+Review Focus:
+- Business logic correctness
+- Edge case handling
+- Error handling adequacy
+- Input validation
+- Type safety (TypeScript)
+
+For each issue:
+- File path and line number
+- Severity (critical/high/medium/low)
+- Logic error description
+- Impact analysis
+- Suggested fix with code example
+
+Expected outputs:
+- logic-review-$PR_NUMBER.json - Logic issues found
+"
+```
+
+**Expected Outputs:**
+- `logic-review-<PR#>.json` - Logic and correctness issues
+
+**Track Progress:**
+```bash
+TOKENS_USED=6000
+db_track_tokens "$workflow_id" "logic-review" $TOKENS_USED "45%"
+```
+
+### Stage 3: Security Audit (45-60%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Scan changed files for security vulnerabilities
+2. Check for OWASP Top 10 issues
+3. Identify hardcoded secrets or credentials
+4. Review authentication/authorization changes
+5. Analyze new dependency security
+
+subagent_type: "security-auditor"
+description: "Security audit of PR changes"
+prompt: "Perform security audit for PR #$PR_NUMBER:
+
+Changed files: $(cat changed-files-$PR_NUMBER.txt)
+
+Security Checklist:
+- [ ] No SQL injection vulnerabilities
+- [ ] No XSS vulnerabilities
+- [ ] No hardcoded secrets/API keys
+- [ ] Proper input validation
+- [ ] Secure authentication/authorization
+- [ ] No insecure dependencies
+- [ ] Proper error handling (no info leak)
+- [ ] HTTPS enforced where needed
+
+Special attention to:
+- Auth/authz changes (HIGH RISK)
+- Database queries
+- User input handling
+- New dependencies
+- Cryptography usage
+
+For each vulnerability:
+- File path and line number
+- Severity (critical/high/medium/low)
+- CVE/CWE reference if applicable
+- Attack vector description
+- Impact assessment
+- Remediation steps with code
+
+Expected outputs:
+- security-review-$PR_NUMBER.json - Security issues found
+"
+```
+
+**Expected Outputs:**
+- `security-review-<PR#>.json` - Security vulnerabilities found
+
+**Quality Gate: Security Critical Issues**
+```bash
+# Check for critical security issues
+CRITICAL_SECURITY=$(jq '.issues[] | select(.severity=="critical")' security-review-$PR_NUMBER.json 2>/dev/null | wc -l)
+
+if [ "$CRITICAL_SECURITY" -gt 0 ]; then
+  echo "🔴 CRITICAL: Found $CRITICAL_SECURITY critical security issues"
+  db_log_error "$workflow_id" "CriticalSecurity" "Critical security vulnerabilities found" "review-pr" "phase-3-security" "0"
+  # Continue but flag for blocking merge
+fi
+
+echo "✅ Security audit complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=7000
+db_track_tokens "$workflow_id" "security-audit" $TOKENS_USED "60%"
+```
+
+### Stage 4: Performance Analysis (60-72%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the performance-analyzer agent to:
+1. Analyze performance impact of changes
+2. Check for N+1 query problems
+3. Review algorithm complexity changes
+4. Identify potential memory leaks
+5. Check database query optimization
+
+subagent_type: "performance-analyzer"
+description: "Analyze performance impact"
+prompt: "Analyze performance impact for PR #$PR_NUMBER:
+
+Changed files: $(cat changed-files-$PR_NUMBER.txt)
+
+Performance Checklist:
+- [ ] No N+1 query problems
+- [ ] Efficient algorithms (time complexity)
+- [ ] No memory leaks
+- [ ] Proper caching strategies
+- [ ] Database queries optimized
+- [ ] No blocking operations in loops
+- [ ] Resource cleanup (connections, files)
+
+Focus Areas:
+- New database queries
+- Loop structures
+- API calls
+- File I/O operations
+- Memory allocation
+
+For each issue:
+- File path and line number
+- Severity (high/medium/low)
+- Performance impact description
+- Benchmark estimate (if possible)
+- Optimization suggestion with code
+
+Expected outputs:
+- performance-review-$PR_NUMBER.json - Performance issues found
+"
+```
+
+**Expected Outputs:**
+- `performance-review-<PR#>.json` - Performance issues
+
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "performance-analysis" $TOKENS_USED "72%"
+```
+
+### Stage 5: Architecture Review (72-85%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the architect agent to:
+1. Review architectural consistency
+2. Check SOLID principles adherence
+3. Evaluate coupling and cohesion
+4. Assess scalability impact
+5. Verify design pattern usage
+
+subagent_type: "architect"
+description: "Review architectural impact"
+prompt: "Review architecture for PR #$PR_NUMBER:
+
+Changed files: $(cat changed-files-$PR_NUMBER.txt)
+PR context: $(cat pr-context-$PR_NUMBER.json)
+
+Architecture Checklist:
+- [ ] Follows existing patterns
+- [ ] SOLID principles maintained
+- [ ] Appropriate coupling/cohesion
+- [ ] Scalability considered
+- [ ] Design patterns used correctly
+- [ ] Module boundaries respected
+
+Focus Areas:
+- New abstractions introduced
+- Dependency changes
+- Interface changes
+- Module structure changes
+- Integration points
+
+For each concern:
+- Component/module affected
+- Severity (high/medium/low)
+- Architectural issue description
+- Long-term impact analysis
+- Refactoring suggestion
+
+Expected outputs:
+- architecture-review-$PR_NUMBER.json - Architecture feedback
+"
+```
+
+**Expected Outputs:**
+- `architecture-review-<PR#>.json` - Architecture feedback
+
+**Track Progress:**
+```bash
+TOKENS_USED=6000
+db_track_tokens "$workflow_id" "architecture-review" $TOKENS_USED "85%"
+```
 
 ---
 
-## Medium Priority Issues 🟡
+## Phase 4: Review Summary Generation (85-95%)
 
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the technical-writer agent to:
+1. Aggregate findings from all 5 review stages
+2. Prioritize issues by severity (critical → low)
+3. Generate comprehensive review summary
+4. Format for GitHub markdown
+5. Include positive findings and recommendations
+
+subagent_type: "technical-writer"
+description: "Generate PR review summary"
+prompt: "Generate comprehensive review summary for PR #$PR_NUMBER:
+
+Input Files:
+- pr-context-$PR_NUMBER.json
+- metadata-validation-$PR_NUMBER.md
+- style-review-$PR_NUMBER.json
+- logic-review-$PR_NUMBER.json
+- security-review-$PR_NUMBER.json
+- performance-review-$PR_NUMBER.json
+- architecture-review-$PR_NUMBER.json
+
+Generate review summary with:
+
+1. **Overall Assessment**
+   - Verdict: APPROVE ✅ | APPROVE WITH MINOR CHANGES 🟡 | REQUEST CHANGES 🔴
+   - Quality Score: X/10
+   - Issues by severity count
+
+2. **Critical Issues** (must fix before merge)
+   - Expandable details for each issue
+   - Problem description
+   - Code examples
+   - Fix recommendations
+   - References (OWASP, CWE, etc.)
+
+3. **High Priority Issues** (should fix before merge)
+
+4. **Medium/Low Priority Issues**
+
+5. **Positive Findings**
+   - What was done well
+
+6. **Recommendations**
+   - Before merge (required)
+   - Short term (recommended)
+   - Long term (consider)
+
+7. **Test Coverage Analysis** (if applicable)
+
+8. **Security Checklist**
+
+9. **Performance Impact**
+
+10. **Next Steps**
+
+Use GitHub markdown with collapsible sections:
+\`\`\`markdown
 <details>
-<summary>3. Complex Function - <code>src/utils/calculator.ts:67</code></summary>
+<summary>Issue Title - <code>file:line</code></summary>
 
-**Stage:** Style
-**Severity:** Medium 🟡
-
-**Problem:**
-Function is 120 lines with cyclomatic complexity of 18 (threshold: 10).
-
-**Suggestion:**
-Break into smaller, focused functions:
-- `validateInput()`
-- `performCalculation()`
-- `formatResult()`
-
-**Benefit:**
-Improved testability, readability, and maintainability.
-
+Content here...
 </details>
+\`\`\`
 
----
+Expected outputs:
+- review-summary-$PR_NUMBER.md - Complete review formatted for GitHub
+"
+```
 
-## Positive Findings ✅
+**Expected Outputs:**
+- `review-summary-<PR#>.md` - Complete formatted review summary
 
-- ✅ Excellent test coverage (95%) for new code
-- ✅ Clear, descriptive variable names
-- ✅ Good error handling with user-friendly messages
-- ✅ Proper TypeScript types throughout
-- ✅ Follows existing code patterns consistently
+**Quality Gate: Summary Validation**
+```bash
+# Validate summary generated
+if [ ! -f "review-summary-$PR_NUMBER.md" ]; then
+  echo "❌ Review summary not generated"
+  db_log_error "$workflow_id" "SummaryMissing" "Review summary file not created" "review-pr" "phase-4" "0"
+  exit 1
+fi
 
----
+# Check summary has content
+LINE_COUNT=$(wc -l < "review-summary-$PR_NUMBER.md")
+if [ "$LINE_COUNT" -lt 50 ]; then
+  echo "❌ Review summary too short: $LINE_COUNT lines"
+  db_log_error "$workflow_id" "SummaryTooShort" "Review summary only $LINE_COUNT lines" "review-pr" "phase-4" "0"
+  exit 1
+fi
 
-## Recommendations
+echo "✅ Review summary generated ($LINE_COUNT lines)"
+```
 
-### Before Merge (Required)
-- [ ] Fix SQL injection in users.ts:42
-- [ ] Fix N+1 query in orders.ts:123
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "summary-generation" $TOKENS_USED "95%"
 
-### Short Term (Recommended)
-- [ ] Refactor calculator.ts for better complexity
-- [ ] Add JSDoc comments to public API functions
-
-### Long Term (Consider)
-- [ ] Consider migrating to ORM to prevent SQL injection by default
-- [ ] Implement request caching to further improve performance
-
----
-
-## Test Coverage Analysis
-
-**Overall Coverage:** 85% (unchanged from base branch)
-
-**New/Modified Code Coverage:**
-- `src/api/users.ts`: 90% ✅
-- `src/services/orders.ts`: 80% ✅
-- `src/utils/calculator.ts`: 95% ✅
-
-**Missing Tests:**
-- Edge case: empty order list in orders.ts:145
-- Error handling: database connection failure
-
----
-
-## Security Checklist
-
-- [x] No hardcoded secrets or API keys
-- [ ] ⚠️ SQL injection vulnerability found
-- [x] Input validation present
-- [x] Authentication/authorization checked
-- [x] No new dependencies with known vulnerabilities
-- [x] Sensitive data encrypted
-- [x] HTTPS enforced
-
----
-
-## Performance Impact
-
-**Database Queries:**
-- ⚠️ +N queries added (N+1 problem in orders.ts)
-
-**Bundle Size (Frontend):**
-- No changes
-
-**API Response Time:**
-- Expected: +50-200ms due to new query (acceptable for non-critical path)
-
----
-
-## Next Steps
-
-1. **Developer:** Address critical and high priority issues
-2. **Re-review:** I'll automatically re-review when you push new commits
-3. **Approval:** Once all critical/high issues are resolved, I'll approve
-
----
-
-<sub>🤖 Automated review by [orchestr8](https://github.com/seth-schultz/orchestr8) | Powered by Claude Code</sub>
+# Store review summary
+db_store_knowledge "pr-review" "summary" "pr-$PR_NUMBER" \
+  "Review summary for PR #$PR_NUMBER" \
+  "$(head -n 100 review-summary-$PR_NUMBER.md)"
 ```
 
 ---
 
-### Phase 5: Post Review to GitHub (5%)
+## Phase 5: Post Review to GitHub (95-100%)
 
-**Deliver Review Feedback:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-reviewer agent to:
+1. Post inline comments for critical issues
+2. Post comprehensive review summary
+3. Set PR review status (approve/request changes/comment)
+4. Apply appropriate labels
+5. Update PR metadata if needed
 
-1. **Post inline comments for critical issues:**
-   ```bash
-   # For each critical/high issue, post line comment
-   gh pr review <PR-NUMBER> --comment \
-     --body "🔴 **SQL Injection Vulnerability**
+subagent_type: "code-reviewer"
+description: "Post review to GitHub"
+prompt: "Post review feedback to PR #$PR_NUMBER:
 
-     User input is concatenated into SQL query. Use parameterized queries instead:
-     \`\`\`typescript
-     const query = 'SELECT * FROM users WHERE id = ?';
-     const result = await db.execute(query, [req.params.id]);
-     \`\`\`"
-   ```
+Review Summary: review-summary-$PR_NUMBER.md
+Critical Issues: $(jq '.issues[] | select(.severity==\"critical\")' security-review-$PR_NUMBER.json logic-review-$PR_NUMBER.json 2>/dev/null | wc -l)
 
-2. **Post summary comment:**
-   ```bash
-   gh pr comment <PR-NUMBER> --body-file review-summary.md
-   ```
+Tasks:
 
-3. **Set review status:**
-   ```bash
-   # If critical issues:
-   gh pr review <PR-NUMBER> --request-changes \
-     --body "Found critical security and performance issues. Please address before merge."
+1. **Post Inline Comments** (for critical/high issues only)
+   For each critical/high severity issue:
+   \`\`\`bash
+   gh pr review $PR_NUMBER --comment -b \"🔴 **[Issue Title]**
 
-   # If only minor issues:
-   gh pr review <PR-NUMBER> --approve \
-     --body "Looks good! Minor suggestions included in review."
+   [Description]
 
-   # If needs changes but not critical:
-   gh pr review <PR-NUMBER> --comment \
-     --body "Found some issues to address. Please review feedback."
-   ```
+   **Fix:**
+   \\\`\\\`\\\`[language]
+   [suggested code]
+   \\\`\\\`\\\`
+   \"
+   \`\`\`
 
-4. **Apply labels:**
-   ```bash
-   # Add labels based on findings
-   gh pr edit <PR-NUMBER> --add-label "needs-changes"      # If request changes
-   gh pr edit <PR-NUMBER> --add-label "security-review"    # If security issues
-   gh pr edit <PR-NUMBER> --add-label "performance"        # If performance issues
-   gh pr edit <PR-NUMBER> --add-label "approved"           # If approved
-   ```
+2. **Post Summary Comment**
+   \`\`\`bash
+   gh pr comment $PR_NUMBER --body-file review-summary-$PR_NUMBER.md
+   \`\`\`
+
+3. **Set Review Status**
+   \`\`\`bash
+   # Count critical issues
+   CRITICAL_COUNT=\$(jq '[.issues[] | select(.severity==\"critical\")] | length' */review-*.json 2>/dev/null | awk '{s+=\$1} END {print s}')
+
+   if [ \"\$CRITICAL_COUNT\" -gt 0 ]; then
+     # Request changes for critical issues
+     gh pr review $PR_NUMBER --request-changes -b \"Found \$CRITICAL_COUNT critical issues. Please address before merge.\"
+   else
+     # Approve or comment based on findings
+     gh pr review $PR_NUMBER --approve -b \"Looks good! Minor suggestions included in review.\"
+   fi
+   \`\`\`
+
+4. **Apply Labels**
+   \`\`\`bash
+   # Apply labels based on findings
+   if [ \"\$CRITICAL_COUNT\" -gt 0 ]; then
+     gh pr edit $PR_NUMBER --add-label \"needs-changes\"
+   fi
+
+   # Add specific labels
+   if grep -q \"security\" security-review-$PR_NUMBER.json 2>/dev/null; then
+     gh pr edit $PR_NUMBER --add-label \"security-review\"
+   fi
+
+   if grep -q \"performance\" performance-review-$PR_NUMBER.json 2>/dev/null; then
+     gh pr edit $PR_NUMBER --add-label \"performance\"
+   fi
+   \`\`\`
+
+Expected outputs:
+- github-post-$PR_NUMBER.log - Log of GitHub API calls
+"
+```
+
+**Expected Outputs:**
+- `github-post-<PR#>.log` - Log of review posting actions
+
+**Quality Gate: GitHub Integration**
+```bash
+# Verify review was posted
+if ! gh pr view "$PR_NUMBER" --json reviews | grep -q "reviews"; then
+  echo "❌ Review not posted to GitHub"
+  db_log_error "$workflow_id" "GitHubPostFailed" "Failed to post review to GitHub" "review-pr" "phase-5" "0"
+  exit 1
+fi
+
+echo "✅ Review posted to GitHub successfully"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=2000
+db_track_tokens "$workflow_id" "github-post" $TOKENS_USED "100%"
+```
+
+---
+
+## Workflow Complete
+
+```bash
+# Complete workflow tracking
+WORKFLOW_END=$(date +%s)
+
+# Determine verdict
+CRITICAL_COUNT=$(jq '[.issues[] | select(.severity=="critical")] | length' */review-*.json 2>/dev/null | awk '{s+=$1} END {print s}')
+if [ "$CRITICAL_COUNT" -gt 0 ]; then
+  VERDICT="REQUEST_CHANGES"
+else
+  VERDICT="APPROVED"
+fi
+
+db_complete_workflow "$workflow_id" "$WORKFLOW_END" "success" \
+  "PR #$PR_NUMBER reviewed: $VERDICT ($CRITICAL_COUNT critical issues)"
+
+echo "
+✅ PR REVIEW COMPLETE
+
+PR Number: #$PR_NUMBER
+Verdict: $VERDICT
+Critical Issues: $CRITICAL_COUNT
+
+Review Posted:
+- Summary: review-summary-$PR_NUMBER.md
+- GitHub: https://github.com/[owner]/[repo]/pull/$PR_NUMBER
+
+Files Generated:
+- pr-context-$PR_NUMBER.json
+- changed-files-$PR_NUMBER.txt
+- review-plan-$PR_NUMBER.md
+- style-review-$PR_NUMBER.json
+- logic-review-$PR_NUMBER.json
+- security-review-$PR_NUMBER.json
+- performance-review-$PR_NUMBER.json
+- architecture-review-$PR_NUMBER.json
+- review-summary-$PR_NUMBER.md
+
+Next Steps:
+1. Developer addresses critical issues
+2. Re-review when new commits pushed
+3. Approve when all critical issues resolved
+"
+
+# Display metrics
+db_workflow_metrics "$workflow_id"
+db_token_savings_report "$workflow_id"
+```
 
 ---
 
@@ -430,13 +771,11 @@ Improved testability, readability, and maintainability.
 
 1. **Detect new commits:**
    ```bash
-   # GitHub webhook or Action triggers on new push to PR branch
-   gh pr view <PR-NUMBER> --json commits
+   gh pr view $PR_NUMBER --json commits
    ```
 
 2. **Identify changed files since last review:**
    ```bash
-   # Compare with last review commit
    git diff <last-review-commit> <new-commit> --name-only
    ```
 
@@ -449,11 +788,11 @@ Improved testability, readability, and maintainability.
 4. **Update review status:**
    ```bash
    # If issues fixed and no new issues:
-   gh pr review <PR-NUMBER> --approve \
+   gh pr review $PR_NUMBER --approve \
      --body "✅ All issues addressed. Looks good!"
 
    # If new issues or incomplete fixes:
-   gh pr review <PR-NUMBER> --comment \
+   gh pr review $PR_NUMBER --comment \
      --body "Thanks for the fixes! Found a few remaining issues..."
    ```
 
@@ -543,27 +882,22 @@ jobs:
 
 ---
 
-## Metrics & Analytics
+## Success Criteria Checklist
 
-Track over time:
-- **Review Thoroughness:** Issues caught vs. production bugs from PRs
-- **Review Speed:** Time from PR open to first review
-- **Iteration Count:** Average iterations to approval
-- **Issue Distribution:** % by severity and category
-- **Developer Satisfaction:** Feedback quality ratings
-- **False Positives:** Issues marked as not applicable
-
----
-
-## Success Criteria
-
-PR review is complete when:
+- ✅ PR context gathered from GitHub
+- ✅ PR metadata validated
 - ✅ All changed files reviewed across 5 stages
+- ✅ Style and readability checked
+- ✅ Logic and correctness verified
+- ✅ Security audit completed
+- ✅ Performance impact analyzed
+- ✅ Architecture consistency reviewed
 - ✅ Issues identified and prioritized
+- ✅ Review summary generated
+- ✅ Inline comments posted for critical issues
 - ✅ Review summary posted to PR
-- ✅ Inline comments on critical issues
 - ✅ PR status set (approved/request changes)
-- ✅ Labels applied
+- ✅ Labels applied appropriately
 - ✅ Developer has clear action items
 
 ---

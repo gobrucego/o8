@@ -1,55 +1,49 @@
 ---
-description: Complete workflow creation lifecycle from requirements to integration with multi-phase design, quality gates, and automated metadata updates
+description: Create new autonomous workflow with multi-phase execution, quality gates, and automated metadata updates
 argumentHint: "[workflow-requirements-description]"
 ---
 
-# Create Workflow Workflow
+# Create Workflow
 
-## ⚠️ CRITICAL: Autonomous Orchestration Required
+Autonomous workflow for creating new orchestration workflows with comprehensive phase design, quality gates, and plugin integration.
 
-**DO NOT execute this workflow in the main Claude Code context.**
+## Intelligence Database Integration
 
-You MUST immediately delegate this entire workflow to the workflow-architect using the Task tool.
+```bash
+source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
 
-**Delegation Instructions:**
+# Initialize workflow
+workflow_id=$(db_start_workflow "create-workflow" "$(date +%s)" "{\"requirements\":\"$1\"}")
+
+echo "🚀 Starting Create Workflow Workflow"
+echo "Requirements: $1"
+echo "Workflow ID: $workflow_id"
+
+# Query similar workflow patterns
+db_query_similar_workflows "create-workflow" 5
 ```
-Use Task tool with:
-- subagent_type: "workflow-architect"
-- description: "Create new autonomous workflow command"
-- prompt: "Execute the create-workflow workflow for: [user's workflow requirements].
-
-Create a complete new workflow:
-1. Analyze requirements and define workflow specifications (20%)
-2. Design multi-phase execution with quality gates (25%)
-3. Implement workflow file with delegation pattern (25%)
-4. Test workflow invocation and orchestration (15%)
-5. Update plugin.json metadata and VERSION (10%)
-6. Update CHANGELOG.md with workflow addition (5%)
-
-Follow all phases, enforce quality gates, and meet all success criteria."
-```
-
-**After delegation:**
-- The workflow-architect will handle entire workflow creation autonomously
-- Returns to main context when complete or if user input required
 
 ---
 
-## Workflow Creation Instructions for Orchestrator
+## Phase 1: Requirements Analysis (0-20%)
 
-You are orchestrating the complete creation of a new autonomous workflow (slash command) from requirements analysis to plugin integration.
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the workflow-architect agent to:
+1. Extract workflow specifications from user requirements
+2. Identify workflow type (feature development, bug fixing, audit, deployment, optimization)
+3. Assess complexity (simple/moderate/complex)
+4. Determine required agents and quality gates
+5. Research similar workflows for patterns
 
-## Workflow Overview
+subagent_type: "workflow-architect"
+description: "Analyze requirements for new workflow"
+prompt: "Analyze requirements for creating a new workflow:
 
-This workflow uses the `workflow-architect` specialist to design and implement a new workflow following established orchestr8 patterns, then uses `plugin-developer` to update plugin metadata.
+Requirements: $1
 
-## Execution Instructions
-
-### Phase 1: Requirements Analysis (20%)
-
-**Use `workflow-architect` to analyze requirements:**
-
-1. **Extract Workflow Specifications**
+Tasks:
+1. **Extract Specifications**
    - What end-to-end process does this automate?
    - What are the inputs (arguments)?
    - What are the outputs (deliverables)?
@@ -62,392 +56,578 @@ This workflow uses the `workflow-architect` specialist to design and implement a
    - Complex: 8+ phases, 5+ agents, orchestrator needed
 
 3. **Workflow Type Identification**
-   - Feature Development (analysis → implement → test → deploy)
-   - Bug Fixing (triage → root cause → fix → test → deploy)
-   - Audit/Review (scan → review → report → remediate)
-   - Deployment (validate → stage → deploy → monitor → rollback)
-   - Optimization (profile → strategy → optimize → benchmark)
+   - Feature Development: analysis → implement → test → deploy
+   - Bug Fixing: triage → root cause → fix → test → deploy
+   - Audit/Review: scan → review → report → remediate
+   - Deployment: validate → stage → deploy → monitor → rollback
+   - Optimization: profile → strategy → optimize → benchmark
 
 4. **Research Similar Workflows**
-   - Find workflows with similar patterns
-   - Identify agent coordination approaches
-   - Understand quality gate patterns
+   \`\`\`bash
+   find /Users/seth/Projects/orchestr8/.claude/commands -name '*.md' | head -10
+   \`\`\`
 
-**CHECKPOINT**: Requirements clear, workflow type identified ✓
+Expected outputs:
+- Workflow specifications document
+- Complexity assessment
+- Workflow type identification
+- List of required agents
+- Quality gates needed
+"
+```
 
-### Phase 2: Workflow Design (30%)
+**Expected Outputs:**
+- Workflow specifications document
+- Complexity and type assessment
+- Agent requirements list
+- Quality gates list
 
-**Use `workflow-architect` to design the workflow:**
+**Quality Gate: Requirements Validation**
+```bash
+# Validate requirements provided
+if [ -z "$1" ]; then
+  echo "❌ Workflow requirements not provided"
+  db_log_error "ValidationError" "Requirements missing" "create-workflow" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ Requirements analyzed"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "requirements-analysis" $TOKENS_USED "20%"
+
+# Store requirements
+db_store_knowledge "workflow-creation" "requirements" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Requirements for new workflow" \
+  "Type: [identified], Complexity: [assessed], Agents: [list]"
+```
+
+---
+
+## Phase 2: Workflow Design (20-45%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the workflow-architect agent to:
+1. Design frontmatter with description and argumentHint
+2. Break down workflow into phases (4-8 phases totaling 100%)
+3. Design agent coordination strategy (sequential/parallel/conditional)
+4. Design quality gates with pass/fail criteria
+5. Define 8-12 specific success criteria
+
+subagent_type: "workflow-architect"
+description: "Design workflow architecture and phases"
+prompt: "Design the complete workflow architecture:
+
+Based on Phase 1 requirements, create:
 
 1. **Frontmatter Design**
-   ```yaml
+   \`\`\`yaml
    ---
    description: [Action verb] [scope] with [capabilities] - [benefits]
-   argumentHint: "[argument-format or description]"
+   argumentHint: \"[argument-format or description]\"
    ---
-   ```
+   \`\`\`
 
-2. **Phase Breakdown**
+2. **Phase Breakdown** (must total 100%)
    - Determine number of phases (typically 4-8)
-   - Assign percentage to each phase (must total 100%)
-   - Define phase objectives clearly
-   - Examples:
-     - Feature: Analysis (20%), Implementation (50%), Quality Gates (20%), Documentation & Deployment (10%)
-     - Bug Fix: Triage (15%), Root Cause (20%), Implementation (25%), Testing (25%), Deployment (15%)
-     - Audit: Reconnaissance (15%), Automated Scan (30%), Manual Review (25%), Reporting (20%), Remediation (10%)
+   - Assign percentage to each phase
+   - Define clear phase objectives
+
+   Examples:
+   - Feature: Analysis (20%), Implementation (50%), Quality Gates (20%), Deployment (10%)
+   - Bug Fix: Triage (15%), Root Cause (20%), Implementation (25%), Testing (25%), Deployment (15%)
+   - Audit: Reconnaissance (15%), Scan (30%), Review (25%), Report (20%), Remediation (10%)
 
 3. **Agent Coordination Design**
-   - Sequential execution (when dependencies exist)
-   - Parallel execution (when tasks are independent)
-   - Conditional execution (based on workflow specifics)
-   - Orchestrator usage (for complex coordination)
+   - Sequential: When dependencies exist
+   - Parallel: When tasks are independent
+   - Conditional: Based on workflow specifics
+   - Orchestrator: For complex coordination
 
 4. **Quality Gates Design**
    - Code Review (code-reviewer)
    - Testing (test-engineer)
    - Security (security-auditor)
    - Performance (performance-analyzer) if applicable
-   - Accessibility (accessibility-expert) if UI changes
    - **All gates must PASS** - no escape hatches
 
-5. **Success Criteria Definition**
-   - 8-12 specific, measurable criteria
-   - Cover all aspects: tests, security, deployment, monitoring
+5. **Success Criteria** (8-12 specific, measurable criteria)
+   - Cover all aspects
+   - Measurable and verifiable
    - Use ✅ checkbox format
 
-**CHECKPOINT**: Design complete and validated ✓
+Expected outputs:
+- Complete workflow design document
+- Phase breakdown with percentages
+- Agent coordination strategy
+- Quality gates specification
+- Success criteria list (8-12 items)
+"
+```
 
-### Phase 3: Implementation (35%)
+**Expected Outputs:**
+- `workflow-design.md` - Complete workflow design
+- Phase breakdown (totaling 100%)
+- Agent coordination strategy
+- Quality gates specification
+- Success criteria list
 
-**Use `workflow-architect` to implement the workflow:**
+**Quality Gate: Design Validation**
+```bash
+# Validate design document exists
+if [ ! -f "workflow-design.md" ]; then
+  echo "❌ Workflow design document missing"
+  db_log_error "ValidationError" "Design document not created" "create-workflow" "phase-2" "0"
+  exit 1
+fi
 
-1. **Create Workflow File**
-   - Path: `.claude/commands/[workflow-name].md`
-   - Kebab-case filename
-   - Frontmatter with description and argumentHint
+# Validate phases total 100%
+# (Manual validation - check design document)
 
-2. **Write Workflow Structure**
-   ```markdown
-   # Workflow Name
+echo "✅ Workflow design validated"
+```
 
-   [Brief introduction]
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$workflow_id" "workflow-design" $TOKENS_USED "45%"
 
-   ## [Optional] Workflow Overview / Context
+# Store design patterns
+db_store_knowledge "workflow-creation" "design" "$(echo $1 | tr -dc '[:alnum:]' | head -c 20)" \
+  "Workflow design architecture" \
+  "$(head -n 50 workflow-design.md)"
+```
 
-   [Background information]
+---
 
-   ## Execution Instructions
+## Phase 3: Implementation (45-75%)
 
-   ### Phase 1: [Name] (X%)
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the plugin-developer agent to:
+1. Create workflow markdown file in .claude/commands/
+2. Implement frontmatter with description and argumentHint
+3. Write Intelligence Database integration section
+4. Implement all phases with explicit Task tool patterns
+5. Add quality gates with bash validation
+6. Include success criteria checklist
+7. Add usage examples and anti-patterns
 
-   [Detailed steps with agent assignments]
+subagent_type: "plugin-developer"
+description: "Implement workflow markdown file"
+prompt: "Implement the complete workflow file:
 
-   **CHECKPOINT**: [Validation] ✓
+Based on workflow-design.md, create:
 
-   ### Phase 2: [Name] (Y%)
+1. **File Location**: /Users/seth/Projects/orchestr8/.claude/commands/[workflow-name].md
+   - Use kebab-case for filename
+   - Extract workflow name from requirements
 
-   [More phases...]
+2. **Frontmatter** (from design):
+   \`\`\`yaml
+   ---
+   description: [from design]
+   argumentHint: \"[from design]\"
+   ---
+   \`\`\`
 
-   ## Success Criteria
+3. **Intelligence Database Integration**:
+   \`\`\`bash
+   source /Users/seth/Projects/orchestr8/.claude/lib/db-helpers.sh
+   workflow_id=\$(db_start_workflow \"workflow-name\" \"\$(date +%s)\" \"{\\\"param\\\":\\\"\$1\\\"}\")
+   db_query_similar_workflows \"workflow-name\" 5
+   \`\`\`
 
-   [Workflow name] is complete when:
-   - ✅ [Criterion 1]
-   - ✅ [Criterion 2]
-   [... 8-12 total ...]
+4. **Each Phase Structure**:
+   \`\`\`markdown
+   ## Phase N: Phase Name (X-Y%)
 
-   ## Example Usage
+   **⚡ EXECUTE TASK TOOL:**
+   \`\`\`
+   Use the [agent-name] agent to:
+   1. Specific deliverable
+   2. Specific deliverable
 
-   ### Example 1: [Use Case]
-   ```bash
-   /workflow-name "description"
-   ```
+   subagent_type: \"agent-name\"
+   description: \"Brief 5-10 word description\"
+   prompt: \"Detailed instructions...
 
-   [Expected execution steps]
-   [Estimated time]
+   Expected outputs:
+   - File 1
+   - File 2
+   \"
+   \`\`\`
 
-   ## Anti-Patterns
+   **Expected Outputs:**
+   - \`file1.md\` - Description
+   - \`file2.json\` - Description
 
-   ### DON'T ❌
-   - [Anti-pattern 1]
-   - [Anti-pattern 2]
+   **Quality Gate: Gate Name**
+   \`\`\`bash
+   if [ ! -f \"required-file\" ]; then
+     echo \"❌ Phase failed\"
+     db_log_error \"ErrorType\" \"Message\" \"workflow\" \"file\" \"0\"
+     exit 1
+   fi
+   echo \"✅ Phase validated\"
+   \`\`\`
 
-   ### DO ✅
-   - [Best practice 1]
-   - [Best practice 2]
-   ```
+   **Track Progress:**
+   \`\`\`bash
+   TOKENS_USED=3000
+   db_track_tokens \"\$workflow_id\" \"phase-name\" \$TOKENS_USED \"20%\"
+   db_store_knowledge \"category\" \"subcategory\" \"key\" \"summary\" \"code\"
+   \`\`\`
+   \`\`\`
 
-3. **Phase Documentation**
-   - Each phase has clear objective
-   - Specific agent assignments (by name, not generic)
-   - Expected outputs listed
-   - Validation criteria stated
-   - Checkpoint at phase end
+5. **Workflow Completion Section**:
+   \`\`\`bash
+   db_complete_workflow \"\$workflow_id\" \"\$(date +%s)\" \"success\" \"Summary\"
+   db_workflow_metrics \"\$workflow_id\"
+   db_token_savings_report \"\$workflow_id\"
+   \`\`\`
 
-4. **Agent Assignment Pattern**
-   ```markdown
-   **Use `specific-agent-name` to:**
-   1. [Subtask 1 with details]
-   2. [Subtask 2 with details]
-   ```
+6. **Success Criteria Checklist** (from design, 8-12 items)
 
-   Or for conditional:
-   ```markdown
-   **Backend Features:**
-   - Python: `python-developer`
-   - TypeScript: `typescript-developer`
-   - Java: `java-developer`
-   ```
+7. **Usage Examples** (2+ real-world examples)
 
-5. **Quality Gates Implementation**
-   ```markdown
-   ### Phase N: Quality Gates (X%)
+8. **Anti-Patterns** (DO/DON'T lists)
 
-   Run all gates in parallel:
+Expected outputs:
+- Complete workflow file (200-400 lines typical)
+"
+```
 
-   1. **Code Review** - `code-reviewer`:
-      - Clean code principles
-      - SOLID principles
-      - Best practices
+**Expected Outputs:**
+- `/Users/seth/Projects/orchestr8/.claude/commands/[workflow-name].md` - Complete workflow file
 
-   2. **Testing** - `test-engineer`:
-      - Coverage >80%
-      - All tests passing
-      - Edge cases covered
+**Quality Gate: Implementation Validation**
+```bash
+# Determine workflow name (simplified - extract from requirements)
+WORKFLOW_NAME=$(echo "$1" | tr '[:upper:]' '[:lower:]' | tr ' ' '-' | head -c 30)
+WORKFLOW_FILE="/Users/seth/Projects/orchestr8/.claude/commands/${WORKFLOW_NAME}.md"
 
-   3. **Security** - `security-auditor`:
-      - No vulnerabilities
-      - No secrets in code
-      - OWASP compliance
+# Validate workflow file exists
+if [ ! -f "$WORKFLOW_FILE" ]; then
+  echo "❌ Workflow file not created at $WORKFLOW_FILE"
+  db_log_error "ValidationError" "Workflow file missing" "create-workflow" "phase-3" "0"
+  exit 1
+fi
 
-   **All gates must PASS before proceeding**
+# Validate frontmatter
+if ! grep -q "^---$" "$WORKFLOW_FILE"; then
+  echo "❌ Invalid frontmatter structure"
+  db_log_error "ValidationError" "Missing YAML frontmatter" "create-workflow" "phase-3" "0"
+  exit 1
+fi
 
-   **CHECKPOINT**: All quality gates passed ✓
-   ```
+# Validate database integration
+if ! grep -q "db_start_workflow" "$WORKFLOW_FILE"; then
+  echo "❌ Missing database integration"
+  db_log_error "ValidationError" "No database integration" "create-workflow" "phase-3" "0"
+  exit 1
+fi
 
-6. **Example Usage**
-   - At least 2 real-world examples
-   - Show command syntax
-   - Describe autonomous execution
-   - Include time estimates
+# Validate Task tool patterns
+if ! grep -q "⚡ EXECUTE TASK TOOL" "$WORKFLOW_FILE"; then
+  echo "❌ Missing explicit Task tool patterns"
+  db_log_error "ValidationError" "No explicit Task patterns" "create-workflow" "phase-3" "0"
+  exit 1
+fi
 
-7. **Anti-Patterns and Best Practices**
-   - DON'T list (what to avoid)
-   - DO list (what to follow)
+# Check file length
+LINE_COUNT=$(wc -l < "$WORKFLOW_FILE")
+if [ "$LINE_COUNT" -lt 100 ]; then
+  echo "❌ Workflow file too short: $LINE_COUNT lines"
+  db_log_error "ValidationError" "Workflow only $LINE_COUNT lines" "create-workflow" "phase-3" "0"
+  exit 1
+fi
 
-**CHECKPOINT**: Workflow file created with all sections ✓
+echo "✅ Workflow implementation validated ($LINE_COUNT lines)"
+```
 
-### Phase 4: Validation (10%)
+**Track Progress:**
+```bash
+TOKENS_USED=8000
+db_track_tokens "$workflow_id" "implementation" $TOKENS_USED "75%"
 
-**Validate workflow implementation:**
+# Store implementation
+db_store_knowledge "workflow-creation" "implementation" "$(basename \"$WORKFLOW_FILE\" .md)" \
+  "Implementation of workflow with $(wc -l < \"$WORKFLOW_FILE\") lines" \
+  "$(head -n 100 \"$WORKFLOW_FILE\")"
+```
 
-1. **Frontmatter Validation**
-   - `description` present and descriptive
-   - `argumentHint` included if workflow accepts arguments
-   - Valid YAML syntax
+---
 
-2. **Phase Validation**
-   - Phases add to 100%
-   - Each phase has clear objective
-   - Agent assignments specific (not generic)
-   - Checkpoints mark phase completion with ✓
+## Phase 4: Integration (75-90%)
 
-3. **Quality Gates Validation**
-   - All critical gates included
-   - Pass/fail conditions explicit
-   - No "skip if time permits" language
-   - Gates enforce quality standards
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the plugin-developer agent to:
+1. Update plugin.json with new workflow count
+2. Increment VERSION file (MINOR version)
+3. Add workflow to README.md if applicable
+4. Update CHANGELOG.md with workflow details
+5. Verify all integration points
 
-4. **Success Criteria Validation**
-   - 8-12 specific criteria
-   - All measurable and verifiable
-   - Cover all workflow aspects
-   - No ambiguous statements
+subagent_type: "plugin-developer"
+description: "Integrate workflow into plugin"
+prompt: "Integrate the new workflow into the Claude Code plugin:
 
-5. **Documentation Validation**
-   - At least 2 usage examples
-   - Anti-patterns documented
-   - Best practices included
-   - Time estimates provided
+Workflow file: $WORKFLOW_FILE
 
-6. **File Validation**
-   - Markdown syntax correct
-   - No spelling errors in critical sections
-   - Code blocks properly formatted
-   - Links valid (if any)
+Integration tasks:
 
-**CHECKPOINT**: All validations passed ✓
+1. **Update plugin.json**
+   - Increment features.workflows count
+   - Path: /Users/seth/Projects/orchestr8/.claude/plugin.json
+   - Current count: [read and increment]
 
-### Phase 5: Plugin Metadata Update (10%)
+2. **Update VERSION file**
+   - Increment MINOR version (X.Y.Z -> X.Y+1.0)
+   - Path: /Users/seth/Projects/orchestr8/.claude/VERSION
+   - Current version: [read current]
+   - New version: [increment minor, reset patch]
 
-**Use `plugin-developer` to update metadata:**
-
-1. **Count Workflows**
-   ```bash
-   find .claude/commands -name "*.md" | wc -l
-   ```
-
-2. **Update VERSION**
-   - Increment MINOR version (e.g., 1.4.0 → 1.5.0)
-   - Update `.claude/VERSION` file
-
-3. **Update plugin.json**
-   - Update `version` field
-   - Update workflow count in `description`
-   - Add workflow name if major feature
-
-4. **Verify Synchronization**
-   - VERSION matches plugin.json version
-   - Component counts accurate
-   - JSON is valid
-
-**CHECKPOINT**: Plugin metadata updated and synchronized ✓
-
-### Phase 6: Documentation (5%)
-
-**Use `plugin-developer` to update CHANGELOG:**
-
-1. **Add CHANGELOG Entry**
-   - Create new `## [X.Y.Z] - YYYY-MM-DD` section
-   - Document new workflow with use cases
-   - Include capabilities and benefits
-   - Use appropriate emoji category
-
-2. **Update README** (if applicable)
+3. **Update README.md** (if major workflow)
    - Add workflow to usage guide
-   - Update capability descriptions
-   - Add example invocations
+   - Include brief description
+   - Path: /Users/seth/Projects/orchestr8/README.md
 
-**CHECKPOINT**: Documentation updated ✓
+4. **Update CHANGELOG.md**
+   - Add entry for new workflow
+   - Include capabilities and use cases
+   - Path: /Users/seth/Projects/orchestr8/.claude/CHANGELOG.md
+   - Format:
+     \`\`\`markdown
+     ### 🔄 Workflows
+     - **/workflow-name** - Description
+       - Capability 1
+       - Capability 2
+       - Use case
+     \`\`\`
 
-## Success Criteria
+5. **Verify Integration**
+   - Check all files updated correctly
+   - Validate version consistency
+   - Ensure documentation complete
 
-Workflow creation is complete when:
+Expected outputs:
+- Updated plugin.json
+- Updated VERSION
+- Updated README.md (if applicable)
+- Updated CHANGELOG.md
+"
+```
+
+**Expected Outputs:**
+- `/Users/seth/Projects/orchestr8/.claude/plugin.json` - Updated workflow count
+- `/Users/seth/Projects/orchestr8/.claude/VERSION` - Incremented version
+- `/Users/seth/Projects/orchestr8/README.md` - Updated (if applicable)
+- `/Users/seth/Projects/orchestr8/.claude/CHANGELOG.md` - Workflow documented
+
+**Quality Gate: Integration Validation**
+```bash
+# Read new version
+NEW_VERSION=$(cat /Users/seth/Projects/orchestr8/.claude/VERSION)
+
+# Validate plugin.json updated
+if ! grep -q "\"workflows\": [0-9]" /Users/seth/Projects/orchestr8/.claude/plugin.json; then
+  echo "❌ plugin.json not updated"
+  db_log_error "ValidationError" "plugin.json workflow count not updated" "create-workflow" "phase-4" "0"
+  exit 1
+fi
+
+# Validate VERSION file
+if [ -z "$NEW_VERSION" ]; then
+  echo "❌ VERSION file not updated"
+  db_log_error "ValidationError" "VERSION file empty or missing" "create-workflow" "phase-4" "0"
+  exit 1
+fi
+
+# Validate CHANGELOG updated
+WORKFLOW_BASENAME=$(basename "$WORKFLOW_FILE" .md)
+if ! grep -q "$WORKFLOW_BASENAME" /Users/seth/Projects/orchestr8/.claude/CHANGELOG.md; then
+  echo "❌ CHANGELOG not updated"
+  db_log_error "ValidationError" "Workflow not added to CHANGELOG" "create-workflow" "phase-4" "0"
+  exit 1
+fi
+
+echo "✅ Integration validated (version: $NEW_VERSION)"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=3000
+db_track_tokens "$workflow_id" "integration" $TOKENS_USED "90%"
+
+# Store integration info
+db_store_knowledge "workflow-creation" "integration" "$(basename \"$WORKFLOW_FILE\" .md)" \
+  "Integration at version $NEW_VERSION" \
+  "Version: $NEW_VERSION, Workflow: /$WORKFLOW_BASENAME"
+```
+
+---
+
+## Phase 5: Testing & Documentation (90-100%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the test-engineer agent to:
+1. Test workflow invocation with sample input
+2. Validate workflow delegation works correctly
+3. Test quality gates can fail appropriately
+4. Create workflow usage documentation
+5. Generate test report
+
+subagent_type: "test-engineer"
+description: "Test and document new workflow"
+prompt: "Test the newly created workflow:
+
+Workflow file: $WORKFLOW_FILE
+Workflow command: /$WORKFLOW_BASENAME
+
+Testing requirements:
+
+1. **Invocation Test**
+   - Test workflow can be invoked via slash command
+   - Verify delegation to appropriate agents
+   - Check error handling
+
+2. **Quality Gate Tests**
+   - Validate quality gates can fail workflow
+   - Test rollback on failure
+   - Verify exit codes
+
+3. **Database Integration Tests**
+   - Test db_start_workflow() initializes correctly
+   - Verify db_track_tokens() tracking
+   - Test db_store_knowledge() storage
+   - Check db_complete_workflow() finalization
+
+4. **Documentation**
+   - Create usage guide: workflow-usage-$WORKFLOW_BASENAME.md
+   - Include invocation examples
+   - Document expected behavior
+   - Troubleshooting guide
+
+Expected outputs:
+- test-report-$WORKFLOW_BASENAME.md
+- workflow-usage-$WORKFLOW_BASENAME.md
+"
+```
+
+**Expected Outputs:**
+- `test-report-[workflow-name].md` - Test results
+- `workflow-usage-[workflow-name].md` - Usage documentation
+
+**Quality Gate: Testing Validation**
+```bash
+# Validate test report exists
+if [ ! -f "test-report-$WORKFLOW_BASENAME.md" ]; then
+  echo "❌ Test report missing"
+  db_log_error "ValidationError" "Test report not created" "create-workflow" "phase-5" "0"
+  exit 1
+fi
+
+# Validate usage documentation
+if [ ! -f "workflow-usage-$WORKFLOW_BASENAME.md" ]; then
+  echo "❌ Usage documentation missing"
+  db_log_error "ValidationError" "Usage guide not created" "create-workflow" "phase-5" "0"
+  exit 1
+fi
+
+echo "✅ Testing and documentation complete"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$workflow_id" "testing-documentation" $TOKENS_USED "100%"
+
+# Store test results
+db_store_knowledge "workflow-creation" "testing" "$(basename \"$WORKFLOW_FILE\" .md)" \
+  "Test results for workflow" \
+  "$(head -n 50 \"test-report-$WORKFLOW_BASENAME.md\")"
+```
+
+---
+
+## Workflow Complete
+
+```bash
+# Complete workflow tracking
+WORKFLOW_END=$(date +%s)
+
+db_complete_workflow "$workflow_id" "$WORKFLOW_END" "success" \
+  "Workflow created: /$WORKFLOW_BASENAME at version $NEW_VERSION"
+
+echo "
+✅ CREATE WORKFLOW COMPLETE
+
+Workflow Created: /$WORKFLOW_BASENAME
+Version: $NEW_VERSION
+File: $WORKFLOW_FILE
+
+Files Created:
+- $WORKFLOW_FILE
+- workflow-design.md
+- test-report-$WORKFLOW_BASENAME.md
+- workflow-usage-$WORKFLOW_BASENAME.md
+
+Files Updated:
+- /Users/seth/Projects/orchestr8/.claude/plugin.json
+- /Users/seth/Projects/orchestr8/.claude/VERSION
+- /Users/seth/Projects/orchestr8/.claude/CHANGELOG.md
+
+Next Steps:
+1. Review test-report-$WORKFLOW_BASENAME.md
+2. Test workflow: /$WORKFLOW_BASENAME \"[test input]\"
+3. Review workflow-usage-$WORKFLOW_BASENAME.md
+4. Commit changes: git add . && git commit -m 'feat: add /$WORKFLOW_BASENAME workflow'
+5. Create PR for review
+"
+
+# Display metrics
+db_workflow_metrics "$workflow_id"
+db_token_savings_report "$workflow_id"
+```
+
+## Success Criteria Checklist
+
 - ✅ Requirements analyzed and workflow type identified
-- ✅ Workflow designed with phases, agents, and quality gates
-- ✅ Workflow file created in .claude/commands/
-- ✅ Frontmatter complete and valid
-- ✅ All phases documented with checkpoints
+- ✅ Workflow designed with phases totaling 100%
 - ✅ Agent assignments specific and appropriate
 - ✅ Quality gates included and mandatory
+- ✅ Workflow file created with explicit Task patterns
+- ✅ Database integration included
 - ✅ Success criteria defined (8-12 items)
-- ✅ Example usage provided (2+ examples)
-- ✅ Anti-patterns and best practices documented
-- ✅ All validations passed
+- ✅ Usage examples provided (2+ examples)
+- ✅ Anti-patterns documented
 - ✅ Plugin metadata updated
 - ✅ VERSION incremented (MINOR bump)
-- ✅ VERSION and plugin.json synchronized
 - ✅ CHANGELOG.md updated
+- ✅ Testing completed
+- ✅ Usage documentation created
 - ✅ Workflow ready for use via /workflow-name
-
-## Example Usage
-
-### Example 1: Database Migration Workflow
-
-```bash
-/create-workflow "Create a workflow for database migration management that handles schema changes, data migration, rollback procedures, and zero-downtime deployments with validation at each step"
-```
-
-The workflow will autonomously:
-1. Analyze requirements → Database migration workflow
-2. Design workflow → 6 phases:
-   - Schema Design & Validation (15%)
-   - Migration Script Generation (20%)
-   - Testing on Staging (25%)
-   - Production Migration (25%)
-   - Verification & Monitoring (10%)
-   - Rollback Preparation (5%)
-3. Implement workflow → Create `/migrate-database` command with:
-   - Agent assignments (database-specialist, backend-developer)
-   - Quality gates (testing, security, data integrity)
-   - Rollback procedures
-   - Example usage scenarios
-4. Validate → All sections complete
-5. Update metadata → Increment version
-6. Document → Add CHANGELOG entry
-
-**Estimated Time**: ~12 minutes
-
-### Example 2: API Versioning Workflow
-
-```bash
-/create-workflow "Create a workflow for API versioning that manages backward compatibility, deprecation notices, migration guides, and ensures smooth transitions for API consumers"
-```
-
-The workflow will create `/version-api` command with:
-- Phases for compatibility analysis, version implementation, documentation, migration support
-- Quality gates for API contracts, backward compatibility testing
-- Success criteria for zero breaking changes
-
-**Estimated Time**: ~10 minutes
-
-### Example 3: Load Testing Workflow
-
-```bash
-/create-workflow "Create a comprehensive load testing workflow that profiles baseline performance, designs test scenarios, executes load tests, analyzes bottlenecks, and generates performance reports"
-```
-
-The workflow will create `/load-test` command using load-testing-specialist with phases for profiling, test execution, analysis, and optimization recommendations.
-
-**Estimated Time**: ~10 minutes
-
-## Anti-Patterns
-
-### DON'T ❌
-
-- Don't skip requirements analysis - understand the process first
-- Don't create ambiguous phases - each needs clear objective
-- Don't use generic agent references - specify exact agent names
-- Don't skip quality gates - they're mandatory
-- Don't allow gate skipping - no "if time permits" language
-- Don't forget checkpoints - mark phase boundaries with ✓
-- Don't use vague success criteria - must be measurable
-- Don't skip examples - workflows need usage documentation
-- Don't forget anti-patterns - show what NOT to do
-- Don't skip metadata update - keep plugin.json synchronized
-- Don't forget CHANGELOG - document all new workflows
-- Don't create partial workflows - all sections required
-
-### DO ✅
-
-- Research similar workflows for patterns
-- Design phases that add to 100%
-- Assign specific agents by name
-- Include all critical quality gates
-- Make gates mandatory (no escape hatches)
-- Use checkpoints at phase boundaries
-- Define 8-12 specific success criteria
-- Provide 2+ real usage examples
-- Document anti-patterns and best practices
-- Update plugin metadata immediately
-- Use semantic versioning (MINOR bump)
-- Commit all related files together
-- Test workflow invocation after creation
 
 ## Workflow Type Patterns
 
 **Feature Development:**
-- Analysis & Design (20%) → Implementation (50%) → Quality Gates (20%) → Documentation & Deployment (10%)
+- Analysis & Design (20%) → Implementation (50%) → Quality Gates (20%) → Deployment (10%)
 
 **Bug Fixing:**
-- Triage & Reproduction (15%) → Root Cause Analysis (20%) → Implementation (25%) → Testing (25%) → Deployment (15%)
+- Triage & Reproduction (15%) → Root Cause (20%) → Implementation (25%) → Testing (25%) → Deployment (15%)
 
 **Audit/Review:**
-- Reconnaissance (15%) → Automated Scanning (30%) → Manual Review (25%) → Reporting (20%) → Remediation (10%)
+- Reconnaissance (15%) → Scan (30%) → Review (25%) → Report (20%) → Remediation (10%)
 
 **Deployment:**
-- Pre-Deployment Validation (20%) → Staging (15%) → Production (30%) → Post-Deployment (20%) → Monitoring (15%)
+- Validation (20%) → Staging (15%) → Production (30%) → Post-Deployment (20%) → Monitoring (15%)
 
 **Optimization:**
-- Profiling & Baseline (20%) → Strategy (15%) → Implementation (40%) → Benchmarking (15%) → Documentation (10%)
-
-## Notes
-
-- **workflow-architect** handles all design and implementation
-- **plugin-developer** handles all metadata updates
-- Version bumps are always MINOR for new workflows
-- All related files must be committed together
-- Workflow is immediately usable via `/workflow-name` after creation
-- No user intervention needed unless requirements are ambiguous
-- Workflows enforce quality gates - no shortcuts allowed
-
-**This workflow makes the orchestr8 plugin self-extending!**
+- Profiling (20%) → Strategy (15%) → Implementation (40%) → Benchmarking (15%) → Documentation (10%)

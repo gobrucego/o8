@@ -61,9 +61,23 @@ db_find_similar_workflows "fix-bug" 5
 
 ## Execution Instructions
 
-### Phase 1: Bug Triage & Reproduction (15%)
+### Phase 1: Bug Triage & Reproduction (0-15%)
 
-**Use `debugger` agent to:**
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the debugger agent to:
+1. Analyze bug report and parse error messages/stack traces
+2. Gather context from recent changes and logs
+3. Reproduce bug locally with exact environment
+4. Create failing test that captures the bug
+
+subagent_type: "debugger"
+description: "Reproduce bug and create failing test"
+prompt: "Analyze and reproduce the reported bug:
+
+Bug Report: $*
+
+Tasks:
 
 1. **Analyze Bug Report**
    - Parse error messages and stack traces
@@ -74,13 +88,10 @@ db_find_similar_workflows "fix-bug" 5
 2. **Gather Context**
    ```bash
    # Check recent changes
-   git log --since="1 week ago" --oneline -- [affected-files]
+   git log --since='1 week ago' --oneline -- [affected-files]
 
-   # Check related issues
-   # Search issue tracker for similar bugs
-
-   # Review monitoring/logs
-   # Check error tracking (Sentry, etc.)
+   # Search for similar bugs in issue tracker
+   # Review monitoring/logs for patterns
    ```
 
 3. **Reproduce Locally**
@@ -90,15 +101,43 @@ db_find_similar_workflows "fix-bug" 5
    - Document exact conditions
 
 4. **Create Failing Test**
-   Use `test-engineer` to write test that fails:
-   ```
+   Coordinate with test-engineer to write test that fails:
    - Unit test for isolated bug
    - Integration test for system interaction
    - E2E test for user-facing bug
-   ```
 
-**CHECKPOINT**: Bug reproduced with failing test ✓
+Expected outputs:
+- Bug reproduction steps documented
+- Failing test created
+- Environment details captured
+"
+```
 
+**Expected Outputs:**
+- `bug-reproduction.md` - Reproduction steps and environment details
+- Failing test in appropriate test suite
+- Error logs and stack traces captured
+
+**Quality Gate: Bug Reproduction**
+```bash
+if [ ! -f "bug-reproduction.md" ]; then
+  echo "❌ Bug reproduction documentation missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Bug not reproduced" "fix-bug" "phase-1" "0"
+  exit 1
+fi
+
+# Verify failing test exists
+TEST_COUNT=$(find . -name "*test*" -newer /tmp/workflow-start-$WORKFLOW_ID | wc -l)
+if [ "$TEST_COUNT" -eq 0 ]; then
+  echo "❌ No failing test created"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Missing regression test" "fix-bug" "phase-1" "0"
+  exit 1
+fi
+
+echo "✅ Bug reproduced with failing test"
+```
+
+**Track Progress:**
 ```bash
 # Log the error to database
 ERROR_TYPE=$(determine_error_type)
@@ -117,129 +156,388 @@ if [ "$SEVERITY" = "critical" ]; then
     "Critical Bug Reproduced" \
     "Bug affects: ${CATEGORY}. Requires immediate attention."
 fi
+
+TOKENS_USED=3000
+db_track_tokens "$WORKFLOW_ID" "triage-reproduction" $TOKENS_USED "15%"
 ```
 
-### Phase 2: Root Cause Analysis (20%)
+---
 
-**Use `debugger` agent with `code-archaeologist` if needed:**
+### Phase 2: Root Cause Analysis (15-35%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the debugger agent with code-archaeologist if needed to:
+1. Debug and investigate using appropriate tools
+2. Identify exact root cause with evidence
+3. Determine affected scope and impact
+4. Document findings and fix strategy
+
+subagent_type: "debugger"
+description: "Identify root cause through debugging"
+prompt: "Perform root cause analysis for the bug:
+
+Bug Details: [from Phase 1]
+Failing Test: [test file path]
+
+Tasks:
 
 1. **Debug Investigation**
-   ```
    Tools to use:
    - Debugger (pdb, gdb, Chrome DevTools, etc.)
    - Profiler (if performance-related)
    - Log analysis
    - Distributed tracing (if microservices)
-   ```
 
 2. **Identify Root Cause**
-   Ask:
+   Answer:
    - What changed that caused this?
    - Why does it fail under these conditions?
    - Is it timing/race condition?
    - Is it data-dependent?
    - Is it environment-specific?
 
-3. **Document Findings**
-   ```markdown
-   ROOT CAUSE:
-   [Exact cause with evidence]
+3. **Assess Impact**
+   - What else might be affected?
+   - Similar patterns in codebase?
+   - User impact scope?
 
-   AFFECTED SCOPE:
-   [What else might be impacted]
+4. **Document Findings**
+   Create root-cause-analysis.md with:
+   - ROOT CAUSE: [Exact cause with evidence]
+   - AFFECTED SCOPE: [What else might be impacted]
+   - WHY IT HAPPENED: [How bug was introduced]
+   - FIX STRATEGY: [How to fix properly]
 
-   WHY IT HAPPENED:
-   [How bug was introduced]
+If needed, use code-archaeologist agent to:
+- Search for similar patterns
+- Analyze code history
+- Identify related bugs
 
-   FIX STRATEGY:
-   [How to fix properly]
-   ```
+Expected outputs:
+- root-cause-analysis.md
+- Debug logs and evidence
+- Fix strategy documented
+"
+```
 
-**CHECKPOINT**: Root cause identified and documented ✓
+**Expected Outputs:**
+- `root-cause-analysis.md` - Complete root cause documentation
+- Debug logs and evidence files
+- Fix strategy with approach
 
-### Phase 3: Implementation (25%)
+**Quality Gate: Root Cause Validation**
+```bash
+if [ ! -f "root-cause-analysis.md" ]; then
+  echo "❌ Root cause analysis missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Root cause not identified" "fix-bug" "phase-2" "0"
+  exit 1
+fi
 
-**Use appropriate development agent based on language:**
+# Verify root cause is documented
+if ! grep -q "ROOT CAUSE:" "root-cause-analysis.md"; then
+  echo "❌ Root cause not documented"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Root cause section missing" "fix-bug" "phase-2" "0"
+  exit 1
+fi
+
+echo "✅ Root cause identified and documented"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$WORKFLOW_ID" "root-cause-analysis" $TOKENS_USED "35%"
+
+# Store root cause for learning
+ROOT_CAUSE=$(grep -A 3 "ROOT CAUSE:" root-cause-analysis.md | tail -n 2)
+db_store_knowledge "debugger" "root_cause" "$CATEGORY" \
+  "Root cause for $ERROR_TYPE: $ROOT_CAUSE" \
+  "$FILE_PATH:$LINE_NUM"
+```
+
+---
+
+### Phase 3: Implementation (35-60%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use appropriate development agent based on language to:
+1. Implement fix targeting root cause
+2. Add defensive code and validation
+3. Verify fix locally with all tests
+4. Ensure minimal changes with no side effects
+
+subagent_type: "[language-specialist]"  # e.g., python-developer, typescript-developer
+description: "Implement bug fix with defensive code"
+prompt: "Implement the bug fix based on root cause analysis:
+
+Root Cause: [from root-cause-analysis.md]
+Fix Strategy: [from root-cause-analysis.md]
+Failing Test: [test file path]
+
+Tasks:
 
 1. **Implement Fix**
-   ```
    Principles:
    - Fix root cause, not symptom
    - Minimal change
    - Maintain code quality
    - No side effects
    - Clear comments if complex
+
+2. **Add Defensive Code**
+   Add validation, assertions, and logging:
+   ```python
+   # Example patterns
+   def process_user(user_id):
+       if not user_id:
+           raise ValueError('user_id is required')
+       if not isinstance(user_id, int):
+           raise TypeError(f'user_id must be int, got {type(user_id)}')
+
+       user = get_user(user_id)
+       if not user:
+           raise NotFoundError(f'User {user_id} not found')
+
+       logger.info(f'Processing user {user_id}')
+       return process(user)
    ```
 
-2. **Verify Fix Locally**
-   ```
+3. **Verify Fix Locally**
    - Failing test now passes
    - All existing tests still pass
    - No new warnings
    - Manual testing if needed
-   ```
 
-3. **Add Defensive Code**
-   ```python
-   # Add validation
-   def process_user(user_id):
-       if not user_id:
-           raise ValueError("user_id is required")
-       if not isinstance(user_id, int):
-           raise TypeError(f"user_id must be int, got {type(user_id)}")
+Expected outputs:
+- Fixed code files
+- All tests passing
+- Fix implementation notes
+"
+```
 
-       user = get_user(user_id)
-       if not user:
-           raise NotFoundError(f"User {user_id} not found")
+**Expected Outputs:**
+- Fixed source code files
+- Implementation notes in `fix-implementation.md`
+- All tests passing (green)
 
-       return process(user)
+**Quality Gate: Implementation Validation**
+```bash
+# Run the previously failing test
+echo "Running regression test..."
+if ! run_tests; then
+  echo "❌ Tests still failing"
+  db_log_error "$WORKFLOW_ID" "TestFailure" "Fix did not resolve bug" "fix-bug" "phase-3" "0"
+  exit 1
+fi
 
-   # Add assertions
-   assert len(items) > 0, "Items list cannot be empty"
+# Verify no new test failures
+echo "Running full test suite..."
+if ! run_all_tests; then
+  echo "❌ New test failures introduced"
+  db_log_error "$WORKFLOW_ID" "RegressionError" "Fix broke other functionality" "fix-bug" "phase-3" "0"
+  exit 1
+fi
 
-   # Add logging
-   logger.info(f"Processing user {user_id}")
-   ```
+echo "✅ Fix implemented and verified locally"
+```
 
-**CHECKPOINT**: Fix implemented and verified locally ✓
+**Track Progress:**
+```bash
+TOKENS_USED=5000
+db_track_tokens "$WORKFLOW_ID" "implementation" $TOKENS_USED "60%"
 
-### Phase 4: Comprehensive Testing (25%)
+# Store fix code
+FIX_CODE=$(git diff HEAD -- "$FILE_PATH" | head -n 50)
+db_store_knowledge "developer" "bug_fix" "$CATEGORY" \
+  "Fix for $ERROR_TYPE in $FILE_PATH" \
+  "$FIX_CODE"
+```
 
-**Run all quality gates in parallel:**
+---
 
-1. **Test Suite** - `test-engineer`:
-   ```
-   - Regression test (the failing test now passes)
+### Phase 4: Comprehensive Testing (60-85%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Run all quality gates in parallel using multiple agents:
+1. test-engineer: Comprehensive test suite
+2. code-reviewer: Review fix quality
+3. security-auditor: Security validation
+4. code-archaeologist: Check for similar bugs
+
+Execute quality gates concurrently for speed.
+
+subagent_type: "test-engineer"
+description: "Run comprehensive test suite and regression tests"
+prompt: "Execute comprehensive testing for bug fix:
+
+Fixed Files: [list of changed files]
+Bug Category: $CATEGORY
+
+Tasks:
+
+1. **Regression Test**
+   - The failing test now passes
+   - Document test results
+
+2. **Full Test Suite**
    - All existing tests pass
-   - New edge case tests
-   - Performance tests (if performance bug)
-   - Load tests (if concurrency bug)
-   ```
+   - No new failures
+   - No flaky tests
 
-2. **Code Review** - `code-reviewer`:
-   ```
-   - Fix is correct and complete
-   - No code smells introduced
-   - Proper error handling
-   - Clear and maintainable
-   ```
+3. **New Edge Case Tests**
+   - Test boundary conditions
+   - Test error cases
+   - Test similar scenarios
 
-3. **Security Check** - `security-auditor`:
-   ```
-   - No new security issues
-   - Input validation proper
-   - No injection risks
-   ```
+4. **Performance Tests** (if performance bug)
+   - Benchmark before/after
+   - Verify no degradation
 
-4. **Similar Bugs Check** - `code-archaeologist`:
-   ```
-   - Search for similar patterns
-   - Check if bug exists elsewhere
-   - Verify fix covers all cases
-   ```
+5. **Load Tests** (if concurrency bug)
+   - Test under high load
+   - Verify thread safety
 
-**CHECKPOINT**: All quality gates passed ✓
+Expected outputs:
+- test-report.md with all results
+- Coverage report
+- Performance benchmarks (if applicable)
+"
+```
 
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-reviewer agent to:
+1. Review fix correctness and completeness
+2. Check for code smells
+3. Verify error handling
+4. Ensure maintainability
+
+subagent_type: "code-reviewer"
+description: "Review bug fix code quality"
+prompt: "Review the bug fix implementation:
+
+Changed Files: [list]
+Root Cause: [summary]
+Fix Strategy: [summary]
+
+Review for:
+- Fix is correct and complete
+- No code smells introduced
+- Proper error handling
+- Clear and maintainable
+- Follows project conventions
+- No unnecessary changes
+
+Expected outputs:
+- code-review-report.md
+"
+```
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the security-auditor agent to:
+1. Verify no new security issues
+2. Check input validation
+3. Ensure no injection risks
+
+subagent_type: "security-auditor"
+description: "Audit bug fix for security issues"
+prompt: "Security audit of bug fix:
+
+Changed Files: [list]
+
+Check for:
+- No new security vulnerabilities
+- Input validation proper
+- No injection risks (SQL, XSS, etc.)
+- No credential exposure
+- Proper error handling (no info leak)
+
+Expected outputs:
+- security-audit.md
+"
+```
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the code-archaeologist agent to:
+1. Search for similar bug patterns
+2. Verify fix covers all cases
+3. Check if bug exists elsewhere
+
+subagent_type: "code-archaeologist"
+description: "Check for similar bugs in codebase"
+prompt: "Search for similar bug patterns:
+
+Bug Pattern: [from root cause]
+Fixed File: $FILE_PATH
+
+Search for:
+- Similar code patterns
+- Related functionality
+- Potential similar bugs
+- Other locations needing fix
+
+Expected outputs:
+- similar-bugs-analysis.md
+- List of potential issues
+"
+```
+
+**Expected Outputs:**
+- `test-report.md` - Complete test results
+- `code-review-report.md` - Code review findings
+- `security-audit.md` - Security validation
+- `similar-bugs-analysis.md` - Similar pattern analysis
+
+**Quality Gate: All Quality Gates Pass**
+```bash
+# Check test report
+if [ ! -f "test-report.md" ]; then
+  echo "❌ Test report missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Testing incomplete" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+if grep -q "FAILED" "test-report.md"; then
+  echo "❌ Tests failed"
+  db_log_error "$WORKFLOW_ID" "TestFailure" "Quality gate failed: tests" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+# Check code review
+if [ ! -f "code-review-report.md" ]; then
+  echo "❌ Code review missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Code review incomplete" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+if grep -q "REJECT" "code-review-report.md"; then
+  echo "❌ Code review rejected"
+  db_log_error "$WORKFLOW_ID" "ReviewFailure" "Quality gate failed: code review" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+# Check security audit
+if [ ! -f "security-audit.md" ]; then
+  echo "❌ Security audit missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Security audit incomplete" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+if grep -q "VULNERABILITY" "security-audit.md"; then
+  echo "❌ Security vulnerabilities found"
+  db_log_error "$WORKFLOW_ID" "SecurityError" "Quality gate failed: security" "fix-bug" "phase-4" "0"
+  exit 1
+fi
+
+echo "✅ All quality gates passed"
+```
+
+**Track Progress:**
 ```bash
 # Log quality gates for bug fix
 db_log_quality_gate "$WORKFLOW_ID" "regression_test" "passed" 100 0
@@ -247,12 +545,33 @@ db_log_quality_gate "$WORKFLOW_ID" "code_review" "passed" 95 0
 db_log_quality_gate "$WORKFLOW_ID" "security" "passed" 100 0
 
 # Track token usage for testing phase
-db_track_tokens "$WORKFLOW_ID" "testing" "test-engineer" $TEST_TOKENS "comprehensive-testing"
+TOKENS_USED=6000
+db_track_tokens "$WORKFLOW_ID" "comprehensive-testing" $TOKENS_USED "85%"
 ```
 
-### Phase 5: Documentation & Deployment (15%)
+---
 
-1. **Document Fix**
+### Phase 5: Documentation & Deployment (85-100%)
+
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the technical-writer agent to:
+1. Document the bug fix comprehensively
+2. Create deployment documentation
+3. Prepare post-mortem analysis
+
+subagent_type: "technical-writer"
+description: "Document bug fix and deployment"
+prompt: "Document the bug fix:
+
+Bug: [summary]
+Root Cause: [from analysis]
+Fix: [description]
+Testing: [results]
+
+Create documentation:
+
+1. **Bug Fix Documentation** (bug-fix-docs.md)
    ```markdown
    ## Bug Fix Documentation
 
@@ -275,9 +594,8 @@ db_track_tokens "$WORKFLOW_ID" "testing" "test-engineer" $TEST_TOKENS "comprehen
    [How to prevent similar bugs]
    ```
 
-2. **Create Commit**
-   ```bash
-   git commit -m "$(cat <<'EOF'
+2. **Commit Message** (commit-message.txt)
+   ```
    fix(component): brief description
 
    Fixes #123
@@ -296,38 +614,191 @@ db_track_tokens "$WORKFLOW_ID" "testing" "test-engineer" $TEST_TOKENS "comprehen
    - Verified in staging
 
    Impact: [users/systems affected]
-   EOF
-   )"
    ```
 
-3. **Deploy**
-   ```
-   Staging:
-   1. Deploy to staging
-   2. Run smoke tests
-   3. Verify fix works
-   4. Monitor for issues
+3. **Post-Mortem** (post-mortem.md)
+   - What happened
+   - Timeline
+   - Root cause
+   - How it was fixed
+   - Prevention measures
+   - Action items
 
-   Production:
-   1. Deploy to production (canary/rolling)
-   2. Monitor metrics closely
-   3. Verify fix in production
-   4. Watch for regressions
+Expected outputs:
+- bug-fix-docs.md
+- commit-message.txt
+- post-mortem.md
+"
+```
 
-   Rollback Plan:
-   - Revert commit if issues
+**⚡ EXECUTE TASK TOOL:**
+```
+Use the ci-cd-engineer agent to:
+1. Deploy to staging and verify
+2. Deploy to production (canary/rolling)
+3. Monitor metrics and verify
+4. Prepare rollback plan
+
+subagent_type: "ci-cd-engineer"
+description: "Deploy bug fix with monitoring"
+prompt: "Deploy the bug fix:
+
+Fixed Files: [list]
+Testing Status: All passed
+
+Deployment tasks:
+
+1. **Staging Deployment**
+   - Deploy to staging environment
+   - Run smoke tests
+   - Verify fix works
+   - Monitor for issues
+
+2. **Production Deployment**
+   - Deploy using canary/rolling strategy
+   - Monitor metrics closely
+   - Verify fix in production
+   - Watch for regressions
+
+3. **Rollback Plan**
+   - Document revert procedure
    - Known good version documented
-   ```
+   - Rollback triggers defined
 
 4. **Post-Deployment**
-   ```
-   - Update issue tracker (close ticket)
+   - Update issue tracker
    - Notify stakeholders
    - Monitor for 24 hours
-   - Document lessons learned
-   ```
 
-**CHECKPOINT**: Deployed and verified ✓
+Expected outputs:
+- deployment-report.md
+- rollback-plan.md
+"
+```
+
+**Expected Outputs:**
+- `bug-fix-docs.md` - Complete documentation
+- `commit-message.txt` - Formatted commit message
+- `post-mortem.md` - Lessons learned
+- `deployment-report.md` - Deployment status
+- `rollback-plan.md` - Rollback procedures
+
+**Quality Gate: Documentation & Deployment**
+```bash
+# Validate documentation
+if [ ! -f "bug-fix-docs.md" ]; then
+  echo "❌ Bug fix documentation missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Documentation incomplete" "fix-bug" "phase-5" "0"
+  exit 1
+fi
+
+if [ ! -f "commit-message.txt" ]; then
+  echo "❌ Commit message not prepared"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Commit message missing" "fix-bug" "phase-5" "0"
+  exit 1
+fi
+
+# Validate deployment
+if [ ! -f "deployment-report.md" ]; then
+  echo "❌ Deployment report missing"
+  db_log_error "$WORKFLOW_ID" "ValidationError" "Deployment not completed" "fix-bug" "phase-5" "0"
+  exit 1
+fi
+
+if grep -q "FAILED" "deployment-report.md"; then
+  echo "❌ Deployment failed"
+  db_log_error "$WORKFLOW_ID" "DeploymentError" "Deployment unsuccessful" "fix-bug" "phase-5" "0"
+  exit 1
+fi
+
+echo "✅ Documented and deployed"
+```
+
+**Track Progress:**
+```bash
+TOKENS_USED=4000
+db_track_tokens "$WORKFLOW_ID" "documentation-deployment" $TOKENS_USED "100%"
+
+# Store post-mortem
+db_store_knowledge "debugger" "post_mortem" "$CATEGORY" \
+  "Post-mortem for $ERROR_TYPE" \
+  "$(head -n 50 post-mortem.md)"
+```
+
+---
+
+## Workflow Completion & Learning
+
+**At workflow end:**
+```bash
+# Mark error as resolved in database
+RESOLUTION_SUMMARY="[Brief description of fix]"
+RESOLUTION_CODE="[Key code snippet that fixed the issue]"
+CONFIDENCE=0.95  # How confident we are this fully fixes the issue
+
+db_resolve_error "$ERROR_ID" "$RESOLUTION_SUMMARY" "$RESOLUTION_CODE" $CONFIDENCE
+
+# Calculate total token usage
+TOTAL_TOKENS=$(sum_agent_token_usage)
+db_track_tokens "$WORKFLOW_ID" "completion" $TOTAL_TOKENS "100%"
+
+# Update workflow status
+db_update_workflow_status "$WORKFLOW_ID" "completed"
+
+# Store lessons learned
+ROOT_CAUSE=$(summarize_root_cause)
+PREVENTION=$(list_prevention_measures)
+db_store_knowledge "debugger" "bug_pattern" "$CATEGORY" \
+  "Bug type: ${ERROR_TYPE}. Root cause: ${ROOT_CAUSE}. Prevention: ${PREVENTION}" \
+  "$RESOLUTION_CODE"
+
+# Get workflow metrics
+echo "=== Bug Fix Metrics ==="
+db_workflow_metrics "$WORKFLOW_ID"
+
+# Get error statistics to track improvement
+echo "=== Error Statistics (Last 30 days) ==="
+db_error_stats 30
+
+# Send completion notification
+DURATION=$(calculate_workflow_duration)
+db_send_notification "$WORKFLOW_ID" "workflow_complete" "high" \
+  "Bug Fixed & Deployed" \
+  "Bug resolved in ${DURATION} minutes. Root cause: ${ROOT_CAUSE}. Confidence: ${CONFIDENCE}"
+
+# Display token usage
+echo "=== Token Usage Report ==="
+db_token_savings "$WORKFLOW_ID"
+
+echo "
+✅ BUG FIX COMPLETE
+
+Bug: $ERROR_TYPE in $FILE_PATH
+Root Cause: $ROOT_CAUSE
+Resolution: $RESOLUTION_SUMMARY
+Confidence: $CONFIDENCE
+
+Deliverables:
+- bug-reproduction.md
+- root-cause-analysis.md
+- fix-implementation.md
+- test-report.md
+- code-review-report.md
+- security-audit.md
+- similar-bugs-analysis.md
+- bug-fix-docs.md
+- post-mortem.md
+- deployment-report.md
+
+Next Steps:
+1. Monitor production for 24 hours
+2. Review post-mortem.md for lessons learned
+3. Implement prevention measures
+4. Update documentation if needed
+"
+```
+
+---
 
 ## Special Bug Types
 
@@ -399,6 +870,8 @@ db_track_tokens "$WORKFLOW_ID" "testing" "test-engineer" $TEST_TOKENS "comprehen
 7. Public disclosure after fix deployed
 ```
 
+---
+
 ## Success Criteria
 
 Bug fix complete when:
@@ -407,12 +880,17 @@ Bug fix complete when:
 - ✅ Fix implemented (root cause, not symptom)
 - ✅ Regression test passes
 - ✅ All existing tests pass
-- ✅ All quality gates passed
+- ✅ All quality gates passed (test, review, security)
+- ✅ Similar bugs checked and addressed
 - ✅ Code reviewed and approved
-- ✅ Deployed to production
-- ✅ Verified in production
+- ✅ Deployed to staging and verified
+- ✅ Deployed to production and monitored
 - ✅ No new issues introduced
-- ✅ Documentation updated
+- ✅ Documentation complete (fix docs, post-mortem)
+- ✅ Stakeholders notified
+- ✅ Lessons learned captured
+
+---
 
 ## Example Usage
 
@@ -468,6 +946,8 @@ Happens ~1% of the time under load."
 
 **Time: 2-3 hours**
 
+---
+
 ## Anti-Patterns
 
 ### DON'T
@@ -490,6 +970,8 @@ Happens ~1% of the time under load."
 ✅ Document for future
 ✅ Learn from each bug
 
+---
+
 ## Monitoring Post-Deployment
 
 ```
@@ -511,82 +993,6 @@ Rollback if:
 - Critical functionality broken
 - Data corruption risk
 - Security vulnerability exposed
-```
-
-## Lessons Learned Template
-
-After each bug fix, document:
-
-```markdown
-## Bug Post-Mortem
-
-### What Happened
-[Bug description]
-
-### Timeline
-- [When introduced]
-- [When discovered]
-- [When fixed]
-
-### Root Cause
-[Why it happened]
-
-### How It Was Fixed
-[Solution implemented]
-
-### How to Prevent
-- [Code changes]
-- [Process changes]
-- [Tool improvements]
-- [Testing improvements]
-
-### Action Items
-- [ ] [Item 1]
-- [ ] [Item 2]
-```
-
-## Workflow Completion & Learning
-
-**At workflow end:**
-```bash
-# Mark error as resolved in database
-RESOLUTION_SUMMARY="[Brief description of fix]"
-RESOLUTION_CODE="[Key code snippet that fixed the issue]"
-CONFIDENCE=0.95  # How confident we are this fully fixes the issue
-
-db_resolve_error "$ERROR_ID" "$RESOLUTION_SUMMARY" "$RESOLUTION_CODE" $CONFIDENCE
-
-# Calculate total token usage
-TOTAL_TOKENS=$(sum_agent_token_usage)
-db_track_tokens "$WORKFLOW_ID" "completion" "orchestrator" $TOTAL_TOKENS "bug-fix-complete"
-
-# Update workflow status
-db_update_workflow_status "$WORKFLOW_ID" "completed"
-
-# Store lessons learned
-ROOT_CAUSE=$(summarize_root_cause)
-PREVENTION=$(list_prevention_measures)
-db_store_knowledge "debugger" "bug_pattern" "$CATEGORY" \
-  "Bug type: ${ERROR_TYPE}. Root cause: ${ROOT_CAUSE}. Prevention: ${PREVENTION}" \
-  "$RESOLUTION_CODE"
-
-# Get workflow metrics
-echo "=== Bug Fix Metrics ==="
-db_workflow_metrics "$WORKFLOW_ID"
-
-# Get error statistics to track improvement
-echo "=== Error Statistics (Last 30 days) ==="
-db_error_stats 30
-
-# Send completion notification
-DURATION=$(calculate_workflow_duration)
-db_send_notification "$WORKFLOW_ID" "workflow_complete" "high" \
-  "Bug Fixed & Deployed" \
-  "Bug resolved in ${DURATION} minutes. Root cause: ${ROOT_CAUSE}. Confidence: ${CONFIDENCE}"
-
-# Display token usage
-echo "=== Token Usage Report ==="
-db_token_savings "$WORKFLOW_ID"
 ```
 
 This workflow ensures every bug is fixed properly, thoroughly tested, and learned from. Autonomous, comprehensive, and production-ready.

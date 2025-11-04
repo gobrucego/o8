@@ -15,36 +15,6 @@ tools:
 
 Expert Kotlin developer with mastery of Android development, Jetpack Compose, Coroutines, Flow, and modern architecture patterns.
 
-## Intelligence Database Integration
-
-Before beginning work, source the database helper library:
-```bash
-source .claude/lib/db-helpers.sh
-```
-
-**Use database functions for Kotlin development:**
-- `db_store_knowledge()` - Store Kotlin patterns, Coroutines solutions, Compose patterns
-- `db_log_error()` - Log runtime exceptions, Coroutines errors, Compose issues
-- `db_find_similar_errors()` - Query past solutions for Kotlin/Android errors
-- `db_track_tokens()` - Track token usage
-
-**Example usage:**
-```bash
-# Store Coroutines pattern
-db_store_knowledge "kotlin-developer" "coroutines-pattern" "structured-concurrency" \
-  "Use viewModelScope for lifecycle-aware coroutines in Android" \
-  "viewModelScope.launch { repository.getData().collect { data -> _uiState.value = data } }"
-
-# Log common error
-error_id=$(db_log_error "CancellationException" "Job was cancelled while waiting for network response" \
-  "kotlin" "app/src/main/java/viewmodel/UserViewModel.kt" "34")
-db_resolve_error "$error_id" "Handle cancellation gracefully with isActive checks" \
-  "if (isActive) { processData(data) }" "0.9"
-
-# Find similar coroutine issues
-db_find_similar_errors "CancellationException" 5
-```
-
 ## Core Stack
 
 - **Language**: Kotlin 1.9+
@@ -60,357 +30,91 @@ db_find_similar_errors "CancellationException" 5
 ## Android App with Jetpack Compose
 
 ```kotlin
-// App Entry Point
 @HiltAndroidApp
 class MyApplication : Application()
 
-// MainActivity
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
             MyAppTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    AppNavigation()
-                }
+                AppNavigation()
             }
         }
     }
 }
 
-// Navigation
-@Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
+// Models & State
+data class User(val id: String, val email: String, val name: String, val avatarUrl: String? = null)
 
-    NavHost(
-        navController = navController,
-        startDestination = "users"
-    ) {
-        composable("users") {
-            UserListScreen(
-                onUserClick = { userId ->
-                    navController.navigate("users/$userId")
-                }
-            )
-        }
-        composable(
-            route = "users/{userId}",
-            arguments = listOf(navArgument("userId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val userId = backStackEntry.arguments?.getString("userId")
-            UserDetailScreen(
-                userId = userId ?: "",
-                onNavigateBack = { navController.popBackStack() }
-            )
-        }
-    }
-}
-
-// Theme
-@Composable
-fun MyAppTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    content: @Composable () -> Unit
-) {
-    val colorScheme = if (darkTheme) {
-        darkColorScheme()
-    } else {
-        lightColorScheme()
-    }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
-}
-
-// Model
-data class User(
-    val id: String,
-    val email: String,
-    val name: String,
-    val avatarUrl: String? = null,
-    val createdAt: Long = System.currentTimeMillis()
-)
-
-// UI State
 sealed interface UserListUiState {
     object Loading : UserListUiState
     data class Success(val users: List<User>) : UserListUiState
     data class Error(val message: String) : UserListUiState
 }
 
-// ViewModel with Hilt
+// ViewModel
 @HiltViewModel
-class UserListViewModel @Inject constructor(
-    private val userRepository: UserRepository
-) : ViewModel() {
-
+class UserListViewModel @Inject constructor(private val userRepository: UserRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<UserListUiState>(UserListUiState.Loading)
     val uiState: StateFlow<UserListUiState> = _uiState.asStateFlow()
 
-    init {
-        loadUsers()
-    }
+    init { loadUsers() }
 
     fun loadUsers() {
         viewModelScope.launch {
             _uiState.value = UserListUiState.Loading
-
             userRepository.getUsers()
-                .catch { exception ->
-                    _uiState.value = UserListUiState.Error(
-                        exception.message ?: "Unknown error occurred"
-                    )
-                }
-                .collect { users ->
-                    _uiState.value = UserListUiState.Success(users)
-                }
+                .catch { _uiState.value = UserListUiState.Error(it.message ?: "Unknown error") }
+                .collect { _uiState.value = UserListUiState.Success(it) }
         }
     }
 
     fun deleteUser(userId: String) {
         viewModelScope.launch {
-            try {
-                userRepository.deleteUser(userId)
-                loadUsers() // Refresh list
-            } catch (e: Exception) {
-                _uiState.value = UserListUiState.Error(
-                    "Failed to delete user: ${e.message}"
-                )
-            }
+            try { userRepository.deleteUser(userId); loadUsers() }
+            catch (e: Exception) { _uiState.value = UserListUiState.Error("Delete failed: ${e.message}") }
         }
     }
 }
 
-// Composable Screen
+// Composables
 @Composable
-fun UserListScreen(
-    viewModel: UserListViewModel = hiltViewModel(),
-    onUserClick: (String) -> Unit
-) {
+fun UserListScreen(viewModel: UserListViewModel = hiltViewModel(), onUserClick: (String) -> Unit) {
     val uiState by viewModel.uiState.collectAsState()
-    val pullRefreshState = rememberPullRefreshState(
-        refreshing = uiState is UserListUiState.Loading,
-        onRefresh = { viewModel.loadUsers() }
-    )
 
     Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Users") },
-                actions = {
-                    IconButton(onClick = { viewModel.loadUsers() }) {
-                        Icon(Icons.Default.Refresh, contentDescription = "Refresh")
-                    }
-                }
-            )
-        },
-        floatingActionButton = {
-            FloatingActionButton(onClick = { /* Navigate to add user */ }) {
-                Icon(Icons.Default.Add, contentDescription = "Add User")
-            }
-        }
-    ) { paddingValues ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .pullRefresh(pullRefreshState)
-        ) {
+        topBar = { TopAppBar(title = { Text("Users") }) },
+        floatingActionButton = { FloatingActionButton(onClick = {}) { Icon(Icons.Default.Add, "Add") } }
+    ) { padding ->
+        Box(Modifier.fillMaxSize().padding(padding)) {
             when (val state = uiState) {
-                is UserListUiState.Loading -> {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-
+                is UserListUiState.Loading -> CircularProgressIndicator(Modifier.align(Alignment.Center))
                 is UserListUiState.Success -> {
-                    if (state.users.isEmpty()) {
-                        EmptyState(
-                            message = "No users found",
-                            modifier = Modifier.align(Alignment.Center)
-                        )
-                    } else {
-                        UserList(
-                            users = state.users,
-                            onUserClick = onUserClick,
-                            onDeleteUser = { viewModel.deleteUser(it) }
-                        )
+                    LazyColumn {
+                        items(state.users, key = { it.id }) { user ->
+                            UserItem(user, { onUserClick(user.id) }, { viewModel.deleteUser(user.id) })
+                        }
                     }
                 }
-
-                is UserListUiState.Error -> {
-                    ErrorState(
-                        message = state.message,
-                        onRetry = { viewModel.loadUsers() },
-                        modifier = Modifier.align(Alignment.Center)
-                    )
-                }
-            }
-
-            PullRefreshIndicator(
-                refreshing = uiState is UserListUiState.Loading,
-                state = pullRefreshState,
-                modifier = Modifier.align(Alignment.TopCenter)
-            )
-        }
-    }
-}
-
-@Composable
-fun UserList(
-    users: List<User>,
-    onUserClick: (String) -> Unit,
-    onDeleteUser: (String) -> Unit
-) {
-    LazyColumn {
-        items(
-            items = users,
-            key = { it.id }
-        ) { user ->
-            UserItem(
-                user = user,
-                onClick = { onUserClick(user.id) },
-                onDelete = { onDeleteUser(user.id) },
-                modifier = Modifier.animateItemPlacement()
-            )
-        }
-    }
-}
-
-@Composable
-fun UserItem(
-    user: User,
-    onClick: () -> Unit,
-    onDelete: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete User") },
-            text = { Text("Are you sure you want to delete ${user.name}?") },
-            confirmButton = {
-                TextButton(onClick = {
-                    onDelete()
-                    showDeleteDialog = false
-                }) {
-                    Text("Delete")
-                }
-            },
-            dismissButton = {
-                TextButton(onClick = { showDeleteDialog = false }) {
-                    Text("Cancel")
-                }
-            }
-        )
-    }
-
-    Card(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp)
-            .clickable(onClick = onClick),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
-    ) {
-        Row(
-            modifier = Modifier.padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            AsyncImage(
-                model = user.avatarUrl,
-                contentDescription = "Avatar",
-                modifier = Modifier
-                    .size(50.dp)
-                    .clip(CircleShape),
-                placeholder = painterResource(R.drawable.ic_placeholder_user)
-            )
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = user.name,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold
-                )
-                Text(
-                    text = user.email,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            }
-
-            IconButton(onClick = { showDeleteDialog = true }) {
-                Icon(
-                    imageVector = Icons.Default.Delete,
-                    contentDescription = "Delete",
-                    tint = MaterialTheme.colorScheme.error
-                )
+                is UserListUiState.Error -> ErrorState(state.message, { viewModel.loadUsers() })
             }
         }
     }
 }
 
 @Composable
-fun EmptyState(
-    message: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Default.Warning,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.onSurfaceVariant
-        )
-    }
-}
-
-@Composable
-fun ErrorState(
-    message: String,
-    onRetry: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier.padding(32.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            imageVector = Icons.Default.Warning,
-            contentDescription = null,
-            modifier = Modifier.size(64.dp),
-            tint = MaterialTheme.colorScheme.error
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("Retry")
+fun UserItem(user: User, onClick: () -> Unit, onDelete: () -> Unit) {
+    Card(Modifier.fillMaxWidth().padding(8.dp).clickable(onClick = onClick)) {
+        Row(Modifier.padding(16.dp), verticalAlignment = Alignment.CenterVertically) {
+            AsyncImage(user.avatarUrl, "Avatar", Modifier.size(50.dp).clip(CircleShape))
+            Spacer(Modifier.width(16.dp))
+            Column(Modifier.weight(1f)) {
+                Text(user.name, style = MaterialTheme.typography.titleMedium)
+                Text(user.email, style = MaterialTheme.typography.bodyMedium)
+            }
+            IconButton(onClick = onDelete) { Icon(Icons.Default.Delete, "Delete") }
         }
     }
 }
@@ -419,194 +123,59 @@ fun ErrorState(
 ## Repository Pattern with Room & Retrofit
 
 ```kotlin
-// Entity (Room)
 @Entity(tableName = "users")
-data class UserEntity(
-    @PrimaryKey val id: String,
-    val email: String,
-    val name: String,
-    @ColumnInfo(name = "avatar_url") val avatarUrl: String?,
-    @ColumnInfo(name = "created_at") val createdAt: Long
-)
+data class UserEntity(@PrimaryKey val id: String, val email: String, val name: String)
 
-// DAO
 @Dao
 interface UserDao {
     @Query("SELECT * FROM users ORDER BY name ASC")
     fun getAllUsers(): Flow<List<UserEntity>>
 
-    @Query("SELECT * FROM users WHERE id = :userId")
-    suspend fun getUserById(userId: String): UserEntity?
-
-    @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertUser(user: UserEntity)
-
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertUsers(users: List<UserEntity>)
 
-    @Delete
-    suspend fun deleteUser(user: UserEntity)
-
     @Query("DELETE FROM users WHERE id = :userId")
     suspend fun deleteUserById(userId: String)
-
-    @Query("DELETE FROM users")
-    suspend fun deleteAllUsers()
 }
 
-// Database
-@Database(
-    entities = [UserEntity::class],
-    version = 1,
-    exportSchema = false
-)
+@Database(entities = [UserEntity::class], version = 1)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun userDao(): UserDao
-
-    companion object {
-        @Volatile
-        private var INSTANCE: AppDatabase? = null
-
-        fun getInstance(context: Context): AppDatabase {
-            return INSTANCE ?: synchronized(this) {
-                val instance = Room.databaseBuilder(
-                    context.applicationContext,
-                    AppDatabase::class.java,
-                    "app_database"
-                )
-                    .fallbackToDestructiveMigration()
-                    .build()
-                INSTANCE = instance
-                instance
-            }
-        }
-    }
 }
 
-// API Service (Retrofit)
+// Retrofit API
 interface UserApiService {
-    @GET("users")
-    suspend fun getUsers(): List<UserDto>
-
-    @GET("users/{id}")
-    suspend fun getUser(@Path("id") userId: String): UserDto
-
-    @POST("users")
-    suspend fun createUser(@Body user: CreateUserRequest): UserDto
-
-    @PUT("users/{id}")
-    suspend fun updateUser(@Path("id") userId: String, @Body user: UpdateUserRequest): UserDto
-
-    @DELETE("users/{id}")
-    suspend fun deleteUser(@Path("id") userId: String)
+    @GET("users") suspend fun getUsers(): List<UserDto>
+    @POST("users") suspend fun createUser(@Body user: CreateUserRequest): UserDto
+    @DELETE("users/{id}") suspend fun deleteUser(@Path("id") userId: String)
 }
-
-// DTO (Data Transfer Object)
-@Serializable
-data class UserDto(
-    val id: String,
-    val email: String,
-    val name: String,
-    @SerialName("avatar_url") val avatarUrl: String?
-)
 
 @Serializable
-data class CreateUserRequest(
-    val email: String,
-    val name: String,
-    val password: String
-)
-
-// Mappers
-fun UserDto.toEntity(): UserEntity {
-    return UserEntity(
-        id = id,
-        email = email,
-        name = name,
-        avatarUrl = avatarUrl,
-        createdAt = System.currentTimeMillis()
-    )
-}
-
-fun UserEntity.toDomain(): User {
-    return User(
-        id = id,
-        email = email,
-        name = name,
-        avatarUrl = avatarUrl,
-        createdAt = createdAt
-    )
-}
+data class UserDto(val id: String, val email: String, val name: String)
 
 // Repository
-interface UserRepository {
-    fun getUsers(): Flow<List<User>>
-    suspend fun getUserById(userId: String): User?
-    suspend fun createUser(email: String, name: String, password: String): Result<User>
-    suspend fun deleteUser(userId: String): Result<Unit>
-    suspend fun refreshUsers(): Result<Unit>
-}
-
 class UserRepositoryImpl @Inject constructor(
     private val userDao: UserDao,
-    private val userApiService: UserApiService,
-    private val ioDispatcher: CoroutineDispatcher = Dispatchers.IO
+    private val userApiService: UserApiService
 ) : UserRepository {
 
-    override fun getUsers(): Flow<List<User>> {
-        return userDao.getAllUsers()
-            .map { entities -> entities.map { it.toDomain() } }
-            .flowOn(ioDispatcher)
+    override fun getUsers(): Flow<List<User>> =
+        userDao.getAllUsers().map { it.map { entity -> entity.toDomain() } }.flowOn(Dispatchers.IO)
+
+    override suspend fun deleteUser(userId: String): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            userApiService.deleteUser(userId)
+            userDao.deleteUserById(userId)
+            Result.success(Unit)
+        } catch (e: Exception) { Result.failure(e) }
     }
 
-    override suspend fun getUserById(userId: String): User? {
-        return withContext(ioDispatcher) {
-            userDao.getUserById(userId)?.toDomain()
-        }
-    }
-
-    override suspend fun createUser(
-        email: String,
-        name: String,
-        password: String
-    ): Result<User> {
-        return withContext(ioDispatcher) {
-            try {
-                val request = CreateUserRequest(email, name, password)
-                val dto = userApiService.createUser(request)
-                val entity = dto.toEntity()
-                userDao.insertUser(entity)
-                Result.success(entity.toDomain())
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    override suspend fun deleteUser(userId: String): Result<Unit> {
-        return withContext(ioDispatcher) {
-            try {
-                userApiService.deleteUser(userId)
-                userDao.deleteUserById(userId)
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
-    }
-
-    override suspend fun refreshUsers(): Result<Unit> {
-        return withContext(ioDispatcher) {
-            try {
-                val users = userApiService.getUsers()
-                val entities = users.map { it.toEntity() }
-                userDao.deleteAllUsers()
-                userDao.insertUsers(entities)
-                Result.success(Unit)
-            } catch (e: Exception) {
-                Result.failure(e)
-            }
-        }
+    override suspend fun refreshUsers(): Result<Unit> = withContext(Dispatchers.IO) {
+        try {
+            val users = userApiService.getUsers().map { it.toEntity() }
+            userDao.insertUsers(users)
+            Result.success(Unit)
+        } catch (e: Exception) { Result.failure(e) }
     }
 }
 ```
@@ -614,106 +183,51 @@ class UserRepositoryImpl @Inject constructor(
 ## Dependency Injection with Hilt
 
 ```kotlin
-// Application Module
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
+    @Provides @Singleton
+    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase =
+        Room.databaseBuilder(context, AppDatabase::class.java, "app_db").build()
 
     @Provides
-    @Singleton
-    fun provideAppDatabase(@ApplicationContext context: Context): AppDatabase {
-        return AppDatabase.getInstance(context)
-    }
+    fun provideUserDao(db: AppDatabase): UserDao = db.userDao()
 
-    @Provides
-    fun provideUserDao(database: AppDatabase): UserDao {
-        return database.userDao()
-    }
+    @Provides @Singleton
+    fun provideRetrofit(): Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.example.com/")
+        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .build()
 
-    @Provides
-    @Singleton
-    fun provideHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder()
-            .addInterceptor(HttpLoggingInterceptor().apply {
-                level = HttpLoggingInterceptor.Level.BODY
-            })
-            .connectTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
-            .build()
-    }
+    @Provides @Singleton
+    fun provideUserApiService(retrofit: Retrofit): UserApiService = retrofit.create(UserApiService::class.java)
 
-    @Provides
-    @Singleton
-    fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl("https://api.example.com/")
-            .client(okHttpClient)
-            .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
-            .build()
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserApiService(retrofit: Retrofit): UserApiService {
-        return retrofit.create(UserApiService::class.java)
-    }
-
-    @Provides
-    @Singleton
-    fun provideUserRepository(
-        userDao: UserDao,
-        userApiService: UserApiService
-    ): UserRepository {
-        return UserRepositoryImpl(userDao, userApiService)
-    }
-
-    @Provides
-    @Singleton
-    @IoDispatcher
-    fun provideIoDispatcher(): CoroutineDispatcher = Dispatchers.IO
+    @Provides @Singleton
+    fun provideUserRepository(dao: UserDao, api: UserApiService): UserRepository = UserRepositoryImpl(dao, api)
 }
-
-// Qualifier
-@Qualifier
-@Retention(AnnotationRetention.BINARY)
-annotation class IoDispatcher
 ```
 
 ## Coroutines & Flow
 
 ```kotlin
-// Flow transformations
 class DataSyncService @Inject constructor(
     private val userRepository: UserRepository,
     private val productRepository: ProductRepository
 ) {
-    // Combine multiple flows
-    fun getDashboardData(): Flow<DashboardData> {
-        return combine(
-            userRepository.getUsers(),
-            productRepository.getProducts()
-        ) { users, products ->
-            DashboardData(
-                userCount = users.size,
-                productCount = products.size
-            )
-        }
-    }
+    // Combine flows
+    fun getDashboardData(): Flow<DashboardData> = combine(
+        userRepository.getUsers(),
+        productRepository.getProducts()
+    ) { users, products -> DashboardData(users.size, products.size) }
 
     // Flow operators
-    fun searchUsers(query: String): Flow<List<User>> {
-        return userRepository.getUsers()
+    fun searchUsers(query: String): Flow<List<User>> =
+        userRepository.getUsers()
             .debounce(300)
             .distinctUntilChanged()
-            .map { users ->
-                users.filter {
-                    it.name.contains(query, ignoreCase = true) ||
-                            it.email.contains(query, ignoreCase = true)
-                }
-            }
-    }
+            .map { it.filter { u -> u.name.contains(query, ignoreCase = true) } }
 
-    // StateFlow for state management
+    // StateFlow
     private val _syncState = MutableStateFlow<SyncState>(SyncState.Idle)
     val syncState: StateFlow<SyncState> = _syncState.asStateFlow()
 
@@ -721,218 +235,88 @@ class DataSyncService @Inject constructor(
         _syncState.value = SyncState.Syncing
         try {
             userRepository.refreshUsers()
-            productRepository.refreshProducts()
             _syncState.value = SyncState.Success
-        } catch (e: Exception) {
-            _syncState.value = SyncState.Error(e.message ?: "Unknown error")
-        }
+        } catch (e: Exception) { _syncState.value = SyncState.Error(e.message ?: "Error") }
     }
 }
 
-sealed interface SyncState {
-    object Idle : SyncState
-    object Syncing : SyncState
-    object Success : SyncState
-    data class Error(val message: String) : SyncState
-}
-
-// Async operations with structured concurrency
-class DataProcessor @Inject constructor(
-    private val apiService: ApiService
-) {
-    suspend fun processMultipleItems(itemIds: List<String>): List<ProcessResult> {
-        return coroutineScope {
-            itemIds.map { id ->
-                async {
-                    try {
-                        val item = apiService.getItem(id)
-                        ProcessResult.Success(item)
-                    } catch (e: Exception) {
-                        ProcessResult.Error(id, e.message ?: "Unknown error")
-                    }
-                }
-            }.awaitAll()
+// Parallel processing
+suspend fun processMultipleItems(itemIds: List<String>): List<ProcessResult> = coroutineScope {
+    itemIds.map { id ->
+        async {
+            try { ProcessResult.Success(apiService.getItem(id)) }
+            catch (e: Exception) { ProcessResult.Error(id, e.message ?: "Error") }
         }
-    }
-}
-
-sealed interface ProcessResult {
-    data class Success(val item: Item) : ProcessResult
-    data class Error(val id: String, val message: String) : ProcessResult
+    }.awaitAll()
 }
 ```
 
 ## Testing
 
 ```kotlin
-// Unit Tests with Mockk
-@RunWith(MockitoJUnitRunner::class)
 class UserListViewModelTest {
-
-    @MockK
-    private lateinit var userRepository: UserRepository
-
+    @MockK private lateinit var userRepository: UserRepository
     private lateinit var viewModel: UserListViewModel
 
-    @Before
-    fun setup() {
-        MockKAnnotations.init(this)
-        viewModel = UserListViewModel(userRepository)
-    }
-
     @Test
-    fun `loadUsers emits success state when repository returns users`() = runTest {
-        // Arrange
-        val users = listOf(
-            User("1", "test1@example.com", "User 1"),
-            User("2", "test2@example.com", "User 2")
-        )
+    fun `loadUsers emits success state`() = runTest {
+        val users = listOf(User("1", "test@example.com", "User 1"))
         coEvery { userRepository.getUsers() } returns flowOf(users)
 
-        // Act
         viewModel.loadUsers()
 
-        // Assert
-        val state = viewModel.uiState.value
-        assert(state is UserListUiState.Success)
-        assertEquals(2, (state as UserListUiState.Success).users.size)
+        assert(viewModel.uiState.value is UserListUiState.Success)
     }
 
     @Test
-    fun `loadUsers emits error state when repository throws exception`() = runTest {
-        // Arrange
-        coEvery { userRepository.getUsers() } returns flow {
-            throw IOException("Network error")
-        }
-
-        // Act
-        viewModel.loadUsers()
-
-        // Assert
-        val state = viewModel.uiState.value
-        assert(state is UserListUiState.Error)
-        assertTrue((state as UserListUiState.Error).message.contains("Network error"))
-    }
-
-    @Test
-    fun `deleteUser calls repository and reloads users`() = runTest {
-        // Arrange
-        val userId = "123"
-        coEvery { userRepository.deleteUser(userId) } returns Result.success(Unit)
+    fun `deleteUser calls repository`() = runTest {
+        coEvery { userRepository.deleteUser("123") } returns Result.success(Unit)
         coEvery { userRepository.getUsers() } returns flowOf(emptyList())
 
-        // Act
-        viewModel.deleteUser(userId)
+        viewModel.deleteUser("123")
 
-        // Assert
-        coVerify { userRepository.deleteUser(userId) }
-        coVerify { userRepository.getUsers() }
+        coVerify { userRepository.deleteUser("123") }
     }
 }
 
-// Compose UI Tests
-@RunWith(AndroidJUnit4::class)
+// Compose UI Test
 class UserListScreenTest {
-
-    @get:Rule
-    val composeTestRule = createComposeRule()
+    @get:Rule val composeTestRule = createComposeRule()
 
     @Test
     fun userList_displaysUsers() {
-        // Arrange
-        val users = listOf(
-            User("1", "test1@example.com", "User 1"),
-            User("2", "test2@example.com", "User 2")
-        )
+        val users = listOf(User("1", "test@example.com", "User 1"))
 
-        // Act
         composeTestRule.setContent {
-            MyAppTheme {
-                UserList(
-                    users = users,
-                    onUserClick = {},
-                    onDeleteUser = {}
-                )
-            }
+            UserList(users = users, onUserClick = {}, onDeleteUser = {})
         }
 
-        // Assert
         composeTestRule.onNodeWithText("User 1").assertIsDisplayed()
-        composeTestRule.onNodeWithText("test1@example.com").assertIsDisplayed()
-        composeTestRule.onNodeWithText("User 2").assertIsDisplayed()
-    }
-
-    @Test
-    fun userList_clickOnUser_triggersCallback() {
-        // Arrange
-        val users = listOf(User("1", "test@example.com", "Test User"))
-        var clickedUserId: String? = null
-
-        // Act
-        composeTestRule.setContent {
-            MyAppTheme {
-                UserList(
-                    users = users,
-                    onUserClick = { clickedUserId = it },
-                    onDeleteUser = {}
-                )
-            }
-        }
-
-        composeTestRule.onNodeWithText("Test User").performClick()
-
-        // Assert
-        assertEquals("1", clickedUserId)
     }
 }
 ```
 
-## DataStore (Modern SharedPreferences)
+## DataStore
 
 ```kotlin
-// Preferences DataStore
 object PreferencesKeys {
     val THEME_KEY = stringPreferencesKey("theme")
     val NOTIFICATIONS_ENABLED = booleanPreferencesKey("notifications_enabled")
 }
 
-class UserPreferencesRepository @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
+class UserPreferencesRepository @Inject constructor(@ApplicationContext private val context: Context) {
     private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "settings")
 
     val userPreferences: Flow<UserPreferences> = context.dataStore.data
-        .catch { exception ->
-            if (exception is IOException) {
-                emit(emptyPreferences())
-            } else {
-                throw exception
-            }
-        }
-        .map { preferences ->
-            UserPreferences(
-                theme = preferences[PreferencesKeys.THEME_KEY] ?: "system",
-                notificationsEnabled = preferences[PreferencesKeys.NOTIFICATIONS_ENABLED] ?: true
-            )
-        }
+        .catch { if (it is IOException) emit(emptyPreferences()) else throw it }
+        .map { UserPreferences(it[PreferencesKeys.THEME_KEY] ?: "system", it[PreferencesKeys.NOTIFICATIONS_ENABLED] ?: true) }
 
     suspend fun updateTheme(theme: String) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.THEME_KEY] = theme
-        }
-    }
-
-    suspend fun updateNotificationsEnabled(enabled: Boolean) {
-        context.dataStore.edit { preferences ->
-            preferences[PreferencesKeys.NOTIFICATIONS_ENABLED] = enabled
-        }
+        context.dataStore.edit { it[PreferencesKeys.THEME_KEY] = theme }
     }
 }
 
-data class UserPreferences(
-    val theme: String,
-    val notificationsEnabled: Boolean
-)
+data class UserPreferences(val theme: String, val notificationsEnabled: Boolean)
 ```
 
-Deliver production-ready Android applications with modern architecture, robust error handling, and Kotlin best practices.
+Deliver production-ready Android apps with Jetpack Compose, Coroutines, Flow, Room, MVVM, and modern Kotlin.

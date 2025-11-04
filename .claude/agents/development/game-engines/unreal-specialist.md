@@ -4,6 +4,13 @@ description: Expert Unreal Engine developer specializing in C++, Blueprints, ren
 categories: [development, game-engines, unreal]
 dependencies: [cpp-developer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # Unreal Engine Specialist

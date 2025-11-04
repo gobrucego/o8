@@ -1,12 +1,6 @@
 ---
 name: database-tracking-patterns
 description: Expertise in workflow and execution tracking using the orchestr8 intelligence database. Auto-activates when creating workflows, tracking progress, managing status updates, or analyzing workflow history. Provides patterns for effective workflow lifecycle management.
-autoActivationContext:
-  - workflow execution
-  - progress tracking
-  - status management
-  - workflow history
-  - execution metrics
 ---
 
 # Database Tracking Patterns Skill

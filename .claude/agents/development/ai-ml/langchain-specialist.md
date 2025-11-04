@@ -4,6 +4,13 @@ description: Expert LangChain developer specializing in LLM chains, agents, RAG 
 categories: [development, ai-ml, langchain]
 dependencies: [python-developer]
 model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+  - Bash
+  - Glob
+  - Grep
 ---
 
 # LangChain Specialist

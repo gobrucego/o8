@@ -1,12 +1,6 @@
 ---
 name: database-optimization
 description: Expertise in tracking and optimizing token usage and database operations. Auto-activates when analyzing performance, optimizing token consumption, or making database vs file-loading decisions. Enables data-driven optimization and cost reduction.
-autoActivationContext:
-  - token optimization
-  - performance analysis
-  - cost optimization
-  - query optimization
-  - token tracking
 ---
 
 # Database Optimization Skill
