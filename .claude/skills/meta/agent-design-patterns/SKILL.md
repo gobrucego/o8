@@ -11,100 +11,70 @@ Expert knowledge of agent design patterns for the Claude Code orchestr8 plugin s
 
 ### Agent Frontmatter Structure
 
-Every agent requires YAML frontmatter with these fields:
+Every agent requires markdown table frontmatter (not YAML):
 
-```yaml
----
-name: agent-name                    # REQUIRED: kebab-case identifier
-description: One-line description   # REQUIRED: Expert [role]... Use for...
-model: claude-sonnet-4-5            # REQUIRED: model selection
-tools:                              # REQUIRED: array of tools
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Glob
-  - Grep
----
+```markdown
+| name | description | model |
+|------|-------------|-------|
+| agent-name | Expert [role]... Use for... | sonnet |
 ```
+
+**Key Changes from Old Format:**
+- Use markdown table format (not YAML with `---` delimiters)
+- NO `tools:` field (tools are auto-discovered)
+- Model names simplified: `opus`, `sonnet`, or `haiku` (not full IDs like `claude-opus-4-1-20250805`)
 
 ### Model Selection Pattern
 
-**Two models are used in orchestr8:**
+**Three models are used in orchestr8:**
 
-1. **claude-opus-4** - Strategic orchestrators ONLY
+1. **opus** - Strategic orchestrators ONLY
    - Project orchestrator
    - Feature orchestrator
    - Complex multi-agent coordination
    - High-level strategic decision-making
 
-2. **claude-sonnet-4-5** - ALL specialized agents
+2. **sonnet** - Most specialized agents (DEFAULT)
    - Language specialists (Python, TypeScript, Java, Go, etc.)
    - Framework specialists (React, Next.js, Django, etc.)
    - Infrastructure specialists (PostgreSQL, Kubernetes, etc.)
    - Quality agents (code reviewer, test engineer, security auditor)
    - Compliance agents (GDPR, FedRAMP, ISO27001, etc.)
 
-**Rule: Use Opus only for meta-orchestrators. Use Sonnet for everything else.**
+3. **haiku** - Quick, straightforward tasks (cost optimization)
+   - Simple file operations
+   - Straightforward refactoring
+   - Basic code generation
+   - When speed and cost matter more than complexity
 
-### Tool Selection Patterns
+**Rule: Use Opus for orchestrators, Sonnet for most agents (default), Haiku for simple/fast tasks.**
 
-**Technical Specialists (Languages, Frameworks, Infrastructure):**
-```yaml
-tools:
-  - Read       # Read code and config files
-  - Write      # Create new files
-  - Edit       # Modify existing files
-  - Bash       # Run tests, builds, installations
-  - Glob       # Find files by pattern
-  - Grep       # Search code content
-```
+### Tool Selection Pattern
 
-**Quality/Review Agents (Read-Only):**
-```yaml
-tools:
-  - Read       # Read code to review
-  - Glob       # Find files to review
-  - Grep       # Search for patterns
-  - Bash       # Run analysis tools
-  # NO Write/Edit - reviewers don't modify code
-```
+**IMPORTANT: In the new format, there is NO `tools:` field in agent frontmatter.**
 
-**Meta-Orchestrators:**
-```yaml
-tools:
-  - Task       # Invoke other agents (listed FIRST)
-  - Read
-  - Write
-  - Bash
-  - Glob
-  - Grep
-  - TodoWrite  # Track progress
-```
+Tools are auto-discovered based on agent needs. However, agent designers should be aware of common tool patterns:
 
-**Compliance Agents:**
-```yaml
-tools:
-  - Read
-  - Write
-  - Edit
-  - Bash
-  - Glob
-  - Grep
-  - Task       # May need to invoke specialists
-```
+**Technical Specialists typically use:**
+- Read, Write, Edit, Bash, Glob, Grep
+
+**Quality/Review Agents typically use:**
+- Read, Glob, Grep, Bash (NO Write/Edit - reviewers don't modify code)
+
+**Meta-Orchestrators typically use:**
+- Task (invoke other agents), Read, Write, Bash, Glob, Grep, TodoWrite
+
+**Compliance Agents typically use:**
+- Read, Write, Edit, Bash, Glob, Grep, Task
 
 ## Agent Type Patterns
 
 ### Pattern 1: Language/Framework Specialist
 
 ```markdown
----
-name: technology-specialist
-description: Expert [Technology] developer specializing in [key areas]. Use for [specific use cases].
-model: claude-sonnet-4-5
-tools: [Read, Write, Edit, Bash, Glob, Grep]
----
+| name | description | model |
+|------|-------------|-------|
+| technology-specialist | Expert [Technology] developer specializing in [key areas]. Use for [specific use cases]. | sonnet |
 
 # Technology Specialist
 
@@ -137,12 +107,9 @@ Your deliverables should be production-ready, well-tested...
 ### Pattern 2: Quality/Review Agent
 
 ```markdown
----
-name: review-specialist
-description: Performs comprehensive [domain] review...
-model: claude-sonnet-4-5
-tools: [Read, Glob, Grep, Bash]  # NO Write/Edit
----
+| name | description | model |
+|------|-------------|-------|
+| review-specialist | Performs comprehensive [domain] review... | sonnet |
 
 # Review Specialist
 
@@ -168,19 +135,9 @@ tools: [Read, Glob, Grep, Bash]  # NO Write/Edit
 ### Pattern 3: Meta-Orchestrator
 
 ```markdown
----
-name: meta-orchestrator
-description: Orchestrates [scope]...
-model: claude-opus-4          # NOTE: Opus for orchestrators
-tools:
-  - Task                     # Listed FIRST
-  - Read
-  - Write
-  - Bash
-  - Glob
-  - Grep
-  - TodoWrite               # For progress tracking
----
+| name | description | model |
+|------|-------------|-------|
+| meta-orchestrator | Orchestrates [scope]... | opus |
 
 # Meta Orchestrator
 
@@ -210,37 +167,52 @@ tools:
 [DO/DON'T lists]
 ```
 
-## Directory Organization Pattern
+## Plugin Organization Pattern
+
+**NEW: Plugin-based structure** - Each plugin is independently installable
 
 ```
-.claude/agents/
-├── development/
-│   ├── languages/           # Python, TypeScript, Java, Go, etc.
-│   ├── frontend/            # React, Vue, Angular, SwiftUI, etc.
-│   ├── api/                 # GraphQL, gRPC, OpenAPI
-│   ├── ai-ml/               # LangChain, LlamaIndex
-│   ├── blockchain/          # Solidity, Web3
-│   ├── game-engines/        # Unity, Unreal, Godot
-│   ├── mobile/              # Mobile development
-│   └── data/                # Data engineering
-├── quality/
-│   ├── [agents].md          # code-reviewer, test-engineer, etc.
-│   ├── testing/             # Specialized testing agents
-│   └── debugging/           # Debugging specialists
-├── infrastructure/
-│   ├── databases/           # PostgreSQL, MongoDB, Redis
-│   ├── messaging/           # Kafka, RabbitMQ
-│   ├── search/              # Elasticsearch, Algolia
-│   ├── caching/             # Caching specialists
-│   ├── monitoring/          # Observability
-│   ├── sre/                 # SRE practices
-│   └── cloud/               # Cloud infrastructure
-├── devops/
-│   ├── cloud/               # AWS, Azure, GCP
-│   └── infrastructure/      # Terraform, Kubernetes, Docker
-├── compliance/              # GDPR, FedRAMP, ISO27001, etc.
-├── orchestration/           # project-orchestrator, feature-orchestrator
-└── meta/                    # Meta-system agents
+plugins/
+├── database-specialists/
+│   └── agents/              # 9 database agents
+├── language-developers/
+│   └── agents/              # 11 language agents
+├── frontend-frameworks/
+│   └── agents/              # 4 frontend agents
+├── mobile-development/
+│   └── agents/              # 2 mobile agents
+├── game-development/
+│   └── agents/              # 3 game engine agents
+├── ai-ml-engineering/
+│   └── agents/              # 5 AI/ML agents
+├── blockchain-web3/
+│   └── agents/              # 2 blockchain agents
+├── api-design/
+│   └── agents/              # 3 API agents
+├── quality-assurance/
+│   ├── agents/              # 8 QA agents
+│   └── commands/            # QA workflows
+├── devops-cloud/
+│   ├── agents/              # 4 cloud agents
+│   └── commands/            # DevOps workflows
+├── infrastructure-messaging/
+│   └── agents/              # 2 messaging agents
+├── infrastructure-search/
+│   └── agents/              # 2 search agents
+├── infrastructure-caching/
+│   └── agents/              # 2 caching agents
+├── infrastructure-monitoring/
+│   └── agents/              # 4 monitoring agents
+├── compliance/
+│   └── agents/              # 5 compliance agents
+├── orchestration/
+│   ├── agents/              # 2 orchestrators
+│   └── commands/            # Orchestration workflows
+├── meta-development/
+│   ├── agents/              # 4 meta agents
+│   └── commands/            # Meta workflows
+└── development-core/
+    └── agents/              # 2 core development agents
 ```
 
 ## Documentation Structure Pattern
@@ -309,13 +281,15 @@ well-tested, secure, etc.] [domain] code/documentation following
 ### DO ✅
 
 **Agent Design:**
+- Use markdown table frontmatter (NOT YAML)
+- NO `tools:` field in frontmatter
+- Use simplified model names: `opus`, `sonnet`, or `haiku` (not full IDs)
 - Follow established patterns from similar agents in the same category
-- Use Opus ONLY for meta-orchestrators, Sonnet for specialists
-- Select tools appropriate for agent type (reviewers don't write code)
+- Use `opus` for orchestrators, `sonnet` for specialists (default), `haiku` for simple/fast tasks
 - Include 5-10 detailed code examples for technical specialists
 - Write comprehensive documentation (300-500 lines for specialists)
 - Use kebab-case for filenames and frontmatter name
-- Place agents in correct category directory
+- Place agents in correct plugin directory
 
 **Documentation:**
 - Start with "You are an expert [domain]..."
@@ -325,17 +299,13 @@ well-tested, secure, etc.] [domain] code/documentation following
 - End with deliverables statement
 - Keep agent description concise but specific
 
-**Tool Selection:**
-- Technical specialists: Read, Write, Edit, Bash, Glob, Grep
-- Quality agents: Read, Glob, Grep, Bash (NO Write/Edit)
-- Orchestrators: Task (first), Read, Write, Bash, Glob, Grep, TodoWrite
-- Compliance: Read, Write, Edit, Bash, Glob, Grep, Task
-
 ### DON'T ❌
 
 **Agent Design:**
-- Don't use Opus for specialized agents (only for orchestrators)
-- Don't give Write/Edit tools to review agents
+- Don't use YAML frontmatter (use markdown table)
+- Don't include `tools:` field (removed in new format)
+- Don't use full model IDs (use `sonnet` or `opus`)
+- Don't use `opus` for specialized agents (only for orchestrators)
 - Don't skip code examples for technical specialists
 - Don't create agents with fewer than 300 lines (too thin)
 - Don't place agents in wrong categories
@@ -396,12 +366,12 @@ implementation to validate code quality before merging or deployment."
 
 Before finalizing an agent:
 
-- [ ] Frontmatter complete: name, description, model, tools
+- [ ] Frontmatter uses markdown table format (NOT YAML)
+- [ ] Frontmatter has name, description, model (NO tools field)
 - [ ] Name is kebab-case and matches filename
 - [ ] Description follows "Expert [role]... Use for..." pattern
-- [ ] Model is Opus (orchestrators only) or Sonnet (specialists)
-- [ ] Tools appropriate for agent type
-- [ ] File placed in correct category directory
+- [ ] Model is `opus` (orchestrators), `sonnet` (default), or `haiku` (simple/fast tasks)
+- [ ] File placed in correct plugin directory
 - [ ] Core Competencies section present
 - [ ] 5+ code examples (for technical specialists)
 - [ ] Best practices (DO/DON'T) included
@@ -410,22 +380,25 @@ Before finalizing an agent:
 
 ## Common Pitfalls
 
-1. **Using Opus for Specialists** - Opus is only for meta-orchestrators
-2. **Giving Write Tools to Reviewers** - Review agents should be read-only
-3. **Thin Documentation** - Technical agents need 5+ detailed examples
-4. **Wrong Category** - Research similar agents to find correct placement
-5. **Generic Descriptions** - Be specific about capabilities and use cases
-6. **Missing DO/DON'T** - Best practices are critical for quality
-7. **Underscore Names** - Always use kebab-case, never underscores
+1. **Using YAML frontmatter** - Must use markdown table format now
+2. **Including tools field** - Tools field is removed in new format
+3. **Using full model IDs** - Use `sonnet` or `opus`, not full IDs
+4. **Using Opus for Specialists** - Opus is only for meta-orchestrators
+5. **Thin Documentation** - Technical agents need 5+ detailed examples
+6. **Wrong Category** - Research similar agents to find correct placement
+7. **Generic Descriptions** - Be specific about capabilities and use cases
+8. **Missing DO/DON'T** - Best practices are critical for quality
+9. **Underscore Names** - Always use kebab-case, never underscores
 
 ## Remember
 
-1. **Model Selection**: Opus for orchestrators, Sonnet for specialists
-2. **Tool Selection**: Match tools to agent responsibilities
-3. **Documentation**: 300-500 lines for specialists, 400+ for orchestrators
-4. **Examples**: 5-10 detailed examples for technical agents
-5. **Naming**: kebab-case for files and frontmatter names
-6. **Structure**: Follow established patterns from similar agents
-7. **Quality**: DO/DON'T sections are not optional
+1. **Frontmatter Format**: Markdown table (NOT YAML), NO tools field
+2. **Model Selection**: `opus` for orchestrators, `sonnet` for specialists (default), `haiku` for simple tasks
+3. **Model Names**: Use simplified names (`opus`/`sonnet`/`haiku`), not full IDs
+4. **Documentation**: 300-500 lines for specialists, 400+ for orchestrators
+5. **Examples**: 5-10 detailed examples for technical agents
+6. **Naming**: kebab-case for files and frontmatter names
+7. **Structure**: Follow established patterns from similar agents
+8. **Quality**: DO/DON'T sections are not optional
 
-Well-designed agents follow consistent patterns, have appropriate tool access, comprehensive documentation with real-world examples, and integrate seamlessly with the orchestr8 plugin system.
+Well-designed agents follow consistent patterns, use the new markdown table frontmatter format, have comprehensive documentation with real-world examples, and integrate seamlessly with the orchestr8 plugin system.

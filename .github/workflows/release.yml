@@ -61,7 +61,6 @@ jobs:
           VERSION_FILE=$(cat .claude/VERSION | tr -d '\n')
           PLUGIN_VERSION=$(jq -r '.version' .claude/plugin.json)
           MARKETPLACE_META=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
-          MARKETPLACE_PLUGIN=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
 
           echo "Checking all versions match $VERSION..."
 
@@ -82,10 +81,19 @@ jobs:
             errors=$((errors + 1))
           fi
 
-          if [ "$VERSION" != "$MARKETPLACE_PLUGIN" ]; then
-            echo "ERROR: marketplace.json plugins[0].version mismatch: $MARKETPLACE_PLUGIN"
-            errors=$((errors + 1))
-          fi
+          # Check all plugin versions in marketplace.json
+          PLUGIN_COUNT=$(jq '.plugins | length' .claude-plugin/marketplace.json)
+          echo "Checking versions for $PLUGIN_COUNT plugins..."
+
+          for i in $(seq 0 $((PLUGIN_COUNT - 1))); do
+            PLUGIN_NAME=$(jq -r ".plugins[$i].name" .claude-plugin/marketplace.json)
+            PLUGIN_VER=$(jq -r ".plugins[$i].version" .claude-plugin/marketplace.json)
+
+            if [ "$VERSION" != "$PLUGIN_VER" ]; then
+              echo "ERROR: Plugin '$PLUGIN_NAME' version mismatch: $PLUGIN_VER"
+              errors=$((errors + 1))
+            fi
+          done
 
           if [ $errors -gt 0 ]; then
             echo "Version consistency check failed with $errors error(s)"
@@ -110,18 +118,35 @@ jobs:
         run: |
           echo "Running comprehensive validation..."
 
-          # Validate structure
-          if [ ! -d ".claude/agents" ] || [ ! -d ".claude/commands" ]; then
-            echo "ERROR: Missing required directories"
+          # Validate new plugin structure
+          if [ ! -d "plugins" ]; then
+            echo "ERROR: Missing plugins directory"
             exit 1
           fi
 
-          # Count components
-          AGENT_COUNT=$(find .claude/agents -name "*.md" | wc -l)
-          WORKFLOW_COUNT=$(find .claude/commands -name "*.md" | wc -l)
+          # Count plugins
+          PLUGIN_COUNT=$(find plugins -mindepth 1 -maxdepth 1 -type d | wc -l)
+          echo "Plugins: $PLUGIN_COUNT"
+
+          # Count components across all plugins
+          AGENT_COUNT=$(find plugins -name "*.md" -path "*/agents/*" | wc -l)
+          WORKFLOW_COUNT=$(find plugins -name "*.md" -path "*/commands/*" | wc -l)
 
           echo "Agents: $AGENT_COUNT"
           echo "Workflows: $WORKFLOW_COUNT"
+
+          # Validate expected counts
+          if [ "$PLUGIN_COUNT" -ne 18 ]; then
+            echo "WARNING: Expected 18 plugins, found $PLUGIN_COUNT"
+          fi
+
+          if [ "$AGENT_COUNT" -ne 75 ]; then
+            echo "WARNING: Expected 75 agents, found $AGENT_COUNT"
+          fi
+
+          if [ "$WORKFLOW_COUNT" -ne 19 ]; then
+            echo "WARNING: Expected 19 workflows, found $WORKFLOW_COUNT"
+          fi
 
           echo "✓ All validation checks passed"
 

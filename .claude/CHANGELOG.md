@@ -5,6 +5,194 @@ All notable changes to the Claude Code Orchestration System.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.0.0] - 2025-11-04
+
+### 🚨 BREAKING CHANGES
+
+This is a major architectural restructuring inspired by the wshobson/agents project. The entire system has been reorganized into a modular, plugin-based architecture with opt-in loading.
+
+#### Plugin-Based Architecture
+
+**NEW: 18 Independent Plugins** - Each plugin is independently installable
+- `database-specialists` (9 agents)
+- `language-developers` (11 agents)
+- `frontend-frameworks` (4 agents)
+- `mobile-development` (2 agents)
+- `game-development` (3 agents)
+- `ai-ml-engineering` (5 agents + 1 workflow)
+- `blockchain-web3` (2 agents)
+- `api-design` (3 agents)
+- `quality-assurance` (8 agents + 5 workflows)
+- `devops-cloud` (4 agents + 3 workflows)
+- `infrastructure-messaging` (2 agents)
+- `infrastructure-search` (2 agents)
+- `infrastructure-caching` (2 agents)
+- `infrastructure-monitoring` (4 agents)
+- `compliance` (5 agents)
+- `orchestration` (2 agents + 7 workflows)
+- `meta-development` (4 agents + 3 workflows)
+- `development-core` (2 agents)
+
+**Total: 75 agents across 18 plugins**
+
+#### Agent Format Changes
+
+**BREAKING: Agent frontmatter changed from YAML to markdown table**
+
+Old format:
+```yaml
+---
+name: agent-name
+description: Expert [role]...
+model: claude-sonnet-4-5-20250929
+tools:
+  - Read
+  - Write
+  - Edit
+---
+```
+
+New format:
+```markdown
+| name | description | model |
+|------|-------------|-------|
+| agent-name | Expert [role]... | sonnet |
+```
+
+**Key Changes:**
+- ✅ Markdown table format instead of YAML
+- ✅ NO `tools:` field (tools are auto-discovered)
+- ✅ Simplified model names: `opus`, `sonnet`, `haiku` (not full IDs)
+- ✅ All 75 agents converted to new format
+
+#### Workflow Format Changes
+
+**BREAKING: Command files no longer have YAML frontmatter**
+
+Old format:
+```yaml
+---
+description: Workflow description
+argumentHint: "[arguments]"
+---
+
+# Workflow Title
+```
+
+New format:
+```markdown
+# Workflow Title
+```
+
+**All 19 workflows converted** - Pure markdown, no frontmatter
+
+#### Skills System Changes
+
+**REMOVED: Intelligence Database System**
+- Removed 4 database-related skills (database-optimization, database-error-learning, database-tracking-patterns, database-knowledge-storage)
+- Removed db-helpers.sh and .orchestr8/intelligence.db system
+- Removed persistent learning and token tracking features
+
+**KEPT: 4 Core Skills**
+- workflow-orchestration-patterns (meta)
+- plugin-architecture (meta)
+- agent-design-patterns (meta) - **UPDATED** for new format
+- test-driven-development (practices)
+
+**agent-design-patterns skill updated:**
+- Includes haiku model documentation
+- Reflects new markdown table frontmatter format
+- Removes tools field references
+- Updates validation checklist
+- Reflects new plugin directory structure
+
+#### Marketplace Changes
+
+**marketplace.json restructured:**
+- Now lists all 18 plugins separately (was 1 monolithic plugin)
+- Each plugin has independent version, source, and description
+- Enables opt-in plugin loading
+- Version synchronized at 3.0.0 across all plugins
+
+#### Directory Structure Changes
+
+**OLD:**
+```
+.claude/agents/
+  ├── development/
+  ├── quality/
+  ├── infrastructure/
+  └── ...
+```
+
+**NEW:**
+```
+plugins/
+  ├── database-specialists/agents/
+  ├── language-developers/agents/
+  ├── quality-assurance/agents/ + commands/
+  └── ...
+```
+
+#### GitHub Workflow Updates
+
+**Updated .github/workflows/release.yml:**
+- Now validates `plugins/` directory (not `.claude/agents` and `.claude/commands`)
+- Validates all 18 plugin versions in marketplace.json (not just plugins[0])
+- Counts agents and workflows across all plugins
+- Expects 18 plugins, 75 agents, 19 workflows
+
+### Migration Notes
+
+**For existing users:**
+
+1. **Backup your workspace** before upgrading
+2. **Clean installation recommended** - Remove old `.claude/` directory structure
+3. **Plugin installation**: Use `/plugin install orchestr8` to get base system
+4. **Selective loading**: Install only needed plugins (e.g., `/plugin install language-developers`)
+5. **No automatic migration** - This is a breaking change requiring fresh install
+
+**Breaking compatibility with:**
+- Any custom agents using old YAML frontmatter format
+- Any workflows depending on Intelligence Database system
+- Any scripts or tools parsing old `.claude/agents` structure
+- Any automation depending on `db-helpers.sh` functions
+
+### What's Changed
+
+**Added:**
+- ✅ 18 independent plugin packages
+- ✅ Markdown table frontmatter format for agents
+- ✅ Haiku model support documentation
+- ✅ Modular, opt-in plugin loading
+- ✅ Updated GitHub release workflow for new structure
+- ✅ Comprehensive plugin marketplace.json
+
+**Changed:**
+- 🔄 Agent frontmatter: YAML → markdown table
+- 🔄 Model names: Full IDs → simplified (`opus`/`sonnet`/`haiku`)
+- 🔄 Directory structure: Monolithic → plugin-based
+- 🔄 Workflows: Remove YAML frontmatter
+- 🔄 Skills: Remove database-related skills
+- 🔄 Version: 2.4.1 → 3.0.0 (breaking change)
+
+**Removed:**
+- ❌ Intelligence Database system (db-helpers.sh, .orchestr8/intelligence.db)
+- ❌ Database-related skills (4 skills)
+- ❌ `tools:` field from agent frontmatter
+- ❌ YAML frontmatter from workflows
+- ❌ Monolithic `.claude/agents` and `.claude/commands` structure
+
+### Compatibility
+
+**Minimum Requirements:**
+- Claude Code >= 1.0.0
+- Fresh installation recommended for v3.0.0
+
+**Upgrade Path:**
+- No automated migration from 2.x to 3.0
+- Requires manual reinstallation and configuration
+
 ## [2.4.1] - 2025-11-04
 
 ### 🗄️ Database Specialists

@@ -5,7 +5,7 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://claude.ai)
 
-**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 75 specialized agents, 19 autonomous workflows, 8 reusable skills, **meta-orchestration** (self-extending plugin that creates its own agents/workflows/skills), enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), ML/data pipelines, API design (GraphQL/gRPC), message queues (Kafka/RabbitMQ), search (Elasticsearch/Algolia), multi-cloud (AWS/Azure/GCP), and observability (Prometheus/ELK).
+**The most comprehensive, enterprise-grade orchestration system for Claude Code** — featuring 75 specialized agents across 18 modular plugins, 19 autonomous workflows, 4 reusable skills, **opt-in plugin loading** (install only what you need), **meta-orchestration** (self-extending plugin that creates its own agents/workflows/skills), enterprise compliance (FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS), ML/data pipelines, API design (GraphQL/gRPC), message queues (Kafka/RabbitMQ), search (Elasticsearch/Algolia), multi-cloud (AWS/Azure/GCP), and observability (Prometheus/ELK).
 
 ## 🎯 What Makes This Different
 
@@ -25,42 +25,73 @@ While other projects provide agent collections, this system delivers a **complet
 
 ---
 
-## 🎉 New in v2.4.1: Database Specialists + Architecture Improvements
+## 🎉 New in v3.0.0: Modular Plugin Architecture (BREAKING CHANGES)
 
-**Enterprise-Ready Features:**
+**🚨 Major Architectural Restructuring** - Inspired by wshobson/agents
 
-### 🎯 Agent Registry (Role-Based Selection)
-- **File:** `.claude/agent-registry.yml`
-- **Purpose:** Intelligent agent selection with fallback support
-- **Benefits:**
-  - 🔄 Primary + fallback agents for every role
-  - 🏷️ Capability tags for smart matching
-  - 📋 Model recommendations (Opus 4 strategic, Sonnet 4.5 tactical)
-  - 💡 Use case guidance for each agent
+### 🔌 Plugin-Based Architecture
+- **18 Independent Plugins** - Install only what you need
+- **Opt-In Loading** - Reduces initial context by 80-90%
+- **Modular Design** - Each plugin is self-contained with agents, workflows, and skills
+- **Selective Installation** - `/plugin install database-specialists` or `/plugin install all`
 
-**Example:** When you need a frontend developer, the registry automatically suggests `react-specialist` with `nextjs-specialist` as fallback.
+**Example Plugin Structure:**
+```
+plugins/
+├── database-specialists/    # 9 database agents
+├── language-developers/     # 11 language agents
+├── quality-assurance/       # 8 QA agents + 5 workflows
+├── orchestration/           # 2 orchestrators + 7 workflows
+└── ... (14 more plugins)
+```
 
-### ✅ Version Validation Script
-- **File:** `.claude/scripts/validate-versions.sh`
-- **Purpose:** Prevent release errors by validating version synchronization
-- **Usage:**
-  ```bash
-  .claude/scripts/validate-versions.sh
-  # ✅ SUCCESS: Versions match! (or ❌ ERROR: Version mismatch)
-  ```
-- **Benefits:** Automated pre-release validation, cross-platform compatible
+### ✨ Agent Format Modernization
+- **Markdown Table Frontmatter** - No more YAML blocks
+- **Simplified Model Names** - `opus`, `sonnet`, `haiku` (not full IDs)
+- **Auto-Discovered Tools** - No `tools:` field needed
+- **Haiku Support** - Cost-optimized model for simple tasks
 
-### 🔐 Enterprise Secrets Management
-- **File:** `.claude/docs/SECRETS_MANAGEMENT.md`
-- **Purpose:** Production-grade secrets integration patterns
-- **Covers:**
-  - 🏦 HashiCorp Vault integration (with code examples)
-  - ☁️ AWS Secrets Manager patterns (boto3/SDK)
-  - 🔷 Azure Key Vault integration (Azure SDK)
-  - 🔄 Secret rotation workflows
-  - ✅ Security best practices checklist
+**Old Format (v2.x):**
+```yaml
+---
+name: python-developer
+description: Expert Python developer...
+model: claude-sonnet-4-5-20250929
+tools: [Read, Write, Edit, Bash]
+---
+```
 
-**Why This Matters:** Move from development to production with confidence. These patterns are used by Fortune 500 companies.
+**New Format (v3.0):**
+```markdown
+| name | description | model |
+|------|-------------|-------|
+| python-developer | Expert Python developer... | sonnet |
+```
+
+### 📦 Available Plugins
+
+| Plugin | Agents | Workflows | Description |
+|--------|--------|-----------|-------------|
+| `orchestration` | 2 | 7 | Project & feature orchestrators |
+| `quality-assurance` | 8 | 5 | Code review, testing, security |
+| `devops-cloud` | 4 | 3 | AWS/Azure/GCP + CI/CD |
+| `language-developers` | 11 | 0 | Python, TS, Java, Go, Rust, etc. |
+| `database-specialists` | 9 | 0 | PostgreSQL, MySQL, MongoDB, etc. |
+| `frontend-frameworks` | 4 | 0 | React, Next.js, Vue, Angular |
+| `ai-ml-engineering` | 5 | 1 | LangChain, MLOps, data pipelines |
+| `compliance` | 5 | 0 | FedRAMP, ISO 27001, SOC2, GDPR, PCI-DSS |
+| ... and 10 more | 27 | 3 | Infrastructure, mobile, game dev, etc. |
+
+**Total: 75 agents, 19 workflows across 18 plugins**
+
+### ⚠️ Breaking Changes from v2.x
+- Agent frontmatter format changed (YAML → markdown table)
+- Intelligence Database system removed
+- Directory structure changed (`.claude/agents/` → `plugins/*/agents/`)
+- Workflows no longer have YAML frontmatter
+- Requires fresh installation (no migration from v2.x)
+
+**Migration:** See [CHANGELOG.md](.claude/CHANGELOG.md) for complete migration guide.
 
 ---
 
@@ -109,19 +140,44 @@ While other projects provide agent collections, this system delivers a **complet
 **Easiest method - install directly from Claude Code:**
 
 ```bash
-# Step 1: Add the marketplace
-/plugin marketplace add seth-schultz/orchestr8
+# Step 1: Update marketplace
+/plugin marketplace update
 
-# Step 2: Install the plugin
+# Step 2: Install base system (includes orchestration + core plugins)
 /plugin install orchestr8
+
+# Step 3 (Optional): Install additional plugins as needed
+/plugin install language-developers      # Python, TypeScript, Java, Go, etc.
+/plugin install quality-assurance        # Code review, testing, security
+/plugin install database-specialists     # PostgreSQL, MySQL, MongoDB, etc.
 ```
 
-That's it! The orchestration system is now installed and ready to use.
+**Selective Plugin Installation:**
+You can install only the plugins you need:
+
+```bash
+# For frontend development
+/plugin install frontend-frameworks
+/plugin install quality-assurance
+
+# For backend development
+/plugin install language-developers
+/plugin install database-specialists
+/plugin install api-design
+
+# For full-stack projects
+/plugin install orchestration           # Project/feature orchestrators
+/plugin install development-core        # Architect + fullstack developer
+/plugin install all                     # Install all 18 plugins (not recommended)
+```
 
 **Verification:**
 ```bash
-# Verify the plugin is installed
-# Run /doctor in Claude Code - should show no plugin errors
+# List installed plugins
+/plugin list
+
+# Verify installation
+/doctor  # Should show no plugin errors
 ```
 
 ---
@@ -134,12 +190,17 @@ That's it! The orchestration system is now installed and ready to use.
 # Navigate to your project
 cd your-project
 
-# Clone into .claude directory
-git clone https://github.com/seth-schultz/orchestr8 .claude
+# Clone the repository
+git clone https://github.com/seth-schultz/orchestr8
+
+# Copy the plugins directory to your project
+cp -r orchestr8/plugins .
+cp -r orchestr8/.claude .
+cp -r orchestr8/.claude-plugin .
 
 # Verify installation
-ls .claude/
-# Should see: CLAUDE.md, agents/, commands/, etc.
+ls plugins/
+# Should see: database-specialists/, language-developers/, etc.
 ```
 
 ---
