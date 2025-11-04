@@ -25,6 +25,45 @@ While other projects provide agent collections, this system delivers a **complet
 
 ---
 
+## 🎉 New in v2.4.0: Phase 1 Architecture Improvements
+
+**Enterprise-Ready Features:**
+
+### 🎯 Agent Registry (Role-Based Selection)
+- **File:** `.claude/agent-registry.yml`
+- **Purpose:** Intelligent agent selection with fallback support
+- **Benefits:**
+  - 🔄 Primary + fallback agents for every role
+  - 🏷️ Capability tags for smart matching
+  - 📋 Model recommendations (Opus 4 strategic, Sonnet 4.5 tactical)
+  - 💡 Use case guidance for each agent
+
+**Example:** When you need a frontend developer, the registry automatically suggests `react-specialist` with `nextjs-specialist` as fallback.
+
+### ✅ Version Validation Script
+- **File:** `.claude/scripts/validate-versions.sh`
+- **Purpose:** Prevent release errors by validating version synchronization
+- **Usage:**
+  ```bash
+  .claude/scripts/validate-versions.sh
+  # ✅ SUCCESS: Versions match! (or ❌ ERROR: Version mismatch)
+  ```
+- **Benefits:** Automated pre-release validation, cross-platform compatible
+
+### 🔐 Enterprise Secrets Management
+- **File:** `.claude/docs/SECRETS_MANAGEMENT.md`
+- **Purpose:** Production-grade secrets integration patterns
+- **Covers:**
+  - 🏦 HashiCorp Vault integration (with code examples)
+  - ☁️ AWS Secrets Manager patterns (boto3/SDK)
+  - 🔷 Azure Key Vault integration (Azure SDK)
+  - 🔄 Secret rotation workflows
+  - ✅ Security best practices checklist
+
+**Why This Matters:** Move from development to production with confidence. These patterns are used by Fortune 500 companies.
+
+---
+
 ## 📚 Table of Contents
 
 - [Quick Start](#-quick-start)

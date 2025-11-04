@@ -63,6 +63,16 @@ You have access to a hierarchical orchestration system with:
 **Documentation:** technical-writer, api-documenter, architecture-documenter
 **Analysis:** requirements-analyzer, dependency-analyzer, code-archaeologist
 
+**Agent Selection via Registry:**
+The system includes a comprehensive **agent-registry.yml** (`.claude/agent-registry.yml`) that provides intelligent agent selection:
+- **Role-based mapping**: Logical roles (system_architect, frontend_developer, etc.) mapped to specific agents
+- **Primary + fallback agents**: Automatic fallback if primary agent unavailable
+- **Capability tags**: Each agent tagged with expertise areas for smart matching
+- **Model recommendations**: Opus 4 for strategic decisions, Sonnet 4.5 for tactical execution
+- **Use case guidance**: When to use each agent with specific examples
+
+Reference the agent registry when selecting agents to ensure optimal task assignment with built-in resilience.
+
 ### Layer 3: Skills
 Skills are automatically activated based on context. Available categories: languages, frameworks, tools, practices, domains.
 
