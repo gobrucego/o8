@@ -182,11 +182,12 @@ jobs:
           BINARY_NAME="${{ matrix.name }}"
           BINARY_NAME=${BINARY_NAME// /-}
           BINARY_NAME=${BINARY_NAME//./-}
+          BINARY_NAME=$(echo "$BINARY_NAME" | tr '[:upper:]' '[:lower:]')
 
-          tar -czf orchestr8-bin-${BINARY_NAME,,}-$VERSION.tar.gz -C ${{ matrix.build_dir }} orchestr8-bin
-          sha256sum orchestr8-bin-${BINARY_NAME,,}-$VERSION.tar.gz > orchestr8-bin-${BINARY_NAME,,}-$VERSION.tar.gz.sha256
+          tar -czf orchestr8-bin-${BINARY_NAME}-$VERSION.tar.gz -C ${{ matrix.build_dir }} orchestr8-bin
+          sha256sum orchestr8-bin-${BINARY_NAME}-$VERSION.tar.gz > orchestr8-bin-${BINARY_NAME}-$VERSION.tar.gz.sha256
 
-          echo "Archive: orchestr8-bin-${BINARY_NAME,,}-$VERSION.tar.gz"
+          echo "Archive: orchestr8-bin-${BINARY_NAME}-$VERSION.tar.gz"
         shell: bash
 
       - name: Create archive (Windows)
