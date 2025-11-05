@@ -114,6 +114,21 @@ jobs:
 
           echo "✓ CHANGELOG.md has entry for $VERSION"
 
+      - name: Validate Rust binary version matches
+        run: |
+          VERSION="${{ steps.get-version.outputs.version }}"
+          CARGO_VERSION=$(grep '^version = ' .claude/mcp-server/orchestr8-bin/Cargo.toml | head -1 | cut -d'"' -f2)
+
+          echo "Plugin version: $VERSION"
+          echo "Cargo version: $CARGO_VERSION"
+
+          if [ "$VERSION" != "$CARGO_VERSION" ]; then
+            echo "ERROR: Rust binary version ($CARGO_VERSION) does not match plugin version ($VERSION)"
+            exit 1
+          fi
+
+          echo "✓ Rust binary version matches"
+
       - name: Run all validation checks
         run: |
           echo "Running comprehensive validation..."
