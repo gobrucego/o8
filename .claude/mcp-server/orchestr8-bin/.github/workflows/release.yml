@@ -94,11 +94,27 @@ jobs:
         if: matrix.os != 'windows-latest'
         run: strip target/${{ matrix.target }}/release/orchestr8-bin
 
+      - name: Extract platform and arch
+        id: platform
+        run: |
+          if [ "${{ matrix.target }}" = "x86_64-apple-darwin" ]; then
+            echo "binary_name=orchestr8-bin-darwin-x86_64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "aarch64-apple-darwin" ]; then
+            echo "binary_name=orchestr8-bin-darwin-arm64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "x86_64-unknown-linux-gnu" ]; then
+            echo "binary_name=orchestr8-bin-linux-x86_64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "aarch64-unknown-linux-gnu" ]; then
+            echo "binary_name=orchestr8-bin-linux-arm64" >> $GITHUB_OUTPUT
+          elif [ "${{ matrix.target }}" = "x86_64-pc-windows-msvc" ]; then
+            echo "binary_name=orchestr8-bin-windows-x86_64" >> $GITHUB_OUTPUT
+          fi
+        shell: bash
+
       - name: Create archive (Unix)
         if: matrix.archive == 'tar.gz'
         run: |
           cd target/${{ matrix.target }}/release
-          tar -czf ../../../orchestr8-bin-${{ matrix.target }}.tar.gz orchestr8-bin
+          tar -czf ../../../${{ steps.platform.outputs.binary_name }}.tar.gz orchestr8-bin
           cd ../../..
 
       - name: Create archive (Windows)
@@ -106,8 +122,21 @@ jobs:
         shell: pwsh
         run: |
           cd target/${{ matrix.target }}/release
-          Compress-Archive -Path orchestr8-bin.exe -DestinationPath ../../../orchestr8-bin-${{ matrix.target }}.zip
+          Compress-Archive -Path orchestr8-bin.exe -DestinationPath ../../../${{ steps.platform.outputs.binary_name }}.zip
           cd ../../..
+
+      - name: Generate SHA256 checksum (Unix)
+        if: matrix.archive == 'tar.gz'
+        run: |
+          sha256sum ${{ steps.platform.outputs.binary_name }}.tar.gz > ${{ steps.platform.outputs.binary_name }}.tar.gz.sha256
+
+      - name: Generate SHA256 checksum (Windows)
+        if: matrix.archive == 'zip'
+        shell: pwsh
+        run: |
+          $file = "${{ steps.platform.outputs.binary_name }}.zip"
+          $hash = (Get-FileHash -Algorithm SHA256 $file).Hash
+          "$hash  $file" | Out-File "$file.sha256"
 
       - name: Upload artifact
         uses: actions/upload-artifact@v4
@@ -115,7 +144,9 @@ jobs:
           name: orchestr8-bin-${{ matrix.target }}
           path: |
             orchestr8-bin-*.tar.gz
+            orchestr8-bin-*.tar.gz.sha256
             orchestr8-bin-*.zip
+            orchestr8-bin-*.zip.sha256
 
   release:
     name: Create GitHub Release
@@ -140,7 +171,9 @@ jobs:
         with:
           files: |
             artifacts/**/*.tar.gz
+            artifacts/**/*.tar.gz.sha256
             artifacts/**/*.zip
+            artifacts/**/*.zip.sha256
           body: |
             ## Orchestr8 MCP Server - Ultra-Fast Agent Discovery
 
@@ -150,33 +183,57 @@ jobs:
             - 💾 Memory usage: <100MB
 
             ### Platforms
-            - macOS (x86_64, ARM64)
-            - Linux (x86_64, ARM64)
-            - Windows (x86_64)
+            - macOS x86_64 and ARM64 (M1/M2/M3)
+            - Linux x86_64 and ARM64
+            - Windows x86_64
 
             ### Installation
-            Download the appropriate binary for your platform and place it in your PATH.
+
+            Download the appropriate binary for your platform:
 
             ```bash
-            # macOS ARM64 (M1/M2)
-            tar -xzf orchestr8-bin-aarch64-apple-darwin.tar.gz
+            # macOS ARM64 (M1/M2/M3)
+            tar -xzf orchestr8-bin-darwin-arm64.tar.gz
+            sudo mv orchestr8-bin /usr/local/bin/
+
+            # macOS x86_64
+            tar -xzf orchestr8-bin-darwin-x86_64.tar.gz
             sudo mv orchestr8-bin /usr/local/bin/
 
             # Linux x86_64
-            tar -xzf orchestr8-bin-x86_64-unknown-linux-gnu.tar.gz
+            tar -xzf orchestr8-bin-linux-x86_64.tar.gz
             sudo mv orchestr8-bin /usr/local/bin/
+
+            # Linux ARM64
+            tar -xzf orchestr8-bin-linux-arm64.tar.gz
+            sudo mv orchestr8-bin /usr/local/bin/
+
+            # Windows x86_64
+            Expand-Archive -Path orchestr8-bin-windows-x86_64.zip -DestinationPath C:\Program Files\orchestr8\
+            ```
+
+            ### Verify Binary Integrity
+
+            Each release includes SHA256 checksums for verification:
+
+            ```bash
+            # macOS/Linux
+            sha256sum -c orchestr8-bin-darwin-arm64.tar.gz.sha256
+
+            # Windows (PowerShell)
+            (Get-FileHash orchestr8-bin-windows-x86_64.zip -Algorithm SHA256).Hash -eq (Get-Content orchestr8-bin-windows-x86_64.zip.sha256 | Cut -d' ' -f1)
             ```
 
             ### Usage
+
+            Once installed, the binary is automatically invoked by Claude Code via the MCP protocol:
+
             ```bash
-            # Run from project root (auto-detects .claude directory)
-            orchestr8-bin
-
-            # Or specify root directory
-            orchestr8-bin --root /path/to/project
-
-            # Check health
+            # Standalone health check
             echo '{"jsonrpc":"2.0","method":"health","id":1}' | orchestr8-bin
+
+            # Check version
+            orchestr8-bin --version
             ```
 
             See [README.md](README.md) for full documentation.

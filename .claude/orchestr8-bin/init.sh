@@ -62,21 +62,46 @@ if [ ! -f "${BINARY_PATH}" ]; then
 
     echo "[orchestr8] Downloading agent discovery system for ${OS}-${ARCH}..."
 
-    DOWNLOAD_URL="https://github.com/seth-schultz/orchestr8/releases/download/v${VERSION}/${BINARY_NAME}"
+    # Determine archive type based on OS
+    if [ "${OS}" = "windows" ]; then
+        ARCHIVE_NAME="${BINARY_NAME%.exe}.zip"
+        ARCHIVE_PATH="${BIN_DIR}/${ARCHIVE_NAME}"
+    else
+        ARCHIVE_NAME="${BINARY_NAME}.tar.gz"
+        ARCHIVE_PATH="${BIN_DIR}/${ARCHIVE_NAME}"
+    fi
+
+    DOWNLOAD_URL="https://github.com/seth-schultz/orchestr8/releases/download/v${VERSION}/${ARCHIVE_NAME}"
 
     # Try to download from GitHub releases
-    if ! curl -fsSL --progress-bar --max-time 30 "${DOWNLOAD_URL}" -o "${BINARY_PATH}"; then
+    if ! curl -fsSL --progress-bar --max-time 30 "${DOWNLOAD_URL}" -o "${ARCHIVE_PATH}"; then
         # Fallback: try without version (latest tag)
-        DOWNLOAD_URL="https://github.com/seth-schultz/orchestr8/releases/download/latest/${BINARY_NAME}"
-        if ! curl -fsSL --progress-bar --max-time 30 "${DOWNLOAD_URL}" -o "${BINARY_PATH}"; then
+        DOWNLOAD_URL="https://github.com/seth-schultz/orchestr8/releases/download/latest/${ARCHIVE_NAME}"
+        if ! curl -fsSL --progress-bar --max-time 30 "${DOWNLOAD_URL}" -o "${ARCHIVE_PATH}"; then
             echo "[orchestr8] ERROR: Failed to download binary from ${DOWNLOAD_URL}"
             echo "[orchestr8] You can manually download from: https://github.com/seth-schultz/orchestr8/releases"
             exit 1
         fi
     fi
 
+    # Extract binary from archive
+    if [ "${OS}" = "windows" ]; then
+        unzip -q "${ARCHIVE_PATH}" -d "${BIN_DIR}" || {
+            echo "[orchestr8] ERROR: Failed to extract ${ARCHIVE_NAME}"
+            exit 1
+        }
+    else
+        tar -xzf "${ARCHIVE_PATH}" -C "${BIN_DIR}" || {
+            echo "[orchestr8] ERROR: Failed to extract ${ARCHIVE_NAME}"
+            exit 1
+        }
+    fi
+
+    # Clean up archive
+    rm -f "${ARCHIVE_PATH}"
+
     chmod +x "${BINARY_PATH}"
-    echo "[orchestr8] Downloaded successfully"
+    echo "[orchestr8] Downloaded and extracted successfully"
 fi
 
 # Verify binary exists and is executable
