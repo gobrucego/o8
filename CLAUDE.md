@@ -106,7 +106,19 @@ argument-hint: "[argument-description]"  # Optional
 
 **To create a new release (e.g., v1.2.0):**
 
-1. **Update version files (CRITICAL - all three must match):**
+1. **Update version files using automation script (RECOMMENDED):**
+   ```bash
+   # Method 1: Use automation script (automatically syncs all files)
+   echo "1.2.0" > .claude/VERSION
+   ./.claude/scripts/sync-plugin-versions.sh
+
+   # This automatically updates:
+   # - .claude/plugin.json (version field)
+   # - All plugins/*/.claude-plugin/plugin.json (18 files)
+   # - .claude-plugin/marketplace.json (both version fields)
+   ```
+
+   **OR manually (legacy method):**
    ```bash
    # Update .claude/VERSION
    echo "1.2.0" > .claude/VERSION
@@ -134,7 +146,7 @@ argument-hint: "[argument-description]"  # Optional
 4. **Create release commit:**
    ```bash
    # IMPORTANT: Include all version files
-   git add .claude/VERSION .claude/plugin.json .claude-plugin/marketplace.json .claude/CHANGELOG.md README.md
+   git add .claude/VERSION .claude/plugin.json .claude-plugin/marketplace.json .claude/CHANGELOG.md README.md plugins/*/.claude-plugin/plugin.json
    git commit -m "release: v1.2.0 - [Brief description of major features]"
    ```
 
@@ -154,11 +166,17 @@ argument-hint: "[argument-description]"  # Optional
 **Version Sync Checklist (verify before tagging):**
 - [ ] `.claude/VERSION` = 1.2.0
 - [ ] `.claude/plugin.json` version = 1.2.0
+- [ ] All 18 plugins have version = 1.2.0 (`.claude/scripts/sync-plugin-versions.sh` handles this)
 - [ ] `.claude-plugin/marketplace.json` metadata.version = 1.2.0
-- [ ] `.claude-plugin/marketplace.json` plugins[0].version = 1.2.0
+- [ ] `.claude-plugin/marketplace.json` all plugins[*].version = 1.2.0
 - [ ] README.md agent/workflow counts match plugin.json
 - [ ] CHANGELOG.md has 1.2.0 entry with complete details
 - [ ] All files committed in single "release: v1.2.0" commit
+
+**Automation Features:**
+- **Pre-commit Hook:** `.git/hooks/pre-commit` automatically validates version consistency before commits
+- **Version Sync Script:** `./.claude/scripts/sync-plugin-versions.sh` synchronizes all 18+ version files automatically
+- If version mismatches are detected, the pre-commit hook will guide you to run the sync script
 
 ## Testing
 
