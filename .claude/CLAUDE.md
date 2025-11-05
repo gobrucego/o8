@@ -13,7 +13,7 @@ MCP Server (Rust) - Stdio-based, zero port conflicts
     ↓
 DuckDB Agent Registry - In-memory, <1ms queries
     ↓
-/agents/ Directory - 74 agent definitions, lazy-loaded on demand
+/agent-definitions/ Directory - 74 agent definitions, lazy-loaded on demand
     ↓
 Meta-Orchestrators (Layer 1) → Specialized Agents (Layer 2) → Workflows (Layer 4)
 ```
@@ -27,7 +27,7 @@ Meta-Orchestrators (Layer 1) → Specialized Agents (Layer 2) → Workflows (Lay
 
 ### Layer 2: Specialized Agents (JIT Loaded via MCP)
 
-All 74 agents are stored in `/agents/` and loaded on-demand when workflows need them:
+All 74 agents are stored in `/agent-definitions/` and loaded on-demand via MCP when workflows need them:
 
 **Development:** architect, frontend-developer, backend-developer, fullstack-developer, api-designer, database-specialist
 **Quality:** code-reviewer, test-engineer, security-auditor, performance-analyzer, accessibility-expert

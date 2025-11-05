@@ -162,7 +162,7 @@ MCP Server (Rust, stdio)
         ↓
 DuckDB Agent Registry
         ↓
-/agents/ Directory (74 definitions)
+/agent-definitions/ Directory (74 definitions)
         ↓
   ┌─────────────────────┐
   │ Meta-Orchestrators  │
@@ -189,7 +189,7 @@ DuckDB Agent Registry
 ### How MCP-Powered JIT Loading Works
 
 1. **Auto-Initialize** - MCP server launches when plugin loads (<500ms)
-2. **Build Registry** - Scans 74 agents in `/agents/`, indexes metadata in DuckDB (<1ms queries)
+2. **Build Registry** - Scans 74 agents in `/agent-definitions/`, indexes metadata in DuckDB (<1ms queries)
 3. **Discover Workflows** - All 20 workflows auto-discovered as MCP prompts via `prompts/list` (<50ms)
 4. **Discover Fast** - Orchestrators query MCP for agents (<1ms via DuckDB)
 5. **Load On-Demand** - Full definition loaded only when needed (<10ms cold, <1ms cached)

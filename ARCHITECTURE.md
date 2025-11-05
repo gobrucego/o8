@@ -61,7 +61,7 @@ project-orchestrator (Sonnet)
 **Agent Discovery Pattern:**
 All agent selection happens through MCP server, never direct file access:
 1. Orchestrator queries MCP: `discover_agents_by_role("architect")`
-2. MCP returns matching agents from `/agents/` with metadata
+2. MCP returns matching agents from `/agent-definitions/` with metadata
 3. Orchestrator requests full definition: `get_agent_definition("architect")`
 4. MCP loads markdown from disk (cached if recently used)
 5. Definition supplied to orchestrator in context
@@ -69,7 +69,7 @@ All agent selection happens through MCP server, never direct file access:
 
 ### Layer 2: Specialized Agent Layer (JIT Loaded via MCP)
 
-**Domain Experts** handle specific aspects of development. All 74 agents are stored in `/agents/` and loaded on-demand when orchestrators request them.
+**Domain Experts** handle specific aspects of development. All 74 agents are stored in `/agent-definitions/` and loaded on-demand via MCP when orchestrators request them.
 
 #### Development Agents
 - `architect.md` - System design and architecture decisions
@@ -143,7 +143,7 @@ Instead of loading all 74 agents at startup (consuming massive context), orchest
    - No I/O, pure in-memory lookup
 
 3. **Tier 3: Definition Loading (On-Demand)**
-   - Load full markdown from `/agents/[category]/[agent].md`
+   - Load full markdown from `/agent-definitions/[category]/[agent].md`
    - Parse YAML frontmatter and instructions
    - Cache in LRU (20 agents max simultaneously)
    - Latency: <10ms cold, <1ms cached
@@ -202,7 +202,7 @@ Instead of loading all 74 agents at startup (consuming massive context), orchest
 
 ```
 orchestr8/
-├── agents/                         ← All 74 agent definitions
+├── agent-definitions/              ← All 74 agent definitions (NOT auto-discovered)
 │   ├── development/
 │   │   ├── architect.md
 │   │   ├── frontend-developer.md
@@ -228,7 +228,7 @@ orchestr8/
     └── CLAUDE.md                  ← This file
 ```
 
-**Key Point:** Agents are in root `/agents/`, NOT in `.claude/agents/`. MCP server is configured to load from `${CLAUDE_WORKSPACE_ROOT}/agents`.
+**Key Point:** Agents are in root `/agent-definitions/`, NOT in `.claude/agents/`. This prevents Claude Code from auto-discovering them. MCP server is explicitly configured to load from `${CLAUDE_WORKSPACE_ROOT}/agent-definitions`.
 
 ## Execution Patterns
 
@@ -487,7 +487,7 @@ The MCP server handles all agent discovery and loading automatically. Workflows 
 3. MCP queries DuckDB (in-memory, <1ms)
 4. MCP returns matching agents with metadata
 5. Workflow calls MCP: `get_agent_definition("code-reviewer")`
-6. MCP loads markdown from `/agents/quality/code-reviewer.md`
+6. MCP loads markdown from `/agent-definitions/quality/code-reviewer.md`
 7. MCP returns full definition with YAML frontmatter
 8. Definition added to context for agent invocation
 9. After task completes, definition released
@@ -501,7 +501,7 @@ The MCP server handles all agent discovery and loading automatically. Workflows 
 ### Agent Registry (DuckDB)
 
 On MCP server startup:
-1. Scans `/agents/` directory for all `.md` files
+1. Scans `/agent-definitions/` directory for all `.md` files
 2. Parses YAML frontmatter (name, description, capabilities, model, etc.)
 3. Indexes metadata in in-memory DuckDB
 4. Enables <1ms discovery queries
@@ -567,7 +567,7 @@ Each skill specifies:
 
 ### Adding Custom Agents
 
-1. Create `agents/custom/my-agent.md`
+1. Create `agent-definitions/custom/my-agent.md`
 2. Define YAML frontmatter (name, description, tools, model)
 3. Write detailed system prompt
 4. Test with example workflows
