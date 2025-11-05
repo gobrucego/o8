@@ -138,6 +138,26 @@ pub struct PromptInfo {
     pub arguments: Vec<PromptArgument>,
 }
 
+/// Resource metadata for resources/list response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResourceMetadata {
+    pub uri: String,
+    pub name: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimeType: Option<String>,
+}
+
+/// Resource content for resources/read response
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ResourceContent {
+    pub uri: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub mimeType: Option<String>,
+    pub text: String,
+}
+
 /// MCP Handler - processes JSON-RPC requests with JIT agent loading support
 pub struct McpHandler {
     db: Database,
@@ -195,6 +215,8 @@ impl McpHandler {
             "cache/clear" => self.handle_cache_clear(request.params).await,
             "prompts/list" => self.handle_prompts_list(request.params).await,
             "prompts/get" => self.handle_prompts_get(request.params).await,
+            "resources/list" => self.handle_resources_list(request.params).await,
+            "resources/read" => self.handle_resources_read(request.params).await,
             method => {
                 error!("Unknown method: {}", method);
                 return JsonRpcResponse::error(
@@ -245,6 +267,10 @@ impl McpHandler {
                 "prompts": {
                     "list": true,
                     "get": true,
+                },
+                "resources": {
+                    "list": true,
+                    "read": true,
                 },
                 "health": true,
             }
@@ -628,6 +654,124 @@ impl McpHandler {
                     "content": content,
                 }
             ]
+        }))
+    }
+
+    async fn handle_resources_list(&self, params: Option<Value>) -> Result<Value> {
+        #[derive(Deserialize)]
+        struct ResourcesListParams {
+            #[serde(default)]
+            cursor: Option<String>,
+            #[serde(default)]
+            limit: Option<usize>,
+        }
+
+        let list_params: ResourcesListParams = match params {
+            Some(p) => serde_json::from_value(p)?,
+            None => ResourcesListParams { cursor: None, limit: None },
+        };
+
+        debug!("Handling resources/list request");
+
+        // Pagination settings
+        let page_limit = list_params.limit.unwrap_or(20).min(100);
+        let cursor_offset: usize = list_params.cursor
+            .and_then(|c| usize::from_str_radix(&c, 10).ok())
+            .unwrap_or(0);
+
+        // Query all agents (already indexed and sorted by DB)
+        let query_params = AgentQueryParams {
+            context: None,
+            role: None,
+            capability: None,
+            limit: Some(10000),
+        };
+
+        let mut all_agents = self.db.query_agents(&query_params)?;
+
+        // Sort alphabetically by name
+        all_agents.sort_by(|a, b| a.name.cmp(&b.name));
+
+        let total_count = all_agents.len();
+        let end_index = (cursor_offset + page_limit).min(total_count);
+
+        // Convert agents to MCP resources format
+        let resources: Vec<ResourceMetadata> = all_agents[cursor_offset..end_index]
+            .iter()
+            .map(|agent| ResourceMetadata {
+                uri: format!("agent://{}", agent.name),
+                name: agent.name.clone(),
+                description: Some(agent.description.clone()),
+                mimeType: Some("application/vnd.orchestr8.agent".to_string()),
+            })
+            .collect();
+
+        // Calculate next cursor if more results available
+        let next_cursor = if end_index < total_count {
+            Some((cursor_offset + page_limit).to_string())
+        } else {
+            None
+        };
+
+        info!("Discovered {} resources (returned {}/{})",
+              total_count, resources.len(), total_count);
+
+        Ok(serde_json::json!({
+            "resources": resources,
+            "total": total_count,
+            "count": resources.len(),
+            "cursor": next_cursor,
+        }))
+    }
+
+    async fn handle_resources_read(&self, params: Option<Value>) -> Result<Value> {
+        #[derive(Deserialize)]
+        struct ResourcesReadParams {
+            uri: String,
+        }
+
+        let read_params: ResourcesReadParams = serde_json::from_value(params.unwrap_or(Value::Null))?;
+        debug!("Handling resources/read request for URI: {}", read_params.uri);
+
+        // Parse URI format: agent://name
+        let uri_parts: Vec<&str> = read_params.uri.split("://").collect();
+        if uri_parts.len() != 2 || uri_parts[0] != "agent" {
+            return Err(anyhow::anyhow!("Invalid resource URI format. Expected 'agent://name', got '{}'", read_params.uri));
+        }
+
+        let agent_name = uri_parts[1];
+
+        // Find agent metadata by name
+        let agent = self.agents
+            .iter()
+            .find(|a| a.name == agent_name)
+            .ok_or_else(|| anyhow::anyhow!("Resource not found: {}", read_params.uri))?;
+
+        // Get file path from database
+        let file_path = self.db.get_agent_file_path(agent_name)?;
+
+        // Load full definition via JIT (with caching)
+        let start = std::time::Instant::now();
+        let definition = self.loader.get_agent_definition_jit(&file_path)?;
+        let load_time = start.elapsed().as_secs_f64() * 1000.0;
+
+        debug!("Loaded agent definition in {:.2}ms", load_time);
+
+        // Cache the definition
+        {
+            let mut cache = self.definition_cache.lock().unwrap();
+            cache.put(agent_name.to_string(), definition.clone());
+        }
+
+        // Convert definition to string for MCP resource content
+        let content = serde_json::to_string_pretty(&definition)?;
+
+        info!("Retrieved resource: {} ({:.2}ms)", read_params.uri, load_time);
+
+        Ok(serde_json::json!({
+            "uri": read_params.uri,
+            "mimeType": "application/vnd.orchestr8.agent+json",
+            "text": content,
         }))
     }
 
