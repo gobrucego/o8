@@ -120,6 +120,24 @@ pub struct IndexStats {
     pub plugins: usize,
 }
 
+/// Prompt argument definition
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PromptArgument {
+    pub name: String,
+    pub description: String,
+    #[serde(default)]
+    pub required: bool,
+}
+
+/// Prompt metadata for listing
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct PromptInfo {
+    pub name: String,
+    pub description: String,
+    #[serde(skip_serializing_if = "Vec::is_empty")]
+    pub arguments: Vec<PromptArgument>,
+}
+
 /// MCP Handler - processes JSON-RPC requests with JIT agent loading support
 pub struct McpHandler {
     db: Database,
@@ -175,6 +193,8 @@ impl McpHandler {
             "health" => self.handle_health(request.params).await,
             "cache/stats" => self.handle_cache_stats(request.params).await,
             "cache/clear" => self.handle_cache_clear(request.params).await,
+            "prompts/list" => self.handle_prompts_list(request.params).await,
+            "prompts/get" => self.handle_prompts_get(request.params).await,
             method => {
                 error!("Unknown method: {}", method);
                 return JsonRpcResponse::error(
@@ -221,6 +241,10 @@ impl McpHandler {
                 "cache": {
                     "stats": true,
                     "clear": true,
+                },
+                "prompts": {
+                    "list": true,
+                    "get": true,
                 },
                 "health": true,
             }
@@ -487,6 +511,123 @@ impl McpHandler {
             "agents": agents,
             "total": agents.len(),
             "discovery_method": "multi-criteria",
+        }))
+    }
+
+    async fn handle_prompts_list(&self, _params: Option<Value>) -> Result<Value> {
+        debug!("Handling prompts/list request");
+
+        let commands_dir = self.agent_dir.parent()
+            .unwrap_or_else(|| std::path::Path::new("/"))
+            .join("commands");
+
+        let mut prompts = Vec::new();
+
+        // Scan commands directory for markdown files
+        if commands_dir.exists() {
+            if let Ok(entries) = std::fs::read_dir(&commands_dir) {
+                for entry in entries.flatten() {
+                    let path = entry.path();
+                    if path.extension().map_or(false, |ext| ext == "md") {
+                        if let Some(filename) = path.file_stem().and_then(|s| s.to_str()) {
+                            // Convert filename to prompt name (kebab-case stays as-is)
+                            let prompt_name = filename.to_string();
+
+                            // Try to read and parse file for description
+                            let description = match std::fs::read_to_string(&path) {
+                                Ok(content) => {
+                                    // Try to extract YAML frontmatter
+                                    match crate::loader::extract_frontmatter(&content) {
+                                        Ok(frontmatter) => {
+                                            // Parse YAML to get description
+                                            match serde_yaml::from_str::<serde_json::Value>(&frontmatter) {
+                                                Ok(yaml) => {
+                                                    yaml.get("description")
+                                                        .and_then(|v| v.as_str())
+                                                        .unwrap_or(&prompt_name)
+                                                        .to_string()
+                                                }
+                                                Err(_) => prompt_name.replace("-", " ").to_uppercase(),
+                                            }
+                                        }
+                                        Err(_) => {
+                                            // Fallback to filename
+                                            prompt_name.replace("-", " ").to_uppercase()
+                                        }
+                                    }
+                                }
+                                Err(_) => prompt_name.replace("-", " ").to_uppercase(),
+                            };
+
+                            prompts.push(PromptInfo {
+                                name: prompt_name,
+                                description,
+                                arguments: Vec::new(), // Will implement argument parsing later
+                            });
+                        }
+                    }
+                }
+            }
+        } else {
+            info!("Commands directory not found: {}", commands_dir.display());
+        }
+
+        // Sort by name for consistent ordering
+        prompts.sort_by(|a, b| a.name.cmp(&b.name));
+
+        info!("Discovered {} prompts", prompts.len());
+
+        Ok(serde_json::json!({
+            "prompts": prompts,
+            "total": prompts.len(),
+        }))
+    }
+
+    async fn handle_prompts_get(&self, params: Option<Value>) -> Result<Value> {
+        #[derive(Deserialize)]
+        struct PromptsGetParams {
+            name: String,
+        }
+
+        let get_params: PromptsGetParams = serde_json::from_value(params.unwrap_or(Value::Null))?;
+        debug!("Handling prompts/get request for: {}", get_params.name);
+
+        let commands_dir = self.agent_dir.parent()
+            .unwrap_or_else(|| std::path::Path::new("/"))
+            .join("commands");
+
+        // Construct file path
+        let prompt_path = commands_dir.join(format!("{}.md", get_params.name));
+
+        // Read file
+        let content = std::fs::read_to_string(&prompt_path)
+            .map_err(|e| anyhow::anyhow!("Prompt not found: {} (error: {})", get_params.name, e))?;
+
+        // Extract frontmatter for description
+        let description = match crate::loader::extract_frontmatter(&content) {
+            Ok(frontmatter) => {
+                match serde_yaml::from_str::<serde_json::Value>(&frontmatter) {
+                    Ok(yaml) => {
+                        yaml.get("description")
+                            .and_then(|v| v.as_str())
+                            .unwrap_or(&get_params.name)
+                            .to_string()
+                    }
+                    Err(_) => get_params.name.replace("-", " ").to_uppercase(),
+                }
+            }
+            Err(_) => get_params.name.replace("-", " ").to_uppercase(),
+        };
+
+        // Return as MCP prompt format with messages array
+        Ok(serde_json::json!({
+            "description": description,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": content,
+                }
+            ]
         }))
     }
 

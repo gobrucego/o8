@@ -400,7 +400,7 @@ fn parse_agent_ref(agent_ref: &str) -> Result<(String, String)> {
 }
 
 /// Extract YAML frontmatter from markdown content
-fn extract_frontmatter(content: &str) -> Result<String> {
+pub fn extract_frontmatter(content: &str) -> Result<String> {
     let lines: Vec<&str> = content.lines().collect();
 
     // Find frontmatter boundaries
