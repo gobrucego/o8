@@ -65,7 +65,8 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
         with:
-          ref: ${{ needs.detect-version.outputs.commit_sha }}
+          fetch-depth: 0
+          ref: main
 
       - name: Configure git
         run: |
@@ -75,7 +76,15 @@ jobs:
       - name: Create and push git tag
         env:
           VERSION: ${{ needs.detect-version.outputs.version }}
+          COMMIT_SHA: ${{ needs.detect-version.outputs.commit_sha }}
         run: |
+          # Verify we're on the right commit
+          CURRENT_SHA=$(git rev-parse HEAD)
+          if [ "$CURRENT_SHA" != "$COMMIT_SHA" ]; then
+            echo "ERROR: Current SHA ($CURRENT_SHA) doesn't match expected SHA ($COMMIT_SHA)"
+            exit 1
+          fi
+
           git tag -a "v${VERSION}" -m "Release v${VERSION}"
           git push origin "v${VERSION}"
           echo "✓ Tag v${VERSION} created and pushed"
