@@ -7,16 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [5.4.0] - 2025-11-05
 
-### 🔧 Bug Fixes: Auto-Release Workflow
+### 🔧 Bug Fixes & Improvements: Auto-Release Workflow
 
 **Fixed git tag creation in detached HEAD state:**
 - Fixed "src refspec does not match any" error when creating tags
 - Workflow now properly checks out main branch instead of specific commit
 - Added validation to ensure we're on the correct commit before tagging
 - Tag push now properly triggers release.yml workflow
-- Removed redundant workflow dispatch trigger (tags trigger workflows automatically)
 
-**Result:** Auto-release workflow is now fully functional and can properly create releases when VERSION changes.
+**Optimized binary build process:**
+- Replaced GitHub Actions matrix builds with single Ubuntu job using cross-compilation
+- Builds all 5 platforms (macOS x86_64/ARM64, Linux x86_64/ARM64, Windows x86_64) in one job
+- Eliminates 45-minute wait for parallel matrix builds to complete
+- Binaries included directly in GitHub release
+- Release process now completes in ~5 minutes instead of 15-30 minutes
+
+**Version synchronization:**
+- Updated orchestr8-bin Cargo.toml version to 5.4.0 (synced with main plugin version)
+- Added release.yml validation to ensure Rust binary version matches plugin version
+- Prevents version mismatches in distributed binaries
+
+**Result:** Auto-release workflow is now fast, reliable, and fully automatic from VERSION change to published release.
 
 ## [5.3.0] - 2025-11-05
 
