@@ -64,34 +64,21 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup jq
-        run: sudo apt-get update && sudo apt-get install -y jq
+      - name: Configure git
+        run: |
+          git config --global user.email "noreply@anthropic.com"
+          git config --global user.name "Claude Code"
 
-      - name: Create git tag
+      - name: Create and push git tag
         env:
           VERSION: ${{ needs.check-version.outputs.version }}
         run: |
-          git tag -a "v${VERSION}" -m "Release v${VERSION}" || true
-          git push origin "v${VERSION}" || true
+          git tag -a "v${VERSION}" -m "Release v${VERSION}"
+          git push origin "v${VERSION}"
 
-      - name: Trigger release workflow
-        run: |
-          gh workflow run release.yml -f tag=v${{ needs.check-version.outputs.version }}
+      - name: Verify tag was created
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Wait for release workflow
+          VERSION: ${{ needs.check-version.outputs.version }}
         run: |
-          for i in {1..60}; do
-            WORKFLOW_ID=$(gh run list --workflow=release.yml --limit 1 --json databaseId --jq '.[0].databaseId' 2>/dev/null)
-            if [ ! -z "$WORKFLOW_ID" ]; then
-              echo "Release workflow started: $WORKFLOW_ID"
-              exit 0
-            fi
-            echo "Waiting for workflow to start..."
-            sleep 5
-          done
-          echo "Workflow did not start within timeout"
-          exit 1
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          git tag --list | grep "v${VERSION}"
+          echo "✓ Tag v${VERSION} created and pushed"
