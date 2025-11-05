@@ -5,6 +5,19 @@ All notable changes to the Claude Code Orchestration System.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.4.0] - 2025-11-05
+
+### 🔧 Bug Fixes: Auto-Release Workflow
+
+**Fixed git tag creation in detached HEAD state:**
+- Fixed "src refspec does not match any" error when creating tags
+- Workflow now properly checks out main branch instead of specific commit
+- Added validation to ensure we're on the correct commit before tagging
+- Tag push now properly triggers release.yml workflow
+- Removed redundant workflow dispatch trigger (tags trigger workflows automatically)
+
+**Result:** Auto-release workflow is now fully functional and can properly create releases when VERSION changes.
+
 ## [5.3.0] - 2025-11-05
 
 ### ✨ Improvements: Fully Automatic Release Workflow
