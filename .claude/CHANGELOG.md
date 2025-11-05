@@ -5,6 +5,24 @@ All notable changes to the Claude Code Orchestration System.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.2.0] - 2025-11-05
+
+### 🔧 Improvements: Automated Release Workflow
+
+**Workflow Enhancements:**
+- Fixed binary build workflow path issues for cross-platform compilation
+- Added auto-release workflow that detects VERSION changes
+- Automatic tagging and release when VERSION file changes
+- Simplified workflow paths for better macOS compatibility
+- Improved sha256sum handling for Windows and Unix
+
+**Release Process:**
+- Update `.claude/VERSION` → auto-release.yml detects change
+- Automatically creates git tag v{version}
+- Triggers binary build for all platforms
+- Creates GitHub release with binaries and checksums
+- No manual tagging required
+
 ## [5.1.0] - 2025-11-05
 
 ### 🔄 Improvements: Binary Distribution & Marketplace Integration
