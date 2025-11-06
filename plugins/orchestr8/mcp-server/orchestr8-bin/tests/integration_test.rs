@@ -9,9 +9,22 @@ use std::time::Duration;
 
 #[test]
 fn test_mcp_initialize() {
+    // Find project root dynamically by looking for the orchestr8-bin binary or using current dir
+    let root = std::env::var("CARGO_MANIFEST_DIR")
+        .map(|dir| {
+            // Walk up from src/.. to find the repo root
+            std::path::PathBuf::from(dir)
+                .parent()
+                .and_then(|p| p.parent())
+                .and_then(|p| p.parent())
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| ".".to_string())
+        })
+        .unwrap_or_else(|_| ".".to_string());
+
     let mut child = Command::new("./target/release/orchestr8-bin")
         .arg("--root")
-        .arg("/Users/seth/Projects/orchestr8")
+        .arg(&root)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -51,9 +64,21 @@ fn test_mcp_initialize() {
 
 #[test]
 fn test_mcp_agent_query() {
+    // Find project root dynamically
+    let root = std::env::var("CARGO_MANIFEST_DIR")
+        .map(|dir| {
+            std::path::PathBuf::from(dir)
+                .parent()
+                .and_then(|p| p.parent())
+                .and_then(|p| p.parent())
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| ".".to_string())
+        })
+        .unwrap_or_else(|_| ".".to_string());
+
     let mut child = Command::new("./target/release/orchestr8-bin")
         .arg("--root")
-        .arg("/Users/seth/Projects/orchestr8")
+        .arg(&root)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())
@@ -96,9 +121,21 @@ fn test_mcp_agent_query() {
 
 #[test]
 fn test_mcp_health() {
+    // Find project root dynamically
+    let root = std::env::var("CARGO_MANIFEST_DIR")
+        .map(|dir| {
+            std::path::PathBuf::from(dir)
+                .parent()
+                .and_then(|p| p.parent())
+                .and_then(|p| p.parent())
+                .map(|p| p.to_string_lossy().to_string())
+                .unwrap_or_else(|| ".".to_string())
+        })
+        .unwrap_or_else(|_| ".".to_string());
+
     let mut child = Command::new("./target/release/orchestr8-bin")
         .arg("--root")
-        .arg("/Users/seth/Projects/orchestr8")
+        .arg(&root)
         .stdin(Stdio::piped())
         .stdout(Stdio::piped())
         .stderr(Stdio::null())

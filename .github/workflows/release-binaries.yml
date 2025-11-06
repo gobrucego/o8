@@ -90,7 +90,7 @@ jobs:
 
       - name: Run tests
         if: '!matrix.cross'
-        run: cargo test --release --target ${{ matrix.target }}
+        run: cargo test --release --target ${{ matrix.target }} --lib --bins
         working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
 
       - name: Strip binary (Linux/macOS)
