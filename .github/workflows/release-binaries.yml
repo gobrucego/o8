@@ -64,38 +64,38 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('.claude/mcp-server/orchestr8-bin/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.lock') }}
 
       - name: Cache cargo index
         uses: actions/cache@v4
         with:
           path: ~/.cargo/git
-          key: ${{ runner.os }}-cargo-git-${{ hashFiles('.claude/mcp-server/orchestr8-bin/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-git-${{ hashFiles('plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.lock') }}
 
       - name: Cache cargo build
         uses: actions/cache@v4
         with:
-          path: .claude/mcp-server/orchestr8-bin/target
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('.claude/mcp-server/orchestr8-bin/Cargo.lock') }}
+          path: plugins/orchestr8/mcp-server/orchestr8-bin/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.lock') }}
 
       - name: Build binary (native)
         if: '!matrix.cross'
         run: cargo build --release --target ${{ matrix.target }}
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
 
       - name: Build binary (cross)
         if: matrix.cross
         run: cross build --release --target ${{ matrix.target }}
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
 
       - name: Run tests
         if: '!matrix.cross'
         run: cargo test --release --target ${{ matrix.target }}
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
 
       - name: Strip binary (Linux/macOS)
         if: matrix.os != 'windows-latest'
-        run: strip .claude/mcp-server/orchestr8-bin/target/${{ matrix.target }}/release/orchestr8-bin
+        run: strip plugins/orchestr8/mcp-server/orchestr8-bin/target/${{ matrix.target }}/release/orchestr8-bin
 
       - name: Extract platform and arch
         id: platform
@@ -115,7 +115,7 @@ jobs:
       - name: Create archive (Unix)
         if: matrix.archive == 'tar.gz'
         run: |
-          cd .claude/mcp-server/orchestr8-bin/target/${{ matrix.target }}/release
+          cd plugins/orchestr8/mcp-server/orchestr8-bin/target/${{ matrix.target }}/release
           tar -czf ../../../../../${{ steps.platform.outputs.binary_name }}.tar.gz orchestr8-bin
           cd ../../../../../
 
@@ -123,7 +123,7 @@ jobs:
         if: matrix.archive == 'zip'
         shell: pwsh
         run: |
-          cd .claude\mcp-server\orchestr8-bin\target\${{ matrix.target }}\release
+          cd plugins\orchestr8\mcp-server\orchestr8-bin\target\${{ matrix.target }}\release
           Compress-Archive -Path orchestr8-bin.exe -DestinationPath ..\..\..\..\..\${{ steps.platform.outputs.binary_name }}.zip
           cd ..\..\..\..\
 

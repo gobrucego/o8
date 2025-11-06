@@ -5,7 +5,7 @@ on:
     branches:
       - main
     paths:
-      - '.claude/VERSION'
+      - 'VERSION'
 
 permissions:
   contents: write
@@ -28,7 +28,7 @@ jobs:
       - name: Get new version
         id: version
         run: |
-          NEW_VERSION=$(cat .claude/VERSION | tr -d '\n')
+          NEW_VERSION=$(cat VERSION | tr -d '\n')
           echo "new_version=$NEW_VERSION" >> $GITHUB_OUTPUT
           echo "Version file: $NEW_VERSION"
 
@@ -156,16 +156,16 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.cargo/registry
-          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('.claude/mcp-server/orchestr8-bin/Cargo.lock') }}
+          key: ${{ runner.os }}-cargo-registry-${{ hashFiles('plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.lock') }}
 
       - name: Cache cargo build
         uses: actions/cache@v4
         with:
-          path: .claude/mcp-server/orchestr8-bin/target
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('.claude/mcp-server/orchestr8-bin/Cargo.lock') }}
+          path: plugins/orchestr8/mcp-server/orchestr8-bin/target
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-build-${{ hashFiles('plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.lock') }}
 
       - name: Build binary
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
         run: |
           if [ "${{ matrix.use_cross }}" = "true" ]; then
             cross build --release --target ${{ matrix.target }}
@@ -176,7 +176,7 @@ jobs:
 
       - name: Create archive (Unix)
         if: matrix.archive == 'tar.gz'
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
         run: |
           VERSION="${{ needs.detect-version.outputs.version }}"
           BINARY_NAME="${{ matrix.name }}"
@@ -208,7 +208,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: orchestr8-binary-${{ matrix.target }}
-          path: .claude/mcp-server/orchestr8-bin/orchestr8-bin-*
+          path: plugins/orchestr8/mcp-server/orchestr8-bin/orchestr8-bin-*
 
   finalize-release:
     name: Finalize GitHub Release with Binaries
@@ -264,7 +264,7 @@ jobs:
           echo "Creating GitHub release $VERSION with binaries..."
 
           # Create release with release notes from CHANGELOG
-          CHANGELOG_SECTION=$(sed -n "/^## \[${{ needs.detect-version.outputs.version }}\]/,/^## \[/p" .claude/CHANGELOG.md | head -n -1)
+          CHANGELOG_SECTION=$(sed -n "/^## \[${{ needs.detect-version.outputs.version }}\]/,/^## \[/p" CHANGELOG.md | head -n -1)
 
           # Create release (or update if it already exists)
           gh release create "$VERSION" \

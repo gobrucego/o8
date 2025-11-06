@@ -42,7 +42,7 @@ jobs:
       - name: Validate tag matches VERSION file
         run: |
           TAG_VERSION="${{ steps.get-version.outputs.version }}"
-          FILE_VERSION=$(cat .claude/VERSION | tr -d '\n')
+          FILE_VERSION=$(cat VERSION | tr -d '\n')
 
           echo "Tag version: $TAG_VERSION"
           echo "VERSION file: $FILE_VERSION"
@@ -58,8 +58,8 @@ jobs:
         run: |
           VERSION="${{ steps.get-version.outputs.version }}"
 
-          VERSION_FILE=$(cat .claude/VERSION | tr -d '\n')
-          PLUGIN_VERSION=$(jq -r '.version' .claude/plugin.json)
+          VERSION_FILE=$(cat VERSION | tr -d '\n')
+          PLUGIN_VERSION=$(jq -r '.version' plugins/orchestr8/.claude-plugin/plugin.json)
           MARKETPLACE_META=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
 
           echo "Checking all versions match $VERSION..."
@@ -117,7 +117,7 @@ jobs:
       - name: Validate Rust binary version matches
         run: |
           VERSION="${{ steps.get-version.outputs.version }}"
-          CARGO_VERSION=$(grep '^version = ' .claude/mcp-server/orchestr8-bin/Cargo.toml | head -1 | cut -d'"' -f2)
+          CARGO_VERSION=$(grep '^version = ' plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.toml | head -1 | cut -d'"' -f2)
 
           echo "Plugin version: $VERSION"
           echo "Cargo version: $CARGO_VERSION"
