@@ -416,23 +416,43 @@ If an agent repeatedly fails:
 
 ## Getting Started
 
-For new users:
-1. Read `ARCHITECTURE.md` for system design
-2. Review agent definitions in `agents/`
-3. Explore skills in `skills/`
-4. Try workflow commands in `commands/`
-5. Start with `/new-project` or `/add-feature`
+### Installation
+Install orchestr8 via Claude Code marketplace:
+```bash
+/plugin marketplace add seth-schultz/orchestr8
+/plugin install orchestr8@seth-schultz/orchestr8
+```
 
-For existing projects:
-1. Checkout this repo into `.claude/` directory
-2. Customize `CLAUDE.md` for your project
-3. Use orchestrators or workflows as needed
-4. Extend with custom agents/skills/workflows
+Or browse interactively:
+```bash
+/plugin
+```
+
+### Using orchestr8
+1. Type `/` in Claude Code to see all available workflows
+2. Use `/orchestr8:new-project` to build projects end-to-end
+3. Use `/orchestr8:add-feature` for feature development
+4. Use `/orchestr8:fix-bug` for debugging and fixes
+5. Use `/orchestr8:security-audit` for security analysis
+
+### Learning the System
+1. Review agent definitions in `agent-definitions/` directory (74 agents organized by domain)
+2. Explore workflows in `commands/` directory (20 slash commands)
+3. Check skills in `skills/` directory (organized by category)
+4. Read agent registry in `agent-registry.yml` for model assignments
+
+### Customization
+To extend orchestr8 for your needs:
+1. Add custom agents to `agent-definitions/` with proper metadata
+2. Create custom workflows in `commands/` directory
+3. Add domain-specific skills in `skills/` directory
+4. Update `agent-registry.yml` with your custom agents
 
 ## Support
 
-- See `README.md` for detailed documentation
-- See `ARCHITECTURE.md` for system design
-- Review examples in `examples/` directory
-- Check agent documentation in `agents/`
-- Explore skill documentation in `skills/`
+- See root `README.md` for detailed documentation and use cases
+- See `CLAUDE.md` (this file) for system architecture and patterns
+- Check agent definitions in `agent-definitions/` for specialized agents
+- Explore workflow documentation in `commands/` directory
+- Review skill documentation in `skills/` directory
+- Check `docs/` directory for architecture and design guides

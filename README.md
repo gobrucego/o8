@@ -84,17 +84,6 @@ Or browse available plugins interactively:
 
 Then select `orchestr8` from the available plugins.
 
-### Manual Installation
-
-```bash
-# Clone into your project workspace
-git clone https://github.com/seth-schultz/orchestr8.git
-cp -r orchestr8/.claude .
-
-# Or install as git submodule
-git submodule add https://github.com/seth-schultz/orchestr8.git .claude
-```
-
 ### Verification
 
 After installation, verify orchestr8 is loaded by typing `/` in Claude Code. You should see all 20 workflows listed (e.g., `/orchestr8:new-project`, `/orchestr8:add-feature`, etc.).
