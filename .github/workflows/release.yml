@@ -106,7 +106,7 @@ jobs:
         run: |
           VERSION="${{ steps.get-version.outputs.version }}"
 
-          if ! grep -q "## \[$VERSION\]" .claude/CHANGELOG.md; then
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
             echo "ERROR: CHANGELOG.md does not have entry for version $VERSION"
             echo "Expected: ## [$VERSION]"
             exit 1
@@ -193,18 +193,18 @@ jobs:
           VERSION="${{ needs.validate-release.outputs.version }}"
 
           # Find line numbers for version headers
-          START_LINE=$(grep -n "^## \[$VERSION\]" .claude/CHANGELOG.md | cut -d: -f1)
+          START_LINE=$(grep -n "^## \[$VERSION\]" CHANGELOG.md | cut -d: -f1)
           if [ -z "$START_LINE" ]; then
             echo "ERROR: Version $VERSION not found in CHANGELOG.md"
             exit 1
           fi
 
           # Find the next version header
-          NEXT_LINE=$(awk "NR > $START_LINE && /^## \[/ {print NR; exit}" .claude/CHANGELOG.md)
+          NEXT_LINE=$(awk "NR > $START_LINE && /^## \[/ {print NR; exit}" CHANGELOG.md)
 
           if [ -z "$NEXT_LINE" ]; then
             # No next version, extract to end of file
-            TOTAL_LINES=$(wc -l < .claude/CHANGELOG.md)
+            TOTAL_LINES=$(wc -l < CHANGELOG.md)
             END_LINE=$TOTAL_LINES
           else
             END_LINE=$((NEXT_LINE - 1))
@@ -212,7 +212,7 @@ jobs:
 
           # Extract release notes (skip the version header line)
           EXTRACT_START=$((START_LINE + 1))
-          sed -n "${EXTRACT_START},${END_LINE}p" .claude/CHANGELOG.md > release-notes.md
+          sed -n "${EXTRACT_START},${END_LINE}p" CHANGELOG.md > release-notes.md
 
           # Check if we got any notes
           if [ ! -s release-notes.md ]; then
