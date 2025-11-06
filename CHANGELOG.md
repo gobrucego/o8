@@ -5,6 +5,41 @@ All notable changes to the Claude Code Orchestration System.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [5.8.3] - 2025-11-05
+
+### 🔧 Fix: Complete Path Migration & .claude Directory Removal
+
+**Critical Fixes:**
+- Removed legacy `.claude/` directory entirely (should not exist)
+- Fixed all shell scripts to use correct `plugins/orchestr8/` paths
+- Removed hardcoded test paths and broken autonomous_db references
+- Updated all 4 GitHub Actions workflows with 29 path corrections
+
+**Shell Script Updates (8 files):**
+- post-install.sh: Corrected path resolution for plugin-scoped installation
+- session-start.sh: Fixed MCP data directory initialization
+- orchestr8-bin/init.sh: Fixed parameter names and agent directory references
+- Removed all references to non-existent `.claude/` structure
+- Fixed test scripts (test-e2e.sh, test-all-methods.sh) with proper paths
+
+**Core Implementation:**
+- loader.rs: Restored agent registry loading with correct path
+- Created comprehensive agent-registry.yml with all 74 agents mapped
+- plugin.json: Fixed environment variables for proper binary/agent discovery
+
+**GitHub Actions Workflows:**
+- release.yml: 8 path corrections for validation and artifact handling
+- pr-checks.yml: 14 path corrections for filters and version checks
+- ci.yml: 6 path corrections for security scanning
+- auto-release.yml: 1 critical fix for Windows binary build directory
+
+**Result:**
+- ✅ Complete path consistency across entire codebase
+- ✅ Plugin structure now properly aligned with marketplace requirements
+- ✅ GitHub Actions workflows validate correctly for releases and CI/CD
+- ✅ All 74 agents discoverable via MCP with role-based fallback chains
+- ✅ Ready for v5.8.3 release and marketplace distribution
+
 ## [5.8.2] - 2025-11-05
 
 ### 🔧 Fix: Restructure Plugin for Marketplace Distribution
