@@ -4,8 +4,14 @@
 
 set -euo pipefail
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+# Use CLAUDE_PLUGIN_ROOT if available, otherwise determine from script location
+if [ -n "${CLAUDE_PLUGIN_ROOT:-}" ]; then
+    PLUGIN_ROOT="$CLAUDE_PLUGIN_ROOT"
+else
+    SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+    PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+fi
+
 MCP_BIN_DIR="$PLUGIN_ROOT/mcp-server/orchestr8-bin/target/release"
 MCP_BIN_PATH="$MCP_BIN_DIR/orchestr8-bin"
 MCP_DATA_DIR="$PLUGIN_ROOT/mcp-server/data"
