@@ -50,7 +50,9 @@ run_test() {
 
 # Find or build binary
 ORCHESTR8_HOME="${CLAUDE_PLUGIN_ROOT:-.}"
-BIN_DIR="/Users/seth/Projects/orchestr8/.claude/mcp-server/orchestr8-bin"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
+BIN_DIR="$PLUGIN_ROOT/mcp-server/orchestr8-bin"
 BINARY_PATH="${BIN_DIR}/target/release/orchestr8-bin"
 
 # Try to find precompiled binary

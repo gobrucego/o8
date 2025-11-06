@@ -134,19 +134,19 @@ jobs:
           echo "Running comprehensive validation..."
 
           # Validate MCP plugin structure
-          if [ ! -d "agent-definitions" ]; then
-            echo "ERROR: Missing agent-definitions directory"
+          if [ ! -d "plugins/orchestr8/agent-definitions" ]; then
+            echo "ERROR: Missing plugins/orchestr8/agent-definitions directory"
             exit 1
           fi
 
-          if [ ! -d "commands" ]; then
-            echo "ERROR: Missing commands directory"
+          if [ ! -d "plugins/orchestr8/commands" ]; then
+            echo "ERROR: Missing plugins/orchestr8/commands directory"
             exit 1
           fi
 
           # Count components in root-level structure
-          AGENT_COUNT=$(find agent-definitions -name "*.md" | wc -l)
-          WORKFLOW_COUNT=$(find commands -name "*.md" | wc -l)
+          AGENT_COUNT=$(find plugins/orchestr8/agent-definitions -name "*.md" | wc -l)
+          WORKFLOW_COUNT=$(find plugins/orchestr8/commands -name "*.md" | wc -l)
 
           echo "Agents: $AGENT_COUNT"
           echo "Workflows: $WORKFLOW_COUNT"
@@ -161,7 +161,7 @@ jobs:
           fi
 
           echo "Validating agent file format..."
-          find agent-definitions -name "*.md" 2>/dev/null | while read -r file; do
+          find plugins/orchestr8/agent-definitions -name "*.md" 2>/dev/null | while read -r file; do
             if ! head -1 "$file" | grep -q "^---$"; then
               echo "ERROR: Agent $file missing YAML frontmatter"
               exit 1
@@ -276,7 +276,7 @@ jobs:
 
             ---
 
-            **Full Changelog**: https://github.com/${{ github.repository }}/blob/main/.claude/CHANGELOG.md
+            **Full Changelog**: https://github.com/${{ github.repository }}/blob/main/CHANGELOG.md
 
             🤖 Generated with [Claude Code](https://claude.com/claude-code)`;
 

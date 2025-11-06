@@ -298,21 +298,12 @@ jobs:
           echo "Scanning for potentially malicious patterns..."
 
           # Check for common malicious patterns in agent and command directories
-          if grep -r "eval(" agent-definitions/ commands/ --include="*.md" 2>/dev/null; then
+          if grep -r "eval(" plugins/orchestr8/agent-definitions/ plugins/orchestr8/commands/ --include="*.md" 2>/dev/null; then
             echo "WARNING: Found eval() usage in markdown files"
           fi
 
-          if grep -r "exec(" agent-definitions/ commands/ --include="*.md" 2>/dev/null; then
+          if grep -r "exec(" plugins/orchestr8/agent-definitions/ plugins/orchestr8/commands/ --include="*.md" 2>/dev/null; then
             echo "WARNING: Found exec() usage in markdown files"
-          fi
-
-          # Also check .claude directory
-          if grep -r "eval(" .claude/ --include="*.md" 2>/dev/null; then
-            echo "WARNING: Found eval() usage in .claude markdown files"
-          fi
-
-          if grep -r "exec(" .claude/ --include="*.md" 2>/dev/null; then
-            echo "WARNING: Found exec() usage in .claude markdown files"
           fi
 
           echo "✓ Security scan complete"

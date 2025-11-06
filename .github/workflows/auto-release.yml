@@ -192,7 +192,7 @@ jobs:
 
       - name: Create archive (Windows)
         if: matrix.archive == 'zip'
-        working-directory: .claude/mcp-server/orchestr8-bin
+        working-directory: plugins/orchestr8/mcp-server/orchestr8-bin
         run: |
           $VERSION = "${{ needs.detect-version.outputs.version }}"
           $BinaryName = "${{ matrix.name }}" -replace ' ', '-' -replace '\.', '-'

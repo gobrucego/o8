@@ -2,13 +2,16 @@
 # Comprehensive MCP server test
 
 BIN="./target/release/orchestr8-bin"
-ROOT="/Users/seth/Projects/orchestr8"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PLUGIN_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+DATA_DIR="$PLUGIN_ROOT/mcp-server/data"
 
 echo "=== Orchestr8 MCP Server Test Suite ==="
 echo ""
 
 # Clean database
-rm -rf "$ROOT/.claude/mcp-server/data/orchestr8.duckdb"* 2>/dev/null
+mkdir -p "$DATA_DIR"
+rm -rf "$DATA_DIR/orchestr8.duckdb"* 2>/dev/null
 
 run_test() {
     local name="$1"

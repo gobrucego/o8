@@ -10,7 +10,7 @@
 # - .claude/VERSION (source of truth)
 # - .claude/plugin.json (MCP plugin metadata)
 # - .claude-plugin/marketplace.json (both metadata.version and plugins[0].version)
-# - .claude/mcp-server/orchestr8-bin/Cargo.toml (Rust binary version)
+# - plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.toml (Rust binary version)
 #
 # Usage:
 #   ./sync-plugin-versions.sh              # Use version from .claude/VERSION
@@ -113,8 +113,8 @@ update_file ".claude-plugin/marketplace.json" \
   "s/\"version\": \"[0-9]*\.[0-9]*\.[0-9]*\"/\"version\": \"$VERSION\"/g"
 
 # 4. Update Rust binary version in Cargo.toml
-update_file ".claude/mcp-server/orchestr8-bin/Cargo.toml" \
-  ".claude/mcp-server/orchestr8-bin/Cargo.toml" \
+update_file "plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.toml" \
+  "plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.toml" \
   "s/^version = \"[0-9]*\.[0-9]*\.[0-9]*\"/version = \"$VERSION\"/"
 
 echo ""
@@ -132,7 +132,7 @@ if [ $FAILED_FILES -eq 0 ]; then
   echo "  ✓ .claude/VERSION"
   echo "  ✓ .claude/plugin.json"
   echo "  ✓ .claude-plugin/marketplace.json (both fields)"
-  echo "  ✓ .claude/mcp-server/orchestr8-bin/Cargo.toml"
+  echo "  ✓ plugins/orchestr8/mcp-server/orchestr8-bin/Cargo.toml"
   echo ""
   echo "All versions now: ${GREEN}$VERSION${NC}"
   echo ""

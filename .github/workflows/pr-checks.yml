@@ -74,21 +74,21 @@ jobs:
         with:
           filters: |
             agents:
-              - 'agent-definitions/**/*.md'
+              - 'plugins/orchestr8/agent-definitions/**/*.md'
             workflows:
-              - 'commands/**/*.md'
+              - 'plugins/orchestr8/commands/**/*.md'
             docs:
               - 'README.md'
               - 'ARCHITECTURE.md'
               - 'CLAUDE.md'
-              - '.claude/CHANGELOG.md'
-              - '.claude/CLAUDE.md'
+              - 'CHANGELOG.md'
+              - 'plugins/orchestr8/CLAUDE.md'
             config:
-              - '.claude/plugin.json'
+              - 'plugins/orchestr8/.claude-plugin/plugin.json'
               - '.claude-plugin/marketplace.json'
             version:
-              - '.claude/VERSION'
-              - '.claude/plugin.json'
+              - 'VERSION'
+              - 'plugins/orchestr8/.claude-plugin/plugin.json'
               - '.claude-plugin/marketplace.json'
 
   # Validate new/modified agents
@@ -247,8 +247,8 @@ jobs:
         run: |
           echo "Checking version consistency..."
 
-          VERSION_FILE=$(cat .claude/VERSION | tr -d '\n')
-          PLUGIN_VERSION=$(jq -r '.version' .claude/plugin.json)
+          VERSION_FILE=$(cat VERSION | tr -d '\n')
+          PLUGIN_VERSION=$(jq -r '.version' plugins/orchestr8/.claude-plugin/plugin.json)
           MARKETPLACE_META=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
           MARKETPLACE_PLUGIN=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
 
@@ -289,9 +289,9 @@ jobs:
 
       - name: Check CHANGELOG updated
         run: |
-          VERSION=$(cat .claude/VERSION | tr -d '\n')
+          VERSION=$(cat VERSION | tr -d '\n')
 
-          if ! grep -q "## \[$VERSION\]" .claude/CHANGELOG.md; then
+          if ! grep -q "## \[$VERSION\]" CHANGELOG.md; then
             echo "ERROR: CHANGELOG.md must have entry for version $VERSION"
             echo "Add: ## [$VERSION] - $(date +%Y-%m-%d)"
             exit 1

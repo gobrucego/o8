@@ -172,21 +172,24 @@ impl AgentLoader {
             }
         }
 
-        // Load from agent-registry.yml for role definitions
-        let registry_path = self.root_dir.join(".claude/agent-registry.yml");
+        // Load from agent-registry.yml for role-based agent selection
+        // This enables workflows to request agents by role with fallback chains
+        let registry_path = self.root_dir.join("agent-registry.yml");
         if registry_path.exists() {
             debug!(
-                "Also loading agent registry from {}",
+                "Loading agent registry for role-based selection from {}",
                 registry_path.display()
             );
-            let registry_agents = self.load_registry(&registry_path)?;
-
-            for agent in registry_agents {
-                if seen_names.insert(agent.name.clone()) {
-                    agents.push(agent);
-                } else {
-                    debug!("Skipping duplicate agent from registry: {}", agent.name);
+            if let Ok(registry_agents) = self.load_registry(&registry_path) {
+                for agent in registry_agents {
+                    if seen_names.insert(agent.name.clone()) {
+                        agents.push(agent);
+                    } else {
+                        debug!("Skipping duplicate agent from registry: {}", agent.name);
+                    }
                 }
+            } else {
+                debug!("Failed to load agent registry, continuing with discovered agents");
             }
         }
 

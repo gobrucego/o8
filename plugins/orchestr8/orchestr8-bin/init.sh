@@ -109,10 +109,10 @@ if [ ! -x "${BINARY_PATH}" ]; then
     chmod +x "${BINARY_PATH}"
 fi
 
-# Copy agent registry to cache if updated
-if [ -d "${ORCHESTR8_HOME}/.claude/agents" ]; then
-    if [ ! -d "${AGENT_CACHE_DIR}" ] || [ "${ORCHESTR8_HOME}/.claude/agents" -nt "${AGENT_CACHE_DIR}" ]; then
-        cp -r "${ORCHESTR8_HOME}/.claude/agents"/* "${AGENT_CACHE_DIR}/" 2>/dev/null || true
+# Copy agent definitions to cache if updated
+if [ -d "${ORCHESTR8_HOME}/agent-definitions" ]; then
+    if [ ! -d "${AGENT_CACHE_DIR}" ] || [ "${ORCHESTR8_HOME}/agent-definitions" -nt "${AGENT_CACHE_DIR}" ]; then
+        cp -r "${ORCHESTR8_HOME}/agent-definitions"/* "${AGENT_CACHE_DIR}/" 2>/dev/null || true
     fi
 fi
 
@@ -134,9 +134,8 @@ echo "[orchestr8] Starting agent discovery system (v${VERSION})..." >&2
 trap - EXIT
 
 exec "${BINARY_PATH}" \
-    --project-root "$(pwd)" \
+    --root "$(pwd)" \
     --agent-dir "${AGENT_CACHE_DIR}" \
     --log-level info \
-    --log-file "${LOG_DIR}/orchestr8.log" \
     --cache-ttl 300 \
     --cache-size 1000

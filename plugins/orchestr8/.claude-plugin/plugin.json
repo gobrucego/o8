@@ -44,7 +44,9 @@
         "--root",
         "${CLAUDE_WORKSPACE_ROOT}",
         "--agent-dir",
-        "${CLAUDE_WORKSPACE_ROOT}/agent-definitions",
+        "${CLAUDE_PLUGIN_ROOT}/agent-definitions",
+        "--data-dir",
+        "${CLAUDE_WORKSPACE_ROOT}/.claude/mcp-server/data",
         "--log-level",
         "info"
       ],
