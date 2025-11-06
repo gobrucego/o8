@@ -297,12 +297,12 @@ jobs:
         run: |
           echo "Scanning for potentially malicious patterns..."
 
-          # Check for common malicious patterns in plugin directories
-          if grep -r "eval(" plugins/ --include="*.md" 2>/dev/null; then
+          # Check for common malicious patterns in agent and command directories
+          if grep -r "eval(" agent-definitions/ commands/ --include="*.md" 2>/dev/null; then
             echo "WARNING: Found eval() usage in markdown files"
           fi
 
-          if grep -r "exec(" plugins/ --include="*.md" 2>/dev/null; then
+          if grep -r "exec(" agent-definitions/ commands/ --include="*.md" 2>/dev/null; then
             echo "WARNING: Found exec() usage in markdown files"
           fi
 

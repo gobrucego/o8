@@ -86,7 +86,6 @@ jobs:
             config:
               - '.claude/plugin.json'
               - '.claude-plugin/marketplace.json'
-              - 'plugins/*/plugin.json'
             version:
               - '.claude/VERSION'
               - '.claude/plugin.json'
