@@ -646,12 +646,16 @@ impl McpHandler {
         };
 
         // Return as MCP prompt format with messages array
+        // Content must be an object with type and text fields per Anthropic message format
         Ok(serde_json::json!({
             "description": description,
             "messages": [
                 {
                     "role": "user",
-                    "content": content,
+                    "content": {
+                        "type": "text",
+                        "text": content
+                    }
                 }
             ]
         }))
