@@ -208,7 +208,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: orchestr8-binary-${{ matrix.target }}
-          path: plugins/orchestr8/mcp-server/orchestr8-bin/orchestr8-bin-*
+          path: plugins/orchestr8/mcp-server/orchestr8-bin/
 
   finalize-release:
     name: Finalize GitHub Release with Binaries
