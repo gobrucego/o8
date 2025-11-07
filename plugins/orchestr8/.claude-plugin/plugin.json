@@ -19,6 +19,5 @@
     "agent-workflows"
   ],
   "commands": "./commands/",
-  "skills": "./skills/",
-  "hooks": "./hooks/hooks.json"
+  "skills": "./skills/"
 }
