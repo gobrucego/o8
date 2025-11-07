@@ -141,6 +141,56 @@ TOKENS_USED=2000
 
 **🚀 PARALLEL EXECUTION OPPORTUNITY (5x speedup):** Phases 2-6 (all 5 review stages) can run in parallel since each analyzes different quality dimensions independently. Use a single message with 5 Task tool calls to execute style, logic, security, performance, and architecture reviews concurrently. Each writes to separate output files (style-review.md, logic-review.md, security-review.md, performance-review.md, architecture-review.md), so no conflicts.
 
+## PARALLEL EXECUTION IMPLEMENTATION
+
+**Execute all 5 review stages simultaneously using this pattern:**
+
+```bash
+# In a single message, make 5 parallel Task tool calls:
+
+Task 1 (code-reviewer): Stage 1 - Style & Readability Review
+→ Output: style-review.md
+
+Task 2 (language-specialist): Stage 2 - Logic & Correctness Review
+→ Output: logic-review.md
+
+Task 3 (security-auditor): Stage 3 - Security Audit
+→ Output: security-audit.md
+
+Task 4 (load-testing-specialist): Stage 4 - Performance Analysis
+→ Output: performance-analysis.md
+
+Task 5 (architect): Stage 5 - Architecture Review
+→ Output: architecture-review.md
+
+# All 5 complete in parallel (instead of sequentially)
+# Result: 5x speedup (2-3 minutes instead of 10-15 minutes)
+```
+
+**Implementation Example:**
+
+```
+Message: "Execute comprehensive code review with parallel stages"
+
+[Single message containing 5 Task calls]
+- Task 1: code-reviewer for style review
+- Task 2: language-specialist for logic review
+- Task 3: security-auditor for security audit
+- Task 4: load-testing-specialist for performance
+- Task 5: architect for architecture review
+
+Wait for all 5 to complete (takes ~3 min, not ~15 min)
+
+Phase 7: Aggregate all 5 reports into master review report
+Phase 8: Deliver results and plan iterations if needed
+```
+
+**Quality Gate Validation (Still Applied):**
+- All 5 stages must complete successfully
+- Each stage must produce valid output file
+- Reports must include severity categorization
+- No critical/high issues blocking merge
+
 ---
 
 ## Phase 2: Stage 1 - Style & Readability Review (5-20%)
