@@ -58,9 +58,7 @@ Community leaders have the right and responsibility to remove, edit, or reject c
 
 ### How to Report
 
-If you experience or witness unacceptable behavior, or have any other concerns, please report it by contacting the project maintainers at:
-
-**Email**: seth-schultz@anthropic.com
+If you experience or witness unacceptable behavior, or have any other concerns, please report it through [GitHub Discussions](https://github.com/seth-schultz/orchestr8/discussions) by creating a private discussion with the maintainers.
 
 Please include:
 
@@ -153,11 +151,10 @@ For answers to common questions about this code of conduct, see the FAQ at [http
 
 ## Contact
 
-For questions about this Code of Conduct, please contact:
+For questions about this Code of Conduct, please use one of the following:
 
-* **Project Maintainer**: Seth Schultz
-* **Email**: seth-schultz@anthropic.com
-* **GitHub Issues**: [orchestr8 Issues](https://github.com/seth-schultz/orchestr8/issues)
+* **GitHub Discussions**: [orchestr8 Discussions](https://github.com/seth-schultz/orchestr8/discussions)
+* **GitHub Issues**: [orchestr8 Issues](https://github.com/seth-schultz/orchestr8/issues) (for non-conduct-related issues)
 
 ## Changes to This Code of Conduct
 

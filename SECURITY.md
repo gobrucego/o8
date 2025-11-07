@@ -10,7 +10,7 @@ If you discover a security vulnerability in orchestr8, please follow these steps
 
 1. **DO NOT** open a public GitHub issue for security vulnerabilities
 2. **DO NOT** disclose the vulnerability publicly until we have had a chance to address it
-3. Email your findings to **security@orchestr8.dev** or contact the maintainer directly at seth.schultz@gmail.com
+3. Report your findings through [GitHub's private vulnerability reporting feature](https://github.com/seth-schultz/orchestr8/security/advisories)
 4. Include detailed information about the vulnerability (see below)
 5. Allow us reasonable time to respond and address the issue before public disclosure
 
@@ -27,14 +27,13 @@ To help us understand and address the vulnerability quickly, please include:
 - **Suggested remediation** (if you have ideas)
 - **Your name and affiliation** (for acknowledgment, if desired)
 
-### Encrypted Communication
+### GitHub Private Vulnerability Reporting
 
-For sensitive security reports, you may encrypt your message using PGP.
-
-**PGP Public Key**: Available at [https://keybase.io/sethschultz](https://keybase.io/sethschultz)
-**Key Fingerprint**: `TBD` (to be published)
-
-Alternatively, you can use GitHub's private vulnerability reporting feature if you prefer to keep the communication within GitHub.
+Use GitHub's private vulnerability reporting feature for all security disclosures. This ensures:
+- Encrypted communication within GitHub
+- Automatic creation of a private security advisory
+- Coordinated disclosure timeline
+- Credit for responsible disclosure
 
 ## Response Timeline
 
@@ -272,7 +271,7 @@ We recognize security researchers who have helped improve orchestr8's security:
 
 **Thank you for helping keep orchestr8 and the community safe!**
 
-If you have any questions about this security policy, please contact security@orchestr8.dev.
+If you have any questions about this security policy, please start a discussion in [GitHub Discussions](https://github.com/seth-schultz/orchestr8/discussions).
 
 ## Additional Resources
 
