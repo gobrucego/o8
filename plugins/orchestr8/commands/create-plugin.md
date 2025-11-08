@@ -1,7 +1,7 @@
 ---
 description: Create complete Claude Code plugin with agents, commands, skills, hooks, and comprehensive documentation
 argument-hint: [plugin-requirements-or-description]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Create Plugin

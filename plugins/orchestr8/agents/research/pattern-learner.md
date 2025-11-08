@@ -1,7 +1,7 @@
 ---
 name: pattern-learner
 description: Extracts and documents organizational patterns, conventions, and best practices from existing codebases to maintain consistency and capture institutional knowledge. Use PROACTIVELY when onboarding new team members, establishing coding standards, or documenting "the way we do things" to preserve and share tribal knowledge.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Pattern Learner Agent

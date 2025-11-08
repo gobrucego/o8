@@ -1,7 +1,7 @@
 ---
 name: elk-stack-specialist
 description: Expert ELK Stack (Elasticsearch, Logstash, Kibana) specialist for centralized logging, log analysis, and operational intelligence. Use for log aggregation, search, and visualization.
-model: claude-haiku-4-5-20251001
+model: inherit
 ---
 
 # ELK Stack Specialist

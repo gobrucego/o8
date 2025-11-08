@@ -1,7 +1,7 @@
 ---
 name: performance-researcher
 description: Benchmarks different implementation approaches to measure actual performance characteristics across CPU, memory, I/O, and latency dimensions. Use PROACTIVELY when performance is critical, when choosing between algorithms/data structures, or when optimizing hot paths to make data-driven decisions with empirical evidence.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Performance Researcher Agent

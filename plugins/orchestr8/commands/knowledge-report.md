@@ -1,7 +1,7 @@
 ---
 description: Generate comprehensive knowledge base reports with visualizations, trends, and insights for organizational learning
 argument-hint: [report-type] [optional-filters]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Knowledge Report Command

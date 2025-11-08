@@ -1,7 +1,7 @@
 ---
 name: assumption-validator
 description: Tests architectural and technical assumptions through empirical validation before committing to major decisions. Use PROACTIVELY when making platform choices, adopting new technologies, or validating scalability claims to avoid costly mistakes and validate decision premises with real-world evidence.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Assumption Validator Agent

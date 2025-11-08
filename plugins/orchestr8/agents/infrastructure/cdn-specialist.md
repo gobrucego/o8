@@ -1,7 +1,7 @@
 ---
 name: cdn-specialist
 description: Expert CDN specialist for Cloudflare, CloudFront, Fastly, and edge caching strategies. Use for global content delivery, DDoS protection, edge computing, and performance optimization.
-model: claude-haiku-4-5-20251001
+model: inherit
 ---
 
 # CDN Specialist

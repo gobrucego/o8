@@ -1,7 +1,7 @@
 ---
 name: test-engineer
 description: Designs test strategies and implements comprehensive test suites including unit, integration, and end-to-end tests. Use PROACTIVELY when implementing new features or fixing bugs to ensure test coverage exists before code changes, following TDD principles. Ensures 80%+ code coverage and tests all critical paths.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Test Engineer Agent

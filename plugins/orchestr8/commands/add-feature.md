@@ -1,7 +1,7 @@
 ---
 description: Add new features safely with automated design, implementation, testing, code review, and security validation
 argument-hint: [feature-description]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Add Feature Workflow

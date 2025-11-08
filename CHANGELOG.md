@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.3.0] - 2025-11-07
+
+### Changed
+
+- **Model Management System Redesign**:
+  - All 84 agents now use `model: inherit` to inherit from parent context (major improvement)
+  - Users can now control agent model selection via main conversation setting
+  - Development workflows can use Haiku (fast, cheap) while production uses Sonnet/Opus
+  - Eliminates need to update 84 agent files when new models release
+
+- **Workflow Model Updates**:
+  - All 23 workflows updated to use Anthropic API aliases instead of full model IDs
+  - 19 workflows use `claude-sonnet-4-5` (production-critical operations)
+  - 4 workflows use `claude-opus-4-1` (complex orchestration)
+  - Removed Haiku from all workflows (upgraded to Sonnet for consistency)
+  - Follows Anthropic best practices for model reference
+
+- **Skills & Documentation**:
+  - Updated `agent-design-patterns` skill to document new model inheritance pattern
+  - Clarified distinction: agents use `inherit`, workflows use explicit API aliases
+  - Updated all examples and validation checklists
+
+### Added
+
+- **Model Migration Documentation**:
+  - `.orchestr8/docs/architecture/model-usage-audit-2025-11-07.md` - Comprehensive audit report
+  - `.orchestr8/docs/architecture/model-migration-final-summary-2025-11-07.md` - Migration summary
+  - Detailed analysis of model distribution and migration strategy
+
+### Benefits
+
+- **Maximum User Flexibility**: Per-project and per-session model selection without code changes
+- **Simplified Maintenance**: Single configuration point (main conversation) instead of 84 separate agent files
+- **Consistent Quality**: Workflows maintain explicit quality standards (Sonnet/Opus only)
+- **Future-Proof**: Agents automatically adapt when users upgrade their main model
+- **Cost Optimization**: Users can choose speed (Haiku) vs quality (Sonnet/Opus) tradeoff
+
 ## [6.2.0] - 2025-11-07
 
 ### Added

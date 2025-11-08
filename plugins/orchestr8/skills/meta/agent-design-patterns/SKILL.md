@@ -27,7 +27,7 @@ Example outputs:
 **Use agent-design-patterns for:**
 - ✅ Creating new specialized agents for the orchestr8 plugin
 - ✅ Designing agent frontmatter structure and metadata
-- ✅ Selecting appropriate models (opus/sonnet/haiku) for agent types
+- ✅ Understanding model inheritance patterns for agents
 - ✅ Structuring agent documentation with examples and best practices
 - ✅ Ensuring agents follow v4.0.0 standards and conventions
 - ✅ Integrating agents with plugin discovery systems
@@ -47,40 +47,44 @@ Every agent requires YAML frontmatter (delimited by triple dashes):
 ---
 name: agent-name
 description: Expert [role]... Use for...
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 ```
 
 **Key Requirements:**
 - Use YAML format with triple dash delimiters (`---`)
 - NO `tools:` field (tools are auto-discovered)
-- Model names simplified: `opus`, `sonnet`, or `haiku` (not full IDs like `claude-opus-4-1-20250805`)
+- **ALL AGENTS** use `model: inherit` to inherit from parent context
 - Required fields: `name`, `description`, `model`
 
 ### Model Selection Pattern
 
-**Three models are used in orchestr8:**
+**Agent Model Inheritance (NEW):**
 
-1. **opus** - Strategic orchestrators ONLY
-   - Project orchestrator
-   - Feature orchestrator
-   - Complex multi-agent coordination
-   - High-level strategic decision-making
+**All Agents** use `model: inherit`:
+- Agents inherit the model from the main conversation or parent workflow
+- Users control agent model via their main conversation model setting
+- Provides flexibility: users choose cost/quality tradeoff
+- Development mode → set main to Haiku (fast, cheap)
+- Production mode → set main to Sonnet/Opus (high quality)
 
-2. **sonnet** - Most specialized agents (DEFAULT)
-   - Language specialists (Python, TypeScript, Java, Go, etc.)
-   - Framework specialists (React, Next.js, Django, etc.)
-   - Infrastructure specialists (PostgreSQL, Kubernetes, etc.)
-   - Quality agents (code reviewer, test engineer, security auditor)
-   - Compliance agents (GDPR, FedRAMP, ISO27001, etc.)
+**Workflows** (commands in `/commands/`) specify explicit models:
 
-3. **haiku** - Quick, straightforward tasks (cost optimization)
-   - Simple file operations
-   - Straightforward refactoring
-   - Basic code generation
-   - When speed and cost matter more than complexity
+1. **claude-opus-4-1** - Complex multi-phase workflows
+   - `/new-project` - Complete project creation
+   - `/modernize-legacy` - Legacy system modernization
+   - `/build-ml-pipeline` - ML pipeline orchestration
+   - `/review-architecture` - Architecture review
 
-**Rule: Use Opus for orchestrators, Sonnet for most agents (default), Haiku for simple/fast tasks.**
+2. **claude-sonnet-4-5** - Production-critical workflows (DEFAULT)
+   - `/add-feature` - Feature development
+   - `/deploy` - Production deployment
+   - `/review-code` - Code quality review
+   - `/security-audit` - Security assessment
+   - `/setup-cicd` - CI/CD pipeline setup
+   - Most quality, knowledge, and optimization workflows
+
+**Rule: Agents use "inherit", Workflows use API aliases (claude-opus-4-1 for complex, claude-sonnet-4-5 for most).**
 
 ### Tool Selection Pattern
 
@@ -108,7 +112,7 @@ Tools are auto-discovered based on agent needs. However, agent designers should 
 ---
 name: technology-specialist
 description: Expert [Technology] developer specializing in [key areas]. Use for [specific use cases].
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Technology Specialist
@@ -145,7 +149,7 @@ Your deliverables should be production-ready, well-tested...
 ---
 name: review-specialist
 description: Performs comprehensive [domain] review...
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Review Specialist
@@ -169,16 +173,19 @@ model: claude-sonnet-4-5-20250929
 [Structured report format]
 ```
 
-### Pattern 3: Meta-Orchestrator
+### Pattern 3: Workflow (Explicit Model)
+
+**Note:** This pattern is for **workflows** (slash commands), not agents.
+Workflows use explicit models (aliases) while agents use "inherit".
 
 ```markdown
 ---
-name: meta-orchestrator
+name: complex-workflow
 description: Orchestrates [scope]...
-model: claude-opus-4-1-20250805
+model: claude-opus-4-1
 ---
 
-# Meta Orchestrator
+# Complex Workflow
 
 ## Core Responsibilities
 1. [Responsibility 1]
@@ -322,9 +329,8 @@ well-tested, secure, etc.] [domain] code/documentation following
 **Agent Design:**
 - Use YAML frontmatter with triple dashes (NOT markdown tables)
 - NO `tools:` field in frontmatter (tools are auto-discovered)
-- Use simplified model names: `opus`, `sonnet`, or `haiku` (not full IDs)
+- **ALL AGENTS** use `model: inherit` (agents inherit from parent context)
 - Follow established patterns from similar agents in the same category
-- Use `opus` for orchestrators, `sonnet` for specialists (default), `haiku` for simple/fast tasks
 - Include 5-10 detailed code examples for technical specialists
 - Write comprehensive documentation (300-500 lines for specialists)
 - Use kebab-case for filenames and frontmatter name
@@ -343,8 +349,8 @@ well-tested, secure, etc.] [domain] code/documentation following
 **Agent Design:**
 - Don't use markdown table frontmatter (use YAML with `---` delimiters)
 - Don't include `tools:` field (removed in v4.0.0)
-- Don't use full model IDs (use `sonnet` or `opus`)
-- Don't use `opus` for specialized agents (only for orchestrators)
+- Don't use explicit model IDs in agents (always use `inherit`)
+- Don't use explicit models for agents (only workflows use explicit models)
 - Don't skip code examples for technical specialists
 - Don't create agents with fewer than 300 lines (too thin)
 - Don't place agents in wrong categories
@@ -409,7 +415,7 @@ Before finalizing an agent:
 - [ ] Frontmatter has name, description, model (NO tools field)
 - [ ] Name is kebab-case and matches filename
 - [ ] Description follows "Expert [role]... Use for..." pattern
-- [ ] Model is `opus` (orchestrators), `sonnet` (default), or `haiku` (simple/fast tasks)
+- [ ] Model is `inherit` (ALL agents inherit from parent context)
 - [ ] File placed in correct plugin directory
 - [ ] Core Competencies section present
 - [ ] 5+ code examples (for technical specialists)
@@ -421,8 +427,8 @@ Before finalizing an agent:
 
 1. **Using markdown table frontmatter** - Must use YAML format with triple dashes in v4.0.0+
 2. **Including tools field** - Tools field is removed in v4.0.0 (auto-discovered)
-3. **Using full model IDs** - Use `sonnet` or `opus`, not full IDs like `claude-sonnet-4-5-20250929`
-4. **Using Opus for Specialists** - Opus is only for meta-orchestrators
+3. **Using explicit models in agents** - Agents must use `inherit`, not explicit model IDs
+4. **Confusing agents and workflows** - Agents use `inherit`, workflows use explicit models
 5. **Thin Documentation** - Technical agents need 5+ detailed examples
 6. **Wrong Category** - Research similar agents to find correct placement
 7. **Generic Descriptions** - Be specific about capabilities and use cases
@@ -432,12 +438,13 @@ Before finalizing an agent:
 ## Remember
 
 1. **Frontmatter Format**: YAML with triple dashes (NOT markdown tables), NO tools field
-2. **Model Selection**: `opus` for orchestrators, `sonnet` for specialists (default), `haiku` for simple tasks
-3. **Model Names**: Use simplified names (`opus`/`sonnet`/`haiku`), not full IDs
-4. **Documentation**: 300-500 lines for specialists, 400+ for orchestrators
-5. **Examples**: 5-10 detailed examples for technical agents
-6. **Naming**: kebab-case for files and frontmatter names
-7. **Structure**: Follow established patterns from similar agents
-8. **Quality**: DO/DON'T sections are not optional
+2. **Model Inheritance**: **ALL AGENTS** use `model: inherit` to inherit from parent context
+3. **Workflows vs Agents**: Workflows (commands) use API aliases (`claude-opus-4-1`, `claude-sonnet-4-5`), agents use `inherit`
+4. **Model Aliases**: Use Anthropic API aliases, not full model IDs (e.g., `claude-sonnet-4-5` not `claude-sonnet-4-5-20250929`)
+5. **Documentation**: 300-500 lines for specialists, 400+ for workflows
+6. **Examples**: 5-10 detailed examples for technical agents
+7. **Naming**: kebab-case for files and frontmatter names
+8. **Structure**: Follow established patterns from similar agents
+9. **Quality**: DO/DON'T sections are not optional
 
-Well-designed agents follow consistent patterns, use YAML frontmatter format (v4.0.0+), have comprehensive documentation with real-world examples, and integrate seamlessly with the orchestr8 plugin system for proper Claude Code discovery.
+Well-designed agents follow consistent patterns, use YAML frontmatter format (v4.0.0+), use `model: inherit` for flexibility, have comprehensive documentation with real-world examples, and integrate seamlessly with the orchestr8 plugin system for proper Claude Code discovery.

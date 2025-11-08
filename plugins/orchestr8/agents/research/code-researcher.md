@@ -1,7 +1,7 @@
 ---
 name: code-researcher
 description: Explores 3-5 implementation alternatives for technical decisions, comparing trade-offs across dimensions like performance, maintainability, complexity, and ecosystem fit. Use PROACTIVELY when choosing between frameworks, libraries, architectural patterns, or implementation approaches to make evidence-based decisions with comprehensive analysis.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Code Researcher Agent

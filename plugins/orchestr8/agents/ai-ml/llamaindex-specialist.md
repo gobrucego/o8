@@ -1,7 +1,7 @@
 ---
 name: llamaindex-specialist
 description: Expert LlamaIndex developer specializing in RAG systems, document indexing, query engines, and production-ready data-centric AI applications
-model: claude-haiku-4-5-20251001
+model: inherit
 ---
 
 # LlamaIndex Specialist

@@ -1,7 +1,7 @@
 ---
 name: terraform-specialist
 description: Expert in Terraform infrastructure as code, multi-cloud provisioning, state management, and infrastructure automation. Use for infrastructure provisioning, cloud resource management, IaC best practices, and infrastructure automation across AWS, Azure, GCP, and other providers.
-model: claude-haiku-4-5-20251001
+model: inherit
 ---
 
 # Terraform Specialist Agent

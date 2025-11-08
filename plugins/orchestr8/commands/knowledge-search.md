@@ -1,7 +1,7 @@
 ---
 description: Search and retrieve organizational knowledge across patterns, anti-patterns, performance baselines, assumptions, technology comparisons, and refactoring opportunities
 argument-hint: [query] [optional-category]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Knowledge Search Command

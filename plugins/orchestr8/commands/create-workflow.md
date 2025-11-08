@@ -1,7 +1,7 @@
 ---
 description: Create new orchestration workflow with phase design, quality gates, and comprehensive documentation
 argument-hint: [workflow-requirements-or-description]
-model: claude-haiku-4-5-20251001
+model: claude-sonnet-4-5
 ---
 
 # Create Workflow

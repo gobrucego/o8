@@ -1,7 +1,7 @@
 ---
 description: Create complete projects end-to-end with requirements analysis, architecture design, implementation, testing, and deployment
 argument-hint: [project-description]
-model: claude-opus-4-1-20250805
+model: claude-opus-4-1
 ---
 
 # New Project Workflow

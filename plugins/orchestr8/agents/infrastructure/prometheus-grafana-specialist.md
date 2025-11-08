@@ -1,7 +1,7 @@
 ---
 name: prometheus-grafana-specialist
 description: Expert Prometheus and Grafana specialist for metrics collection, alerting, and visualization. Use for application monitoring, SLI/SLO tracking, and operational dashboards.
-model: claude-haiku-4-5-20251001
+model: inherit
 ---
 
 # Prometheus & Grafana Specialist

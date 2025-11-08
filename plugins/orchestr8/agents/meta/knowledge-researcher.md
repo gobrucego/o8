@@ -1,7 +1,7 @@
 ---
 name: knowledge-researcher
 description: Expert in searching, analyzing, and synthesizing organizational knowledge. Queries the knowledge base for patterns, anti-patterns, performance baselines, validated assumptions, technology comparisons, and refactoring opportunities to inform decision-making.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Knowledge Researcher Agent

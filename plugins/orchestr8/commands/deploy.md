@@ -1,7 +1,7 @@
 ---
 description: Safe production deployment with pre-deployment validation, health checks, and automatic rollback capabilities
 argument-hint: [environment-staging-or-production]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Deploy Workflow

@@ -1,7 +1,7 @@
 ---
 description: Automated web UI testing with visual testing, functional testing, accessibility validation, and performance analysis
 argument-hint: [app-url-or-path]
-model: claude-haiku-4-5-20251001
+model: claude-sonnet-4-5
 ---
 
 # Test Web UI Workflow

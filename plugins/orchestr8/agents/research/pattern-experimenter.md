@@ -1,7 +1,7 @@
 ---
 name: pattern-experimenter
 description: Compares design patterns and architectural approaches through hands-on experimentation, evaluating trade-offs in real implementations. Use PROACTIVELY when choosing between MVC/MVVM/Clean Architecture, selecting state management patterns, or evaluating API design patterns to make informed decisions through practical comparison.
-model: claude-sonnet-4-5-20250929
+model: inherit
 ---
 
 # Pattern Experimenter Agent

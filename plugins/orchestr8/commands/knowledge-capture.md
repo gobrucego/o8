@@ -1,7 +1,7 @@
 ---
 description: Capture organizational knowledge including patterns, anti-patterns, performance baselines, validated assumptions, technology comparisons, and refactoring opportunities
 argument-hint: [type] [details]
-model: claude-sonnet-4-5-20250929
+model: claude-sonnet-4-5
 ---
 
 # Knowledge Capture Command
