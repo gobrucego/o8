@@ -5,11 +5,11 @@
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Claude Code](https://img.shields.io/badge/Claude%20Code-Compatible-green.svg)](https://claude.ai)
 
-Transform Claude Code into a fully autonomous software engineering team with research capabilities. orchestr8 provides 79+ specialized agents (including 5 research agents) coordinated through intelligent workflows, achieving 3-6x speedups through parallel execution, evidence-based decision making, and enterprise-scale project delivery.
+Transform Claude Code into a fully autonomous software engineering team with research capabilities. orchestr8 provides 80+ specialized agents (including 5 research agents) coordinated through intelligent workflows, achieving 3-6x speedups through parallel execution, evidence-based decision making, and enterprise-scale project delivery.
 
 ## Key Features
 
-- **79+ Specialized Agents** - Including 5 research agents for exploratory development
+- **80+ Specialized Agents** - Including 5 research agents for exploratory development
 - **31 Automated Workflows** - Including 11 research workflows for hypothesis testing
 - **Research-Driven Development** - Test multiple approaches in parallel before committing
 - **Async Execution Architecture** - Fire-and-forget long-running research tasks
@@ -220,7 +220,7 @@ Claude Code Session
         ↓
 Workflow Commands (/orchestr8:*)
         ↓
-/agents/ Directory (74+ agent definitions)
+/agents/ Directory (80+ agent definitions)
         ↓
   ┌─────────────────────┐
   │ Meta-Orchestrators  │
@@ -363,7 +363,7 @@ Agents are organized by domain expertise in the `/agents/` directory:
 | Research Speedup | 5x | Test 5 hypotheses in parallel |
 | Quality Gate Coverage | 100% | Every output passes 5 validation stages |
 | Concurrent Task Capacity | 118 | vs 9 without orchestration |
-| Agent Specialization | 79+ | Including 5 research agents |
+| Agent Specialization | 80+ | Including 5 research agents |
 | Workflow Automation | 31 | Including 11 research workflows |
 | Knowledge Capture | Automatic | Every project contributes to organizational learning |
 | Async Execution | Fire-and-forget | Long-running research tasks |

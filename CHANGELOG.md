@@ -7,6 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [6.4.0] - 2025-01-08
+
+### Added
+- **8 Research Workflow Commands** - Complete implementation of all research workflows referenced in README
+  - `/orchestr8:research` - Parallel hypothesis testing workflow with empirical validation
+  - `/orchestr8:benchmark` - Technology/pattern comparison with comprehensive benchmarks
+  - `/orchestr8:validate-assumptions` - Systematic assumption validation through controlled experiments
+  - `/orchestr8:explore-alternatives` - Multi-approach exploration with scoring matrices
+  - `/orchestr8:research-solution` - Alias for research workflow (solution discovery focus)
+  - `/orchestr8:compare-approaches` - Alias for benchmark workflow (direct comparison)
+  - `/orchestr8:validate-architecture` - Alias for validate-assumptions (architecture focus)
+  - `/orchestr8:discover-patterns` - Pattern discovery using pattern-learner agent
+
+### Changed
+- **Research Workflows Enhanced** - All research commands now include:
+  - Proper delegation patterns with autonomous orchestration
+  - Parallelism-first architecture for 3-5x speedups
+  - Comprehensive phase-by-phase instructions
+  - Quality gates with bash validation
+  - Specialized agent coordination (code-researcher, performance-researcher, assumption-validator, pattern-experimenter, pattern-learner)
+  - Output standards to `.orchestr8/docs/research/` and `.orchestr8/docs/performance/benchmarks/`
+
+### Fixed
+- **Agent Count** - Updated from "79+ agents" to "80+ agents" throughout README (actual count: 80)
+- **Workflow Directory** - Removed old `/workflows/` directory, all commands now properly in `/commands/`
+- **README Accuracy** - All 31 slash commands listed in README now exist and are fully functional
+
+### Removed
+- `/workflows/` directory (replaced with proper slash commands in `/commands/`)
+
 ## [6.3.0] - 2025-11-07
 
 ### Changed
