@@ -7,6 +7,39 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [7.1.0] - 2025-01-11
+
+### Added
+
+- **Mermaid Diagram Generation** - New comprehensive diagram generation capabilities (#9)
+  - New `diagram-specialist` agent: Expert in creating Mermaid diagrams for architecture, data flows, and UX journeys
+  - New `/orchestr8:generate-diagrams` command: Autonomous workflow for generating visual documentation
+  - Support for C4 Architecture Model diagrams (L0-L3):
+    - L0: System Context - Big picture view of system and external dependencies
+    - L1: Container - Major applications, services, and data stores
+    - L2: Component - Internal structure of services and modules
+    - L3: Code - Class and module relationships
+  - Data flow diagrams showing system data movement and transformations
+  - Sequence diagrams for API interactions and async workflows
+  - User journey flow diagrams with decision points and error paths
+  - Entity Relationship Diagrams (ERD) for database schemas
+  - State machine diagrams for workflow states and transitions
+  - Deployment diagrams for infrastructure topology
+  - Comprehensive examples and best practices documentation
+  - All diagrams use Mermaid syntax (renders in GitHub, VS Code, Markdown viewers)
+  - Diagrams saved to `.orchestr8/docs/diagrams/` with automatic categorization
+
+### Fixed
+
+- **C# Developer Agent** - Fixed markdown formatting in LINQ & Exception Handling section (#8)
+  - Added missing "Exception Handling & Middleware" section header
+  - Added missing opening code fence for exception handling examples
+  - Code fences now properly balanced (14 fences, 7 pairs)
+
+- **Modernize Legacy Command** - Fixed non-existent agent reference (#7)
+  - Changed documentation from "code-archaeologist agent" to "debugger agent"
+  - Documentation now matches implementation (subagent_type: "orchestr8:quality:debugger")
+
 ## [7.0.0] - 2025-01-10
 
 ### Changed
