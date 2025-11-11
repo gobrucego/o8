@@ -29,7 +29,7 @@ echo "Workflow ID: $workflow_id"
 
 **⚡ EXECUTE TASK TOOL:**
 ```
-Use the code-archaeologist agent to:
+Use the debugger agent to:
 1. Identify technologies, frameworks, versions
 2. Calculate code metrics (lines, complexity, test coverage)
 3. Map dependencies and architecture

@@ -370,6 +370,9 @@ public class ReportingService
 }
 ```
 
+## Exception Handling & Middleware
+
+```csharp
 // Global exception middleware
 public class ExceptionHandlingMiddleware
 {
