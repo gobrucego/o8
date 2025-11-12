@@ -1,6 +1,6 @@
 {
   "name": "orchestr8-mcp-server",
-  "version": "1.0.0",
+  "version": "8.0.0-rc4",
   "description": "MCP server for orchestr8 - Autonomous software development workflows, agents, and skills for Claude Code",
   "main": "dist/index.js",
   "scripts": {
@@ -20,6 +20,13 @@
     "test:integration:protocol": "node --test tests/integration/mcp-protocol.test.js",
     "test:integration:server": "node tests/integration/mcp-server.test.js",
     "test:watch": "node --test --watch tests/unit/**/*.test.js",
+    "test:providers": "tsx test-providers.ts",
+    "test:providers:unit": "node --test src/providers/__tests__/**/*.test.ts",
+    "test:providers:integration": "node --test src/loaders/__tests__/**/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:headed": "playwright test --headed",
+    "test:e2e:debug": "playwright test --debug",
     "verify": "bash tests/verify-structure.sh",
     "benchmark": "node --test tests/benchmarks/**/*.bench.js"
   },
@@ -48,6 +55,7 @@
     "zod": "^3.25.76"
   },
   "devDependencies": {
+    "@playwright/test": "^1.56.1",
     "@types/express": "^4.17.21",
     "@types/ws": "^8.5.10"
   }

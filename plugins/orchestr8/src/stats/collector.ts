@@ -5,6 +5,12 @@
  * Used by both stdio and HTTP transports to track server metrics.
  */
 
+export interface ActivityEvent {
+  type: string;
+  timestamp: number;
+  data?: any;
+}
+
 export interface StatsSnapshot {
   uptime: number;
   requests: {
@@ -33,6 +39,7 @@ export interface StatsSnapshot {
 }
 
 export type StatsSubscriber = (snapshot: StatsSnapshot) => void;
+export type ActivitySubscriber = (event: ActivityEvent) => void;
 
 export class StatsCollector {
   private startTime: number;
@@ -50,8 +57,11 @@ export class StatsCollector {
     lastActivity: Date.now()
   };
 
+  private activityLog: ActivityEvent[] = [];
   private subscribers = new Set<StatsSubscriber>();
+  private activitySubscribers = new Set<ActivitySubscriber>();
   private readonly maxLatencies = 100;
+  private readonly maxActivityLog = 1000;
 
   constructor() {
     this.startTime = Date.now();
@@ -60,7 +70,7 @@ export class StatsCollector {
   /**
    * Track a request to the MCP server
    */
-  trackRequest(method: string, latencyMs: number): void {
+  trackRequest(method: string, latencyMs: number, params?: any): void {
     this.stats.requests.total++;
     this.stats.requests.byMethod[method] =
       (this.stats.requests.byMethod[method] || 0) + 1;
@@ -71,6 +81,14 @@ export class StatsCollector {
     }
 
     this.stats.lastActivity = Date.now();
+
+    // Log activity
+    this.logActivity('mcp_request', {
+      method,
+      latency: latencyMs,
+      params
+    });
+
     this.notifySubscribers();
   }
 
@@ -93,10 +111,45 @@ export class StatsCollector {
   /**
    * Track an error
    */
-  trackError(): void {
+  trackError(errorData?: any): void {
     this.stats.errors++;
     this.stats.lastActivity = Date.now();
+
+    // Log activity
+    this.logActivity('error', errorData);
+
     this.notifySubscribers();
+  }
+
+  /**
+   * Log an activity event
+   */
+  logActivity(type: string, data?: any): void {
+    const event: ActivityEvent = {
+      type,
+      timestamp: Date.now(),
+      data
+    };
+
+    this.activityLog.push(event);
+
+    // Keep only the last N activities
+    if (this.activityLog.length > this.maxActivityLog) {
+      this.activityLog.shift();
+    }
+
+    // Notify activity subscribers
+    this.notifyActivitySubscribers(event);
+  }
+
+  /**
+   * Get activity log
+   */
+  getActivityLog(limit?: number): ActivityEvent[] {
+    if (limit) {
+      return this.activityLog.slice(-limit);
+    }
+    return [...this.activityLog];
   }
 
   /**
@@ -146,10 +199,28 @@ export class StatsCollector {
   }
 
   /**
+   * Subscribe to activity events
+   * Returns an unsubscribe function
+   */
+  subscribeToActivity(callback: ActivitySubscriber): () => void {
+    this.activitySubscribers.add(callback);
+    return () => {
+      this.activitySubscribers.delete(callback);
+    };
+  }
+
+  /**
    * Get number of active subscribers
    */
   getSubscriberCount(): number {
     return this.subscribers.size;
+  }
+
+  /**
+   * Get number of active activity subscribers
+   */
+  getActivitySubscriberCount(): number {
+    return this.activitySubscribers.size;
   }
 
   /**
@@ -170,6 +241,7 @@ export class StatsCollector {
       errors: 0,
       lastActivity: Date.now()
     };
+    this.activityLog = [];
     this.notifySubscribers();
   }
 
@@ -187,6 +259,23 @@ export class StatsCollector {
         callback(snapshot);
       } catch (error) {
         console.error('[StatsCollector] Error in subscriber callback:', error);
+      }
+    });
+  }
+
+  /**
+   * Notify all activity subscribers of new activity
+   */
+  private notifyActivitySubscribers(event: ActivityEvent): void {
+    if (this.activitySubscribers.size === 0) {
+      return;
+    }
+
+    this.activitySubscribers.forEach(callback => {
+      try {
+        callback(event);
+      } catch (error) {
+        console.error('[StatsCollector] Error in activity subscriber callback:', error);
       }
     });
   }

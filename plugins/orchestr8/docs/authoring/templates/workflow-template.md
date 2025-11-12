@@ -191,8 +191,8 @@ Phase 4 (Testing): 800-1200 tokens
 
 **Static URI (fixed dependency):**
 ```markdown
-orchestr8://agents/_fragments/typescript-core
-orchestr8://patterns/_fragments/autonomous-organization
+orchestr8://agents/typescript-core
+orchestr8://patterns/autonomous-organization
 ```
 
 **Dynamic query (variable need):**
@@ -301,7 +301,7 @@ Registration: Automatic via MCP
 
 **As pattern fragment:**
 ```
-Location: resources/workflows/_fragments/workflow-name.md
+Location: resources/workflows/workflow-name.md
 Discovery: orchestr8://workflows/match?query=...
 ```
 

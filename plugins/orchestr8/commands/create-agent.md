@@ -12,7 +12,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 1: Expertise Scoping (0-25%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-create-agent
+**→ Load:** orchestr8://workflows/workflow-create-agent
 
 **Activities:**
 - Define agent specialization and domain
@@ -125,7 +125,7 @@ How to apply knowledge
 - Add synonyms and related terms
 
 **Integration:**
-- Save to `resources/agents/_fragments/`
+- Save to `resources/agents/`
 - Rebuild search index
 - Verify agent is discoverable
 - Test loading via MCP

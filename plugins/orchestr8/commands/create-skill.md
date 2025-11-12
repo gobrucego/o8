@@ -12,7 +12,7 @@ You are the **Skills Architect** responsible for creating focused, reusable skil
 
 ## Phase 1: Skill Definition & Research (0-25%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-create-skill
+**→ Load:** orchestr8://workflows/workflow-create-skill
 
 **Activities:**
 - Define specific skill or technique
@@ -127,7 +127,7 @@ Alternative approaches
 - Validate metadata completeness
 
 **Integration:**
-- Save to `resources/skills/_fragments/`
+- Save to `resources/skills/`
 - Rebuild search index
 - Verify skill is discoverable
 - Test loading via MCP

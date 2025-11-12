@@ -905,7 +905,7 @@ Load resources on-demand when needed:
 
 **Load this resource:**
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 [... more entries ...]
@@ -930,7 +930,7 @@ orchestr8://agents/_fragments/typescript-core
     "scenario-a1b2c3d4e5f6": {
       "scenario": "Building async TypeScript applications",
       "keywords": ["building", "async", "typescript", "applications"],
-      "uri": "orchestr8://agents/_fragments/typescript-async-patterns",
+      "uri": "orchestr8://agents/typescript-async-patterns",
       "category": "agent",
       "estimatedTokens": 800,
       "relevance": 100
@@ -938,7 +938,7 @@ orchestr8://agents/_fragments/typescript-core
     "scenario-f6e5d4c3b2a1": {
       "scenario": "Need error handling for promises",
       "keywords": ["need", "error", "handling", "promises"],
-      "uri": "orchestr8://skills/_fragments/error-handling-async",
+      "uri": "orchestr8://skills/error-handling-async",
       "category": "skill",
       "estimatedTokens": 650,
       "relevance": 100
@@ -1142,20 +1142,96 @@ promptLoader.watchForChanges(() => {
 
 ### Fragment Organization
 
+**Post-Optimization Structure (384 fragments total):**
+
 ```
 resources/
-├── agents/
+├── agents/ (149 fragments)
 │   ├── typescript-developer.md      # Main resource (references fragments)
-│   └── _fragments/                  # Composable knowledge units
-│       ├── typescript-core.md       # Type system (~650 tokens)
-│       ├── typescript-async-patterns.md  # Async patterns (~800 tokens)
-│       ├── typescript-testing.md    # Testing (~700 tokens)
-│       └── typescript-api-development.md # APIs (~900 tokens)
-├── skills/
-│   ├── error-handling.md
-│   └── _fragments/
-│       ├── error-handling-async.md  # Async errors (~600 tokens)
-│       └── error-handling-validation.md # Validation (~500 tokens)
+│   ├── typescript-core.md           # Type system (~650 tokens)
+│   ├── typescript-async-patterns.md # Async patterns (~800 tokens)
+│   ├── typescript-testing.md        # Testing (~700 tokens)
+│   └── typescript-api-development.md # APIs (~900 tokens)
+│
+├── skills/ (86 fragments - 6 hierarchical families)
+│   ├── Performance Family (5 skills, ~570 tokens saved)
+│   │   ├── performance-optimization.md (core)
+│   │   ├── performance-api-optimization.md
+│   │   ├── performance-database-optimization.md
+│   │   ├── performance-frontend-optimization.md
+│   │   └── performance-profiling-techniques.md
+│   │
+│   ├── Security Family (7 skills, ~3,320 tokens saved)
+│   │   ├── security-api-security.md
+│   │   ├── security-authentication-jwt.md
+│   │   ├── security-authentication-oauth.md
+│   │   ├── security-input-validation.md
+│   │   ├── security-owasp-top10.md
+│   │   └── security-secrets-management.md
+│   │
+│   ├── Testing Family (5 skills, ~570 tokens saved)
+│   │   ├── testing-strategies.md (core)
+│   │   ├── testing-unit.md
+│   │   ├── testing-integration.md
+│   │   └── testing-e2e-best-practices.md
+│   │
+│   ├── Observability Family (4 skills, +365 tokens invested)
+│   │   ├── observability-structured-logging.md (26 cross-refs)
+│   │   ├── observability-metrics-prometheus.md
+│   │   ├── observability-distributed-tracing.md
+│   │   └── observability-sli-slo-monitoring.md
+│   │
+│   ├── Error Handling Family (4 skills, ~150 tokens saved)
+│   │   ├── error-handling-api-patterns.md
+│   │   ├── error-handling-logging.md
+│   │   ├── error-handling-resilience.md
+│   │   └── error-handling-validation.md
+│   │
+│   └── IaC Family (5 skills, +130 tokens invested)
+│       ├── iac-terraform-modules.md (20 cross-refs)
+│       ├── iac-pulumi-programming.md
+│       ├── iac-gitops-workflows.md
+│       ├── iac-state-management.md
+│       └── iac-testing-validation.md
+│
+├── examples/ (28 fragments - extracted from skills/agents)
+│   ├── docker-multistage-go.md          # ~45,000 tokens saved
+│   ├── docker-multistage-nodejs.md      # across all examples
+│   ├── express-error-handling.md
+│   ├── express-jwt-auth.md
+│   ├── fastapi-async-crud.md
+│   ├── go-grpc-service.md
+│   ├── kubernetes-deployment-basic.md
+│   └── typescript-rest-api-complete.md
+│
+├── patterns/ (29 fragments - 9 families)
+│   ├── Event-Driven Family (6 patterns)
+│   │   ├── event-driven-pubsub.md
+│   │   ├── event-driven-cqrs.md
+│   │   ├── event-driven-eventsourcing.md
+│   │   ├── event-driven-saga.md
+│   │   ├── event-driven-best-practices.md
+│   │   └── message-broker-comparison.md
+│   │
+│   ├── Database Family (3 patterns)
+│   │   ├── database-connection-pooling-scaling.md
+│   │   ├── database-indexing-strategies.md
+│   │   └── database-query-optimization.md
+│   │
+│   └── Architecture Family (3 patterns)
+│       ├── architecture-microservices.md
+│       ├── architecture-layered.md
+│       └── architecture-decision-records.md
+│
+├── workflows/ (36 fragments)
+│   ├── workflow-new-project.md          # Progressive loading
+│   ├── workflow-add-feature.md          # 78% avg savings
+│   └── ...
+│
+└── guides/ (10 fragments)
+    ├── aws-eks-cluster.md
+    ├── ci-cd-github-actions.md
+    └── ...
 ```
 
 ### Fragment Metadata Schema
@@ -1189,7 +1265,7 @@ Markdown content here...
 - Indexed for fuzzy matching
 
 **Discovery Process:**
-1. Scan `resources/{category}/_fragments/` directories recursively
+1. Scan `resources/{category}/` directories recursively
 2. Parse frontmatter from each `.md` file
 3. Extract metadata (tags, capabilities, useWhen)
 4. Build in-memory index (ResourceFragment[])
@@ -1205,8 +1281,8 @@ Expert in TypeScript development...
 
 ## Core Capabilities
 
-**→ Fragment:** Uses knowledge from `_fragments/typescript-core.md`
-**→ Fragment:** Async patterns from `_fragments/typescript-async-patterns.md`
+**→ Fragment:** Uses knowledge from `typescript-core.md`
+**→ Fragment:** Async patterns from `typescript-async-patterns.md`
 ```
 
 **Automatic Assembly (dynamic matching):**
@@ -1443,5 +1519,6 @@ npm run build-index
 
 ---
 
-**Last Updated:** 2025-11-11
-**Document Version:** 1.0.0
+**Last Updated:** 2025-11-12
+**Document Version:** 2.0.0 (Post-Optimization)
+**Resource Library:** 384 fragments, 1,675 scenarios, 207+ cross-refs

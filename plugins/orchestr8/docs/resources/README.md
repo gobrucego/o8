@@ -19,13 +19,13 @@ The system organizes resources into seven primary categories:
 
 | Category | Purpose | Example URIs |
 |----------|---------|--------------|
-| **agents** | AI agent definitions with specialized expertise | `orchestr8://agents/_fragments/typescript-core` |
-| **skills** | Reusable techniques and best practices | `orchestr8://skills/_fragments/error-handling-resilience` |
-| **patterns** | Design patterns and architectural approaches | `orchestr8://patterns/_fragments/autonomous-organization` |
-| **examples** | Code examples and reference implementations | `orchestr8://examples/_fragments/express-jwt-auth` |
-| **guides** | Setup and configuration guides | `orchestr8://guides/_fragments/aws-eks-cluster` |
-| **best-practices** | Code standards and quality guidelines | `orchestr8://best-practices/_fragments/api-design-rest` |
-| **workflows** | Execution strategies and process templates | `orchestr8://workflows/_fragments/workflow-new-project` |
+| **agents** | AI agent definitions with specialized expertise | `orchestr8://agents/typescript-core` |
+| **skills** | Reusable techniques and best practices | `orchestr8://skills/error-handling-resilience` |
+| **patterns** | Design patterns and architectural approaches | `orchestr8://patterns/autonomous-organization` |
+| **examples** | Code examples and reference implementations | `orchestr8://examples/express-jwt-auth` |
+| **guides** | Setup and configuration guides | `orchestr8://guides/aws-eks-cluster` |
+| **best-practices** | Code standards and quality guidelines | `orchestr8://best-practices/api-design-rest` |
+| **workflows** | Execution strategies and process templates | `orchestr8://workflows/workflow-new-project` |
 
 See [categories.md](./categories.md) for detailed information about each category.
 
@@ -36,16 +36,16 @@ Resources are organized using a **fragment architecture** where knowledge is bro
 ```
 resources/
 ├── agents/
-│   └── _fragments/
+│   └── 
 │       ├── typescript-core.md              (~650 tokens)
 │       ├── typescript-async-patterns.md    (~580 tokens)
 │       └── typescript-api-development.md   (~720 tokens)
 ├── skills/
-│   └── _fragments/
+│   └── 
 │       ├── error-handling-resilience.md
 │       └── testing-integration.md
 └── patterns/
-    └── _fragments/
+    └── 
         ├── autonomous-organization.md
         └── security-auth-jwt.md
 ```
@@ -67,10 +67,10 @@ Load specific resources by direct URI reference:
 
 ```typescript
 // Load a specific agent fragment
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 // Load a specific workflow
-orchestr8://workflows/_fragments/workflow-new-project
+orchestr8://workflows/workflow-new-project
 ```
 
 **Characteristics:**
@@ -117,7 +117,7 @@ Keyword Index: ["retry", "exponential", "backoff"]
   ↓
 UseWhen Index: Matching scenarios from fragments
   ↓
-Result: orchestr8://skills/_fragments/error-handling-resilience
+Result: orchestr8://skills/error-handling-resilience
 ```
 
 **Performance:**
@@ -145,7 +145,7 @@ orchestr8://match?query=typescript+testing&mode=catalog&maxResults=5
 {
   "matches": [
     {
-      "uri": "orchestr8://agents/_fragments/typescript-testing",
+      "uri": "orchestr8://agents/typescript-testing",
       "score": 95,
       "estimatedTokens": 720
     }
@@ -214,7 +214,7 @@ See [authoring-guide.md](./authoring-guide.md) for writing effective metadata.
 ```markdown
 You are a TypeScript expert. Load core expertise:
 
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 Your task: Design a type-safe API client...
 ```
@@ -511,7 +511,7 @@ Static resource cache automatically expires after 4 hours. To force invalidation
    ↓
 2. Write Frontmatter (id, category, tags, capabilities, useWhen, tokens)
    ↓
-3. Place in _fragments/ subdirectory
+3. Place in  subdirectory
    ↓
 4. Run build-index (extracts metadata, builds indexes)
    ↓

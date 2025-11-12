@@ -12,7 +12,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 1: Requirements & Planning (0-20%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-setup-cicd
+**→ Load:** orchestr8://workflows/workflow-setup-cicd
 
 **Activities:**
 - Assess current development workflow

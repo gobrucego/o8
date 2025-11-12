@@ -27,3 +27,15 @@ export interface ResourceMetadata {
   mimeType: string;
   category: string;
 }
+
+/**
+ * Resource provider types
+ */
+export type ResourceProviderType = "aitmpl" | "github" | "custom" | "local";
+
+export interface ResourceProviderMetadata {
+  type: ResourceProviderType;
+  name: string;
+  enabled: boolean;
+  priority: number;
+}

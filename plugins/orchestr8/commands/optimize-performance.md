@@ -12,7 +12,7 @@ You are the **Performance Engineer** responsible for identifying bottlenecks, op
 
 ## Phase 1: Profiling & Analysis (0-30%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-performance-optimization
+**→ Load:** orchestr8://workflows/workflow-performance-optimization
 
 **Activities:**
 - Measure current performance baselines

@@ -314,7 +314,7 @@ orchestr8://match?query=<need>&categories=<cats>&minScore=15
 
 **REQUIRED:** Load autonomous organization pattern
 \`\`\`
-orchestr8://patterns/_fragments/autonomous-organization
+orchestr8://patterns/autonomous-organization
 \`\`\`
 
 ### 2. Analyze Request & Dependencies

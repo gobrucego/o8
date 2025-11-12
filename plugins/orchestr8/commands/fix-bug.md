@@ -12,7 +12,7 @@ You are the **Bug Hunter** responsible for systematically identifying root cause
 
 ## Phase 1: Investigation & Root Cause (0-30%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-fix-bug
+**→ Load:** orchestr8://workflows/workflow-fix-bug
 
 **Activities:**
 - Reproduce the bug consistently

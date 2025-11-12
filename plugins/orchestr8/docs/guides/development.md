@@ -138,15 +138,15 @@ plugins/orchestr8/
 ├── resources/               # On-demand resources
 │   ├── agents/             # AI agent definitions
 │   │   ├── typescript-developer.md
-│   │   └── _fragments/     # Agent expertise fragments
+│   │   └──      # Agent expertise fragments
 │   ├── skills/             # Reusable skill fragments
-│   │   └── _fragments/
+│   │   └── 
 │   ├── patterns/           # Design patterns
-│   │   └── _fragments/
+│   │   └── 
 │   ├── examples/           # Code examples
-│   │   └── _fragments/
+│   │   └── 
 │   ├── guides/             # Setup and configuration guides
-│   │   └── _fragments/
+│   │   └── 
 │   └── .index/             # Generated indexes (from build-index)
 │       ├── usewhen-index.json
 │       ├── keyword-index.json
@@ -449,7 +449,7 @@ Maps use-when scenarios to fragments for semantic matching:
   "totalFragments": 221,
   "fragments": {
     "typescript-core": {
-      "path": "agents/_fragments/typescript-core.md",
+      "path": "agents/typescript-core.md",
       "category": "agent",
       "scenarios": [
         "designing type-safe APIs",
@@ -492,7 +492,7 @@ Pre-computed results for common queries:
 
 Rebuild indexes when:
 
-1. Adding new fragments to `resources/*/_fragments/`
+1. Adding new fragments to `resources/*/`
 2. Modifying fragment metadata (tags, capabilities, use-when)
 3. Index-based lookup returns stale results
 4. After pulling changes that add/modify resources
@@ -733,7 +733,7 @@ npm start
 
 1. **Create the fragment file**
    ```bash
-   vim resources/agents/_fragments/my-fragment.md
+   vim resources/agents/my-fragment.md
    ```
 
 2. **Add frontmatter metadata**

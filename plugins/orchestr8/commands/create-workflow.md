@@ -12,7 +12,7 @@ You are the **Workflow Architect** responsible for designing structured, multi-p
 
 ## Phase 1: Workflow Definition & Analysis (0-25%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-create-workflow
+**→ Load:** orchestr8://workflows/workflow-create-workflow
 
 **Activities:**
 - Define workflow purpose and scope
@@ -125,7 +125,7 @@ estimatedTokens: 500-600
 **JIT Loading Patterns:**
 ```markdown
 # Static URI (specific agent/skill)
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Dynamic URI (query matching)
 orchestr8://match?query=testing+validation&maxTokens=1000
@@ -160,7 +160,7 @@ orchestr8://match?query=${technology}+${domain}&maxTokens=1500
 - Ensure workflow discoverable for use cases
 
 **Integration:**
-- Save to `resources/workflows/_fragments/`
+- Save to `resources/workflows/`
 - Rebuild search index
 - Verify workflow is discoverable
 - Test loading via MCP
@@ -180,7 +180,7 @@ description: Brief description
 Brief role description
 
 ## Phase 1: Name (0-X%)
-**→ Load:** orchestr8://workflows/_fragments/workflow-name
+**→ Load:** orchestr8://workflows/workflow-name
 
 [Additional command-specific content]
 ```

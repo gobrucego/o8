@@ -194,7 +194,7 @@ This guide provides practical examples for everyday Orchestr8 usage. Perfect for
 
 **URI:**
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Returns:**
@@ -229,7 +229,7 @@ Expert in TypeScript's type system...
 
 **URI:**
 ```
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://skills/error-handling-resilience
 ```
 
 **Returns:**
@@ -263,7 +263,7 @@ Patterns for robust error handling...
 
 **URI:**
 ```
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://examples/express-jwt-auth
 ```
 
 **Returns:**
@@ -297,7 +297,7 @@ Complete JWT auth implementation...
 
 **URI:**
 ```
-orchestr8://patterns/_fragments/microservices-architecture
+orchestr8://patterns/microservices-architecture
 ```
 
 **Returns:**
@@ -340,17 +340,17 @@ orchestr8://match?query=typescript+api&mode=catalog
 Top 10 Matches for "typescript api"
 
 1. TypeScript API Development (Score: 88)
-   orchestr8://agents/_fragments/typescript-api-development
+   orchestr8://agents/typescript-api-development
    Tags: typescript, rest-api, express, nodejs
    Tokens: 900
 
 2. API Design REST (Score: 76)
-   orchestr8://skills/_fragments/api-design-rest
+   orchestr8://skills/api-design-rest
    Tags: api, rest, design, best-practices
    Tokens: 720
 
 3. Express Minimal API (Score: 72)
-   orchestr8://examples/_fragments/express-minimal-api
+   orchestr8://examples/express-minimal-api
    Tags: express, typescript, api, minimal
    Tokens: 500
 
@@ -375,13 +375,13 @@ orchestr8://skills/match?query=testing+unit+integration
 Top Matches in Skills Category
 
 1. Testing Integration Strategies (Score: 92)
-   orchestr8://skills/_fragments/testing-integration
+   orchestr8://skills/testing-integration
 
 2. Testing Unit Patterns (Score: 85)
-   orchestr8://skills/_fragments/testing-unit
+   orchestr8://skills/testing-unit
 
 3. API Testing Best Practices (Score: 78)
-   orchestr8://skills/_fragments/api-testing
+   orchestr8://skills/api-testing
 ```
 
 **Benefits:**
@@ -470,8 +470,8 @@ orchestr8://match?query=kubernetes+deployment&mode=catalog&maxResults=10
 
 4. **Load selectively:**
 ```
-orchestr8://guides/_fragments/kubernetes-deployment
-orchestr8://patterns/_fragments/helm-charts
+orchestr8://guides/kubernetes-deployment
+orchestr8://patterns/helm-charts
 ```
 
 **Total tokens:** 100 (catalog) + 2000 (content) = 2100 tokens
@@ -486,19 +486,19 @@ orchestr8://patterns/_fragments/helm-charts
 
 **Step 1 - Agent (core expertise):**
 ```
-orchestr8://agents/_fragments/typescript-api-development
+orchestr8://agents/typescript-api-development
 → 900 tokens
 ```
 
 **Step 2 - Skill (specific technique):**
 ```
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://skills/error-handling-resilience
 → 720 tokens
 ```
 
 **Step 3 - Example (working code):**
 ```
-orchestr8://examples/_fragments/express-error-handling
+orchestr8://examples/express-error-handling
 → 650 tokens
 ```
 
@@ -513,13 +513,13 @@ orchestr8://examples/_fragments/express-error-handling
 
 **Step 1 - Pattern (architecture):**
 ```
-orchestr8://patterns/_fragments/microservices-architecture
+orchestr8://patterns/microservices-architecture
 → 1100 tokens
 ```
 
 **Step 2 - Guide (setup):**
 ```
-orchestr8://guides/_fragments/kubernetes-deployment
+orchestr8://guides/kubernetes-deployment
 → 1200 tokens
 ```
 
@@ -540,10 +540,10 @@ orchestr8://guides/_fragments/kubernetes-deployment
 
 **Loading:**
 ```
-orchestr8://skills/_fragments/error-handling-resilience      # 720 tokens
-orchestr8://skills/_fragments/api-rate-limiting              # 580 tokens
-orchestr8://skills/_fragments/caching-strategies             # 650 tokens
-orchestr8://skills/_fragments/monitoring-observability       # 800 tokens
+orchestr8://skills/error-handling-resilience      # 720 tokens
+orchestr8://skills/api-rate-limiting              # 580 tokens
+orchestr8://skills/caching-strategies             # 650 tokens
+orchestr8://skills/monitoring-observability       # 800 tokens
 ```
 
 **Total:** 2750 tokens
@@ -560,7 +560,7 @@ orchestr8://skills/_fragments/monitoring-observability       # 800 tokens
 **Approach:**
 ```
 # Direct load
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Token usage:** ~650 tokens
@@ -584,8 +584,8 @@ orchestr8://match?query=authentication+jwt&mode=catalog
 # - api-security-best-practices (720 tokens)
 
 # Step 3: Load specific
-orchestr8://patterns/_fragments/security-auth-jwt
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://patterns/security-auth-jwt
+orchestr8://examples/express-jwt-auth
 ```
 
 **Token usage:** 100 + 1530 = 1630 tokens
@@ -593,42 +593,71 @@ orchestr8://examples/_fragments/express-jwt-auth
 
 ---
 
-### Pattern 3: Agent-First
+### Pattern 3: Progressive Loading (Core-First)
 
-**Goal:** Start with core agent, add skills as needed
+**Goal:** Start with core content, load examples on-demand
 
 **Approach:**
 ```
-# Step 1: Core agent
-orchestr8://agents/_fragments/typescript-core
+# Step 1: Core agent (650 tokens)
+orchestr8://agents/typescript-core
 
-# Step 2: Add skills during development
-orchestr8://skills/_fragments/error-handling-resilience
-orchestr8://skills/_fragments/testing-unit
+# Step 2: Add skills during development (as needed)
+orchestr8://skills/error-handling-resilience  # 720 tokens
+orchestr8://skills/testing-unit  # 680 tokens
+
+# Step 3: Load examples only when stuck (on-demand)
+orchestr8://examples/express-error-handling  # 850 tokens
 ```
 
-**Token usage:** Progressive (650 + 720 + 680 = 2050)
-**Best for:** Learning, exploration
+**Token usage:**
+- Core + 2 skills: 2,050 tokens
+- With example: 2,900 tokens
+- vs loading everything: 4,500+ tokens
+- **Savings: 54-64%**
+
+**Best for:** Learning, exploration, efficient development
+
+**Real-world example (SRE agent):**
+```
+# Core content (180 tokens)
+orchestr8://agents/sre-specialist
+
+# Returns core + references to examples:
+# → orchestr8://examples/infrastructure/sre-slo-configuration
+# → orchestr8://examples/infrastructure/sre-incident-management
+
+# Load example when implementing (800 tokens)
+orchestr8://examples/infrastructure/sre-slo-configuration
+
+# Total: 980 tokens vs 2,000+ upfront
+# Savings: 52%
+```
 
 ---
 
-### Pattern 4: Workflow-Driven
+### Pattern 4: Workflow-Driven with JIT Loading
 
-**Goal:** Let workflow orchestrate resource loading
+**Goal:** Let workflow orchestrate phase-based resource loading
 
 **Approach:**
 ```
 /orchestr8:new-project Build a TypeScript API with auth
 
-# Workflow automatically loads:
-# - TypeScript agent
-# - API patterns
-# - Auth examples
-# - Testing guides
+# Workflow uses JIT loading by phase:
+# Phase 1 (0-20%): → Load architecture patterns (1,200 tokens)
+# Phase 2 (20-30%): → Load typescript+setup (1,000 tokens)
+# Phase 3 (30-70%): → Load implementation expertise (3,500 tokens)
+# Phase 4 (70-90%): → Load testing+security (2,000 tokens)
+# Phase 5 (90-100%): → Load deployment (1,800 tokens, conditional)
 ```
 
-**Token usage:** Automatic, optimized
-**Best for:** Complex tasks, beginners
+**Token usage:**
+- Typical project: 4,500-6,000 tokens progressive
+- vs loading everything: 12,000 tokens
+- **Savings: 77%**
+
+**Best for:** Complex tasks, structured development, beginners
 
 ---
 

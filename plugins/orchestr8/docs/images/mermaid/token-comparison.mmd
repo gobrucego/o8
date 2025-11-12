@@ -1,0 +1,42 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#1168bd'}}}%%
+graph TB
+    subgraph "Task: Build TypeScript REST API with JWT Authentication"
+        subgraph "Traditional Approach - Load Everything Upfront"
+            T1["All TypeScript Resources<br/>15KB"]
+            T2["All API Patterns<br/>12KB"]
+            T3["All Security Guides<br/>8KB"]
+            T4["All Database Patterns<br/>10KB"]
+            TTotal["❌ Total: 45KB<br/>~11,250 tokens<br/><br/>Waste: 85-95%"]
+
+            T1 --> TTotal
+            T2 --> TTotal
+            T3 --> TTotal
+            T4 --> TTotal
+        end
+
+        subgraph "orchestr8 v8.0 - Progressive JIT Loading"
+            O1["1. Query registry<br/>250 tokens"]
+            O2["2. Load typescript-core agent<br/>600 tokens"]
+            O3["3. Load security-auth-jwt skill<br/>400 tokens"]
+            O4["4. JIT fetch express-jwt-auth example<br/>350 tokens"]
+            OTotal["✅ Total: 1,600 tokens<br/><br/>Savings: 86% reduction<br/>Context: 10-20% usage"]
+
+            O1 --> O2
+            O2 --> O3
+            O3 --> O4
+            O4 --> OTotal
+        end
+    end
+
+    TTotal -.->|vs| OTotal
+
+    style TTotal fill:#d9534f,stroke:#a94442,color:#fff
+    style T1 fill:#f5c6cb,stroke:#d9534f
+    style T2 fill:#f5c6cb,stroke:#d9534f
+    style T3 fill:#f5c6cb,stroke:#d9534f
+    style T4 fill:#f5c6cb,stroke:#d9534f
+    style OTotal fill:#5cb85c,stroke:#4cae4c,color:#fff
+    style O1 fill:#d1ecf1,stroke:#5bc0de
+    style O2 fill:#d1ecf1,stroke:#5bc0de
+    style O3 fill:#d1ecf1,stroke:#5bc0de
+    style O4 fill:#d1ecf1,stroke:#5bc0de

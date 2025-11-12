@@ -75,7 +75,7 @@ typescript-testing (680 tokens)
 
 **File location:**
 ```
-resources/{category}/_fragments/{fragment-name}.md
+resources/{category}/{fragment-name}.md
 ```
 
 **Naming conventions:**
@@ -86,10 +86,10 @@ resources/{category}/_fragments/{fragment-name}.md
 
 **Examples:**
 ```bash
-resources/agents/_fragments/typescript-core.md
-resources/skills/_fragments/error-handling-resilience.md
-resources/patterns/_fragments/autonomous-organization.md
-resources/examples/_fragments/express-jwt-auth.md
+resources/agents/typescript-core.md
+resources/skills/error-handling-resilience.md
+resources/patterns/autonomous-organization.md
+resources/examples/express-jwt-auth.md
 ```
 
 ### Step 4: Write Effective Frontmatter
@@ -142,13 +142,13 @@ id: typescript_core                # ✗ Use hyphens, not underscores
 
 **Examples:**
 ```yaml
-# File: agents/_fragments/typescript-core.md
+# File: agents/typescript-core.md
 category: agent                    # ✓ Correct
 
-# File: skills/_fragments/error-handling.md
+# File: skills/error-handling.md
 category: skill                    # ✓ Correct
 
-# File: agents/_fragments/typescript-core.md
+# File: agents/typescript-core.md
 category: skill                    # ✗ Wrong - doesn't match directory
 ```
 
@@ -524,7 +524,7 @@ Built quick lookup cache with 20 queries
 
 ```bash
 # Static loading (direct URI)
-orchestr8://agents/_fragments/your-fragment-id
+orchestr8://agents/your-fragment-id
 
 # Dynamic loading (query-based)
 orchestr8://match?query=your+expected+keywords&mode=index
@@ -544,15 +544,15 @@ orchestr8://agents/match?query=your+keywords
 **Add cross-references in content:**
 
 ```markdown
-For async patterns, see [typescript-async-patterns](orchestr8://agents/_fragments/typescript-async-patterns).
+For async patterns, see [typescript-async-patterns](orchestr8://agents/typescript-async-patterns).
 ```
 
 **Add relatedFragments in frontmatter (optional):**
 
 ```yaml
 relatedFragments:
-  - orchestr8://agents/_fragments/typescript-async-patterns
-  - orchestr8://skills/_fragments/error-handling-async
+  - orchestr8://agents/typescript-async-patterns
+  - orchestr8://skills/error-handling-async
 ```
 
 ### Step 10: Commit and Share
@@ -566,7 +566,7 @@ relatedFragments:
 
 **Commit message format:**
 ```bash
-git add resources/{category}/_fragments/{fragment-name}.md
+git add resources/{category}/{fragment-name}.md
 git add resources/.index/*.json
 git commit -m "Add {fragment-name} fragment to {category}
 
@@ -758,13 +758,13 @@ typescript-api-development.md (720 tokens) - API patterns
 
 **Problem:**
 ```
-File: agents/_fragments/express-auth-example.md
+File: agents/express-auth-example.md
 Content: Complete code example with no explanation
 ```
 
 **Solution:**
 ```
-File: examples/_fragments/express-jwt-auth.md
+File: examples/express-jwt-auth.md
 Content: Code example with minimal explanation
 Category: example
 ```
@@ -794,11 +794,11 @@ estimatedTokens: 600
 ```markdown
 # Fragment Title
 
-For foundational knowledge, see [typescript-core](orchestr8://agents/_fragments/typescript-core).
+For foundational knowledge, see [typescript-core](orchestr8://agents/typescript-core).
 
 Related patterns:
-- [Error Handling](orchestr8://skills/_fragments/error-handling-resilience)
-- [API Design](orchestr8://skills/_fragments/api-design-rest)
+- [Error Handling](orchestr8://skills/error-handling-resilience)
+- [API Design](orchestr8://skills/api-design-rest)
 ```
 
 ### Mistake 7: Code Without Explanation
@@ -1046,8 +1046,8 @@ class Bulkhead {
 
 ## Related Patterns
 
-For async error handling, see [error-handling-async](orchestr8://skills/_fragments/error-handling-async).
-For logging strategies, see [error-handling-logging](orchestr8://skills/_fragments/error-handling-logging).
+For async error handling, see [error-handling-async](orchestr8://skills/error-handling-async).
+For logging strategies, see [error-handling-logging](orchestr8://skills/error-handling-logging).
 ```
 
 **Why this is a high-quality fragment:**
@@ -1067,13 +1067,13 @@ For logging strategies, see [error-handling-logging](orchestr8://skills/_fragmen
 npm run build-index
 
 # Count tokens (using tiktoken or similar)
-npx tiktoken-count resources/agents/_fragments/typescript-core.md
+npx tiktoken-count resources/agents/typescript-core.md
 
 # Search for similar fragments
-grep -r "typescript" resources/agents/_fragments/
+grep -r "typescript" resources/agents/
 
 # Validate YAML frontmatter
-npx js-yaml-cli resources/agents/_fragments/typescript-core.md
+npx js-yaml-cli resources/agents/typescript-core.md
 ```
 
 ### Token Estimation Tool

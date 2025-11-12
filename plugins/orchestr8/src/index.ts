@@ -28,7 +28,7 @@ const logger = new Logger("orchestr8-mcp");
 // Check if HTTP mode is enabled via environment variable
 const HTTP_MODE =
   process.env.ORCHESTR8_HTTP === "true" || process.env.ORCHESTR8_HTTP === "1";
-const HTTP_PORT = parseInt(process.env.ORCHESTR8_HTTP_PORT || "3000", 10);
+const HTTP_PORT = parseInt(process.env.ORCHESTR8_HTTP_PORT || "1337", 10);
 
 class Orchestr8Server {
   private server: McpServer;
@@ -66,6 +66,18 @@ class Orchestr8Server {
         "Failed to pre-load resource index, will load on-demand:",
         error,
       );
+    }
+
+    // ============================================================================
+    // NEW: Initialize provider system
+    // ============================================================================
+    try {
+      await this.resourceLoader.initializeProviders();
+      logger.info("Provider system initialized successfully");
+    } catch (error) {
+      logger.error("Failed to initialize provider system:", error);
+      // Don't fail startup - continue with local resources only
+      logger.warn("Continuing with local resources only");
     }
 
     // Register prompts
@@ -108,6 +120,12 @@ class Orchestr8Server {
           const startTime = Date.now();
           logger.debug(`Loading prompt: ${prompt.name}`);
 
+          // Track MCP prompt request
+          this.stats.logActivity('prompt_get', {
+            name: prompt.name,
+            args: args
+          });
+
           try {
             // Convert args to the format expected by loader
             const argValues: Record<string, any> = args || {};
@@ -133,7 +151,7 @@ class Orchestr8Server {
               ],
             };
           } catch (error) {
-            this.stats.trackError();
+            this.stats.trackError(error);
             throw error;
           }
         },
@@ -142,63 +160,137 @@ class Orchestr8Server {
   }
 
   private registerResources(resources: any[]): void {
-    for (const resource of resources) {
+    // Register lightweight resource registry for discovery
+    this.registerResourceRegistry(resources);
+
+    // Register aggregate list resources for each category
+    this.registerAggregateListResources(resources);
+
+    // Note: Individual resources are NOT registered upfront
+    // They are accessed dynamically via orchestr8://match URI templates
+    // This achieves 70-85% token reduction at startup
+  }
+
+  private registerResourceRegistry(resources: any[]): void {
+    this.server.registerResource(
+      "resource-registry",
+      "orchestr8://registry",
+      {
+        mimeType: "application/json",
+        description: "Lightweight resource catalog for discovery"
+      },
+      async () => {
+        // Track MCP registry request
+        this.stats.logActivity('resource_read', {
+          uri: 'orchestr8://registry',
+          category: 'registry'
+        });
+
+        const catalog = {
+          version: "1.0.0",
+          totalResources: resources.length,
+          categories: {
+            agents: resources.filter(r => r.category === 'agents').length,
+            skills: resources.filter(r => r.category === 'skills').length,
+            patterns: resources.filter(r => r.category === 'patterns').length,
+            examples: resources.filter(r => r.category === 'examples').length,
+            guides: resources.filter(r => r.category === 'guides').length,
+            workflows: resources.filter(r => r.category === 'workflows').length,
+          },
+          searchUri: "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+          usage: "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
+        };
+
+        return {
+          contents: [{
+            uri: "orchestr8://registry",
+            mimeType: "application/json",
+            text: JSON.stringify(catalog, null, 2)
+          }]
+        };
+      }
+    );
+
+    logger.debug(`Registered resource registry with ${resources.length} total resources`);
+  }
+
+  private registerAggregateListResources(resources: any[]): void {
+    // Group resources by category
+    const byCategory = resources.reduce((acc, resource) => {
+      const category = resource.category || 'other';
+      if (!acc[category]) {
+        acc[category] = [];
+      }
+      acc[category].push(resource);
+      return acc;
+    }, {} as Record<string, any[]>);
+
+    // Register aggregate list resource for each category
+    const categories = [
+      { name: 'workflows', description: 'Complete list of all available workflows' },
+      { name: 'agents', description: 'Complete list of all available agents' },
+      { name: 'skills', description: 'Complete list of all available skills' },
+      { name: 'patterns', description: 'Complete list of all available patterns' },
+      { name: 'examples', description: 'Complete list of all available examples' },
+      { name: 'guides', description: 'Complete list of all available guides' },
+    ];
+
+    for (const { name, description } of categories) {
+      const categoryResources = byCategory[name] || [];
+      const aggregateUri = `orchestr8://${name}`;
+
       this.server.registerResource(
-        resource.name,
-        resource.uri,
+        `${name}-list`,
+        aggregateUri,
         {
-          mimeType: resource.mimeType,
-          description: resource.description,
+          mimeType: 'application/json',
+          description: description,
         },
         async (uri) => {
           const startTime = Date.now();
-          logger.debug(`Loading resource: ${resource.uri}`);
+          logger.debug(`Loading aggregate list: ${aggregateUri}`);
+
+          // Track MCP resource list request
+          this.stats.logActivity('resources_list', {
+            category: name,
+            count: categoryResources.length
+          });
 
           try {
-            // Check cache
-            const cached = this.resourceLoader.getCachedResource(resource.uri);
-            if (cached) {
-              this.stats.trackCacheHit();
-              this.stats.trackRequest(
-                `resource:${resource.name}`,
-                Date.now() - startTime,
-              );
-              return {
-                contents: [
-                  {
-                    uri: uri.toString(),
-                    mimeType: resource.mimeType,
-                    text: cached,
-                  },
-                ],
-              };
-            }
+            // Build JSON list of all resources in this category
+            const resourceList = categoryResources.map((r: any) => ({
+              name: r.name,
+              uri: r.uri,
+              description: r.description,
+              mimeType: r.mimeType,
+            }));
 
-            this.stats.trackCacheMiss();
-
-            // Load resource content
-            const content = await this.resourceLoader.loadResourceContent(
-              resource.uri,
-            );
+            const jsonContent = JSON.stringify({
+              category: name,
+              count: resourceList.length,
+              resources: resourceList,
+            }, null, 2);
 
             const latency = Date.now() - startTime;
-            this.stats.trackRequest(`resource:${resource.name}`, latency);
+            this.stats.trackRequest(`aggregate:${name}`, latency);
 
             return {
               contents: [
                 {
                   uri: uri.toString(),
-                  mimeType: resource.mimeType,
-                  text: content,
+                  mimeType: 'application/json',
+                  text: jsonContent,
                 },
               ],
             };
           } catch (error) {
-            this.stats.trackError();
+            this.stats.trackError(error);
             throw error;
           }
         },
       );
+
+      logger.debug(`Registered aggregate list resource: ${aggregateUri}`);
     }
   }
 
@@ -234,24 +326,36 @@ class Orchestr8Server {
         description:
           "Dynamic best practice matching - finds and assembles relevant best practice resources based on query",
       },
+      {
+        category: "workflows",
+        description:
+          "Dynamic workflow matching - finds and assembles relevant workflow resources based on query",
+      },
     ];
 
     for (const { category, description } of dynamicCategories) {
-      const templateUri = `orchestr8://${category}/match{+rest}`;
+      // Register dynamic matching template (e.g., orchestr8://agents/match?query=...)
+      const dynamicTemplateUri = `orchestr8://${category}/match{+rest}`;
 
       this.server.registerResource(
         `${category}-dynamic`,
-        new ResourceTemplate(templateUri, { list: undefined }),
+        new ResourceTemplate(dynamicTemplateUri, { list: undefined }),
         {
           mimeType: "text/markdown",
           description: description,
         },
         async (uri, params: Record<string, any>) => {
           const startTime = Date.now();
-          logger.debug(`Loading dynamic resource: ${uri.toString()}`);
+          const fullUri = uri.toString();
+          logger.debug(`Loading dynamic resource: ${fullUri}`);
+
+          // Track MCP resource request
+          this.stats.logActivity('resource_read', {
+            uri: fullUri,
+            category: category
+          });
 
           try {
-            const fullUri = uri.toString();
             const content =
               await this.resourceLoader.loadResourceContent(fullUri);
 
@@ -268,13 +372,65 @@ class Orchestr8Server {
               ],
             };
           } catch (error) {
-            this.stats.trackError();
+            this.stats.trackError(error);
             throw error;
           }
         },
       );
 
-      logger.debug(`Registered dynamic resource template: ${templateUri}`);
+      logger.debug(`Registered dynamic resource template: ${dynamicTemplateUri}`);
+
+      // Register static resource template (e.g., orchestr8://agents/medium-writer-expert)
+      const staticTemplateUri = `orchestr8://${category}/{+resourceId}`;
+
+      this.server.registerResource(
+        `${category}-static`,
+        new ResourceTemplate(staticTemplateUri, { list: undefined }),
+        {
+          mimeType: "text/markdown",
+          description: `Access individual ${category} resources by ID`,
+        },
+        async (uri, params: Record<string, any>) => {
+          const startTime = Date.now();
+          const fullUri = uri.toString();
+
+          // Skip if this is a /match URI (handled by dynamic template)
+          if (fullUri.includes('/match')) {
+            throw new Error(`URI ${fullUri} should be handled by dynamic template`);
+          }
+
+          logger.debug(`Loading static resource: ${fullUri}`);
+
+          // Track MCP resource request
+          this.stats.logActivity('resource_read', {
+            uri: fullUri,
+            category: category
+          });
+
+          try {
+            const content =
+              await this.resourceLoader.loadResourceContent(fullUri);
+
+            const latency = Date.now() - startTime;
+            this.stats.trackRequest(`static:${category}`, latency);
+
+            return {
+              contents: [
+                {
+                  uri: fullUri,
+                  mimeType: "text/markdown",
+                  text: content,
+                },
+              ],
+            };
+          } catch (error) {
+            this.stats.trackError(error);
+            throw error;
+          }
+        },
+      );
+
+      logger.debug(`Registered static resource template: ${staticTemplateUri}`);
     }
 
     // Register global catch-all template
@@ -288,10 +444,16 @@ class Orchestr8Server {
       },
       async (uri, params: Record<string, any>) => {
         const startTime = Date.now();
-        logger.debug(`Loading global dynamic resource: ${uri.toString()}`);
+        const fullUri = uri.toString();
+        logger.debug(`Loading global dynamic resource: ${fullUri}`);
+
+        // Track MCP resource request
+        this.stats.logActivity('resource_read', {
+          uri: fullUri,
+          category: 'global'
+        });
 
         try {
-          const fullUri = uri.toString();
           const content =
             await this.resourceLoader.loadResourceContent(fullUri);
 
@@ -308,7 +470,7 @@ class Orchestr8Server {
             ],
           };
         } catch (error) {
-          this.stats.trackError();
+          this.stats.trackError(error);
           throw error;
         }
       },
@@ -354,6 +516,53 @@ class Orchestr8Server {
       getResourceContent: async (uri: string) => {
         return this.resourceLoader.loadResourceContent(uri);
       },
+      // ============================================================================
+      // NEW: Provider system endpoints
+      // ============================================================================
+      getProviderNames: () => {
+        return this.resourceLoader.getProviderNames(true); // Only enabled providers
+      },
+      getProvidersHealth: async () => {
+        return this.resourceLoader.getProvidersHealth();
+      },
+      getProvidersStats: () => {
+        return this.resourceLoader.getProvidersStats();
+      },
+      getAggregateProviderStats: () => {
+        return this.resourceLoader.getAggregateProviderStats();
+      },
+      searchAllProviders: async (query: string, options?: any) => {
+        return this.resourceLoader.searchAllProviders(query, options);
+      },
+      searchProvider: async (
+        providerName: string,
+        query: string,
+        options?: any,
+      ) => {
+        return this.resourceLoader.searchProvider(providerName, query, options);
+      },
+      // Provider methods (Wave 4: HTTP Transport Integration)
+      getProviders: async () => {
+        return this.resourceLoader.getProviders();
+      },
+      getProviderIndex: async (name: string) => {
+        return this.resourceLoader.getProviderIndex(name);
+      },
+      getProviderHealth: async (name: string) => {
+        return this.resourceLoader.getProviderHealth(name);
+      },
+      getAllProvidersHealth: async () => {
+        return this.resourceLoader.getProvidersHealth();
+      },
+      getProviderStats: (name: string) => {
+        return this.resourceLoader.getProviderStats(name);
+      },
+      enableProvider: async (name: string) => {
+        return this.resourceLoader.enableProvider(name);
+      },
+      disableProvider: async (name: string) => {
+        return this.resourceLoader.disableProvider(name);
+      },
     };
 
     this.httpTransport = new HTTPTransport(
@@ -367,6 +576,13 @@ class Orchestr8Server {
     );
 
     await this.httpTransport.start();
+
+    // Log server startup activity
+    this.stats.logActivity('server_start', {
+      mode: 'HTTP',
+      port: HTTP_PORT,
+      timestamp: Date.now()
+    });
 
     logger.info(`orchestr8 MCP server started successfully in HTTP mode`);
     logger.info(`Web UI available at: http://localhost:${HTTP_PORT}`);

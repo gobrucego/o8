@@ -284,9 +284,9 @@ describe('List All Static Resources', () => {
 
 ```javascript
 describe('Read Static Resource', () => {
-  it('should read orchestr8://agents/_fragments/typescript-core', async () => {
+  it('should read orchestr8://agents/typescript-core', async () => {
     const result = await client.sendRequest('resources/read', {
-      uri: 'orchestr8://agents/_fragments/typescript-core'
+      uri: 'orchestr8://agents/typescript-core'
     });
 
     assert.ok(result, 'Should return a result');
@@ -299,7 +299,7 @@ describe('Read Static Resource', () => {
 
   it('should return text content', async () => {
     const result = await client.sendRequest('resources/read', {
-      uri: 'orchestr8://agents/_fragments/typescript-core'
+      uri: 'orchestr8://agents/typescript-core'
     });
 
     const content = result.contents[0];
@@ -313,7 +313,7 @@ describe('Read Static Resource', () => {
 
   it('should have substantial content (>500 chars)', async () => {
     const result = await client.sendRequest('resources/read', {
-      uri: 'orchestr8://agents/_fragments/typescript-core'
+      uri: 'orchestr8://agents/typescript-core'
     });
 
     const text = result.contents[0].text;
@@ -330,7 +330,7 @@ describe('Read Static Resource', () => {
 - Content includes text, uri, mimeType
 - Text content is substantial (>500 chars)
 - MIME type is correct (text/markdown or text/plain)
-- Nested paths work (e.g., examples/_fragments/...)
+- Nested paths work (e.g., examples/...)
 
 ### 4. Dynamic Resource Matching
 
@@ -526,7 +526,7 @@ describe('Invalid URIs Return Proper Errors', () => {
 ```javascript
 describe('Cache Hit on Second Request', () => {
   it('should cache static resource content', async () => {
-    const uri = 'orchestr8://agents/_fragments/typescript-core';
+    const uri = 'orchestr8://agents/typescript-core';
 
     // First request (cache miss)
     const result1 = await client.sendRequest('resources/read', { uri });

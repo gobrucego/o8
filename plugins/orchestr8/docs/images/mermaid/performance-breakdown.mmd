@@ -1,0 +1,23 @@
+%%{init: {'theme':'base'}}%%
+graph TB
+    subgraph "orchestr8 v8.0 Query Performance - 3-Tier Strategy"
+        Query[User Query] --> Check{Check Cache}
+
+        Check -->|Cache Hit<br/>70-80% of queries| Tier1["✅ Tier 1: Quick Cache<br/><2ms response<br/>Instant results"]
+        Check -->|Cache Miss| Index{Index Lookup}
+
+        Index -->|2+ matches found| Tier2["✅ Tier 2: Keyword Index<br/>5-10ms response<br/>85-95% token reduction<br/>1,675 scenarios<br/>4,036 keywords"]
+        Index -->|Insufficient matches| Tier3["✅ Tier 3: Fuzzy Fallback<br/>15-20ms response<br/>Full semantic matching<br/>95%+ relevance"]
+
+        Tier1 --> Result["📊 Result<br/>200-500 tokens<br/>95%+ relevance"]
+        Tier2 --> Result
+        Tier3 --> Result
+    end
+
+    style Query fill:#e9ecef,stroke:#6c757d
+    style Check fill:#fff3cd,stroke:#f0ad4e
+    style Index fill:#fff3cd,stroke:#f0ad4e
+    style Tier1 fill:#5cb85c,stroke:#4cae4c,color:#fff
+    style Tier2 fill:#5bc0de,stroke:#46b8da,color:#fff
+    style Tier3 fill:#f0ad4e,stroke:#eea236,color:#333
+    style Result fill:#1168bd,stroke:#0b4884,color:#fff

@@ -149,13 +149,13 @@ export class IndexBuilder {
     const allFragments: ResourceFragment[] = [];
 
     for (const { dir, type } of categories) {
-      const categoryPath = join(this.resourcesPath, dir, "_fragments");
+      const categoryPath = join(this.resourcesPath, dir);
 
       try {
         await fs.access(categoryPath);
         await this.scanFragmentsDirectory(categoryPath, type, dir, allFragments);
       } catch (error) {
-        logger.debug(`Fragments directory not found: ${categoryPath}`);
+        logger.debug(`Category directory not found: ${categoryPath}`);
       }
     }
 
@@ -227,12 +227,16 @@ export class IndexBuilder {
     const body = parsed.content;
 
     // Extract metadata from frontmatter with fallbacks
+    // Extract ID from file path - look for category directory pattern
+    const pathParts = filePath.split(/[\/\\]/);
+    const resourcesIndex = pathParts.findIndex(p => p === 'resources');
+    const categoryIndex = resourcesIndex + 1;
+    const filenameIndex = pathParts.length - 1;
+
     const id =
       frontmatter.id ||
-      filePath
-        .split("_fragments/")[1]
-        ?.replace(/\.md$/, "")
-        .replace(/\\/g, "/") ||
+      pathParts.slice(categoryIndex + 1, filenameIndex + 1).join('/')
+        .replace(/\.md$/, "") ||
       "unknown";
 
     const tags = Array.isArray(frontmatter.tags)
@@ -497,7 +501,7 @@ export class IndexBuilder {
                           fragment.category === "pattern" ? "patterns" :
                           "workflows";
 
-    return `orchestr8://${categoryPlural}/_fragments/${filename}`;
+    return `orchestr8://${categoryPlural}/${filename}`;
   }
 
   /**

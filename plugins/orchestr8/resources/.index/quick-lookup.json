@@ -1,205 +1,205 @@
 {
   "version": "1.0.0",
   "commonQueries": {
-    "building": {
-      "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-engineer-nlp",
-        "orchestr8://agents/_fragments/ai-ml-mlops"
-      ],
-      "tokens": 3360
-    },
     "implementing": {
       "uris": [
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-engineer-nlp",
-        "orchestr8://agents/_fragments/ai-ml-mlops",
-        "orchestr8://agents/_fragments/api-designer-graphql"
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/algolia-specialist"
       ],
-      "tokens": 3390
+      "tokens": 3010
+    },
+    "building": {
+      "uris": [
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp",
+        "orchestr8://agents/ai-ml-mlops"
+      ],
+      "tokens": 3360
     },
     "requiring": {
       "uris": [
-        "orchestr8://agents/_fragments/medium-writer-expert",
-        "orchestr8://agents/_fragments/python-async-context-managers",
-        "orchestr8://agents/_fragments/python-async-fundamentals",
-        "orchestr8://agents/_fragments/python-fastapi-dependencies",
-        "orchestr8://agents/_fragments/research-specialist"
+        "orchestr8://agents/agent-architect",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
       ],
-      "tokens": 3470
+      "tokens": 1513
     },
     "creating": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/agent-designer-workflow",
-        "orchestr8://agents/_fragments/api-designer-rest",
-        "orchestr8://agents/_fragments/data-engineer-modern-stack"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/api-designer-rest",
+        "orchestr8://agents/data-engineer-modern-stack"
       ],
       "tokens": 3080
     },
+    "patterns": {
+      "uris": [
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist"
+      ],
+      "tokens": 2450
+    },
     "designing": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/agent-designer-principles",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/api-designer-graphql"
+        "orchestr8://agents/agent-architect",
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/ai-ml-engineer-core"
       ],
-      "tokens": 3230
+      "tokens": 2863
     },
     "using": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-engineer-nlp"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp"
       ],
       "tokens": 3260
     },
-    "needing": {
+    "production": {
       "uris": [
-        "orchestr8://skills/_fragments/medium-engagement-hooks",
-        "orchestr8://skills/_fragments/security-authentication-jwt",
-        "orchestr8://examples/_fragments/docker-multistage-nodejs",
-        "orchestr8://examples/_fragments/express-error-handling",
-        "orchestr8://examples/_fragments/express-jwt-auth"
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist"
       ],
-      "tokens": 3120
-    },
-    "validation": {
-      "uris": [
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/api-designer-graphql",
-        "orchestr8://agents/_fragments/blockchain-solidity-expert",
-        "orchestr8://agents/_fragments/data-engineer-modern-stack",
-        "orchestr8://agents/_fragments/frontend-react-expert"
-      ],
-      "tokens": 3340
+      "tokens": 2630
     },
     "code": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/agent-designer-workflow",
-        "orchestr8://agents/_fragments/ai-ml-mlops",
-        "orchestr8://agents/_fragments/api-designer-rest",
-        "orchestr8://agents/_fragments/blockchain-solidity-expert"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/api-designer-rest",
+        "orchestr8://agents/blockchain-solidity-expert"
       ],
       "tokens": 3280
     },
-    "data": {
+    "performance": {
       "uris": [
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-engineer-nlp",
-        "orchestr8://agents/_fragments/ai-ml-mlops",
-        "orchestr8://agents/_fragments/api-designer-graphql"
-      ],
-      "tokens": 3390
-    },
-    "patterns": {
-      "uris": [
-        "orchestr8://agents/_fragments/agent-designer-fragment-structure",
-        "orchestr8://agents/_fragments/agent-designer-principles",
-        "orchestr8://agents/_fragments/agent-designer-workflow",
-        "orchestr8://agents/_fragments/api-designer-graphql",
-        "orchestr8://agents/_fragments/api-integration-specialist"
-      ],
-      "tokens": 3230
-    },
-    "management": {
-      "uris": [
-        "orchestr8://agents/_fragments/devops-expert-cicd",
-        "orchestr8://agents/_fragments/frontend-accessibility",
-        "orchestr8://agents/_fragments/frontend-react-expert",
-        "orchestr8://agents/_fragments/frontend-vue-expert",
-        "orchestr8://agents/_fragments/infrastructure-gcp-architect"
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/api-integration-specialist"
       ],
       "tokens": 3360
+    },
+    "optimization": {
+      "uris": [
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist"
+      ],
+      "tokens": 2610
+    },
+    "features": {
+      "uris": [
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
+      ],
+      "tokens": 1880
+    },
+    "needing": {
+      "uris": [
+        "orchestr8://agents/legacy-system-analyst",
+        "orchestr8://skills/medium-engagement-hooks",
+        "orchestr8://skills/security-authentication-jwt",
+        "orchestr8://skills/service-dependency-mapping",
+        "orchestr8://examples/docker-multistage-nodejs"
+      ],
+      "tokens": 3040
+    },
+    "complex": {
+      "uris": [
+        "orchestr8://agents/agent-architect",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
+      ],
+      "tokens": 1513
     },
     "testing": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/agent-designer-principles",
-        "orchestr8://agents/_fragments/agent-designer-workflow",
-        "orchestr8://agents/_fragments/ai-ml-mlops",
-        "orchestr8://agents/_fragments/api-integration-specialist"
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/api-integration-specialist"
       ],
       "tokens": 3200
     },
-    "api": {
+    "management": {
       "uris": [
-        "orchestr8://agents/_fragments/api-designer-rest",
-        "orchestr8://agents/_fragments/api-integration-specialist",
-        "orchestr8://agents/_fragments/data-engineer-big-data",
-        "orchestr8://agents/_fragments/frontend-react-expert",
-        "orchestr8://agents/_fragments/frontend-vue-expert"
+        "orchestr8://agents/cassandra-specialist",
+        "orchestr8://agents/code-reviewer",
+        "orchestr8://agents/devops-expert-cicd",
+        "orchestr8://agents/dynamodb-specialist",
+        "orchestr8://agents/frontend-accessibility"
       ],
-      "tokens": 3380
+      "tokens": 2569
     },
-    "handling": {
+    "validation": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-principles",
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-engineer-nlp",
-        "orchestr8://agents/_fragments/api-designer-graphql"
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/api-designer-graphql",
+        "orchestr8://agents/assumption-validator",
+        "orchestr8://agents/blockchain-solidity-expert",
+        "orchestr8://agents/data-engineer-modern-stack"
       ],
-      "tokens": 3310
+      "tokens": 2960
     },
-    "strategy": {
+    "practices": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-principles",
-        "orchestr8://agents/_fragments/medium-writer-expert",
-        "orchestr8://agents/_fragments/typescript-async-patterns",
-        "orchestr8://skills/_fragments/cicd-pipeline-optimization",
-        "orchestr8://skills/_fragments/competitive-analysis"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
       ],
-      "tokens": 3470
+      "tokens": 1850
     },
-    "database": {
+    "deployment": {
       "uris": [
-        "orchestr8://agents/_fragments/database-architect-sql",
-        "orchestr8://agents/_fragments/database-performance-tuning",
-        "orchestr8://agents/_fragments/infrastructure-aws-architect",
-        "orchestr8://agents/_fragments/mobile-android-kotlin",
-        "orchestr8://agents/_fragments/python-async-context-managers"
+        "orchestr8://agents/agent-architect",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/algolia-specialist"
       ],
-      "tokens": 3240
+      "tokens": 2673
     },
-    "performance": {
+    "best": {
       "uris": [
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/_fragments/ai-ml-engineer-core",
-        "orchestr8://agents/_fragments/ai-ml-mlops",
-        "orchestr8://agents/_fragments/api-integration-specialist"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
       ],
-      "tokens": 3360
-    },
-    "security": {
-      "uris": [
-        "orchestr8://agents/_fragments/blockchain-solidity-expert",
-        "orchestr8://agents/_fragments/devops-expert-cicd",
-        "orchestr8://agents/_fragments/infrastructure-aws-architect",
-        "orchestr8://agents/_fragments/infrastructure-gcp-architect",
-        "orchestr8://agents/_fragments/infrastructure-kubernetes"
-      ],
-      "tokens": 3410
-    },
-    "scenarios": {
-      "uris": [
-        "orchestr8://agents/_fragments/agent-designer-metadata-optimization",
-        "orchestr8://agents/_fragments/agent-designer-workflow",
-        "orchestr8://agents/_fragments/mobile-react-native",
-        "orchestr8://agents/_fragments/python-async-concurrency",
-        "orchestr8://agents/_fragments/python-async-fundamentals"
-      ],
-      "tokens": 3120
+      "tokens": 1850
     }
   }
 }

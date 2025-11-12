@@ -37,16 +37,16 @@ orchestr8://match?query=typescript+react+hooks+api+postgresql+authentication&mod
 **Next steps:**
 ```
 # Load core agents
-orchestr8://agents/_fragments/typescript-core
-orchestr8://agents/_fragments/react-hooks-patterns
+orchestr8://agents/typescript-core
+orchestr8://agents/react-hooks-patterns
 
 # Load specific skills
-orchestr8://skills/_fragments/api-design-rest
-orchestr8://skills/_fragments/database-postgresql
+orchestr8://skills/api-design-rest
+orchestr8://skills/database-postgresql
 
 # Load examples
-orchestr8://examples/_fragments/express-jwt-auth
-orchestr8://examples/_fragments/react-auth-flow
+orchestr8://examples/express-jwt-auth
+orchestr8://examples/react-auth-flow
 ```
 
 ---
@@ -125,9 +125,9 @@ orchestr8://match?query=kubernetes+deployment+production&mode=catalog&maxResults
 # Total: 2600 tokens (within budget)
 
 # Step 3: Load selected resources
-orchestr8://guides/_fragments/kubernetes-deployment
-orchestr8://patterns/_fragments/helm-charts
-orchestr8://guides/_fragments/monitoring-setup
+orchestr8://guides/kubernetes-deployment
+orchestr8://patterns/helm-charts
+orchestr8://guides/monitoring-setup
 ```
 
 **Total tokens:** 100 + 2600 = 2700 tokens
@@ -158,30 +158,46 @@ orchestr8://match?query=retry+exponential+backoff+circuit+breaker&mode=index&max
 
 ---
 
-### Strategy 3: Progressive Loading
+### Strategy 3: Progressive Loading with On-Demand Examples
 
-**Goal:** Load incrementally based on needs
+**Goal:** Load core content immediately, examples on-demand
 
-**Phase 1 - Core expertise (1000 tokens):**
+**Phase 1 - Core expertise (650 tokens):**
 ```
-orchestr8://agents/_fragments/typescript-core
-```
-
-**Phase 2 - Add skills as needed (1500 tokens):**
-```
-orchestr8://skills/_fragments/api-design-rest
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://agents/typescript-core
+# Returns: Core TypeScript knowledge
 ```
 
-**Phase 3 - Add examples if stuck (2300 tokens):**
+**Phase 2 - Add skills as needed (1,370 tokens):**
 ```
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://skills/api-design-rest  # 720 tokens
+orchestr8://skills/error-handling-resilience  # 650 tokens
 ```
+
+**Phase 3 - Load examples only when needed (on-demand):**
+```
+# Agent with progressive loading
+orchestr8://agents/mlops-specialist  # 220 tokens core
+
+# Returns core + on-demand example references:
+# → orchestr8://examples/ml/mlops-pipeline-kubeflow
+# → orchestr8://examples/ml/mlops-model-versioning
+
+# Load example when implementing (900 tokens)
+orchestr8://examples/ml/mlops-pipeline-kubeflow
+```
+
+**Total comparison:**
+- **Without examples**: 2,020 tokens (core + skills)
+- **With 1 example**: 2,920 tokens (selective)
+- **Loading all examples upfront**: 5,500+ tokens
+- **Savings: 47-63%**
 
 **Benefits:**
-- Load only what's needed
-- Adjust based on progress
-- Optimal token usage
+- Core knowledge always available
+- Examples loaded only when stuck
+- Adjust based on implementation needs
+- Real-world agents using this: sre-specialist (52-82% savings), mlops-specialist, dynamodb-specialist, sqlserver-specialist
 
 ---
 
@@ -194,16 +210,16 @@ orchestr8://examples/_fragments/express-jwt-auth
 **Composition:**
 ```
 # Core (650 tokens)
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # API Design (720 tokens)
-orchestr8://skills/_fragments/api-design-rest
+orchestr8://skills/api-design-rest
 
 # Auth Pattern (680 tokens)
-orchestr8://patterns/_fragments/security-auth-jwt
+orchestr8://patterns/security-auth-jwt
 
 # Testing (450 tokens)
-orchestr8://skills/_fragments/testing-unit
+orchestr8://skills/testing-unit
 ```
 
 **Total:** 2500 tokens (exact budget match)
@@ -276,7 +292,7 @@ orchestr8://match?query=authentication+jwt&categories=examples,patterns&mode=cat
 **Approach:**
 ```
 # Level 1: Core agent
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Level 2: Related skills
 orchestr8://skills/match?query=typescript+testing+error+handling&mode=catalog
@@ -400,9 +416,9 @@ orchestr8://match?query=typescript+testing&mode=catalog
 ```
 # Load in parallel (if supported by client)
 Promise.all([
-  loadResource('orchestr8://agents/_fragments/typescript-core'),
-  loadResource('orchestr8://skills/_fragments/api-design-rest'),
-  loadResource('orchestr8://examples/_fragments/express-minimal-api')
+  loadResource('orchestr8://agents/typescript-core'),
+  loadResource('orchestr8://skills/api-design-rest'),
+  loadResource('orchestr8://examples/express-minimal-api')
 ])
 ```
 
@@ -451,7 +467,7 @@ Task: Build authenticated API with testing
 orchestr8://match?query=deployment+production+rollback&mode=index
 
 # Cache-friendly queries (exact same URI)
-orchestr8://workflows/_fragments/workflow-deploy
+orchestr8://workflows/workflow-deploy
 ```
 
 **Best practices:**
@@ -496,7 +512,7 @@ try {
 
 // Ultimate fallback: Static resource
 if (!result) {
-  result = query('orchestr8://agents/_fragments/default-agent')
+  result = query('orchestr8://agents/default-agent')
 }
 ```
 
@@ -504,23 +520,64 @@ if (!result) {
 
 ## Custom Integration Scenarios
 
-### Workflow Automation
+### Workflow Automation with JIT Loading
 
-**Scenario:** Automated feature generation
+**Scenario:** Automated feature generation with phase-based JIT loading
 
 **Integration:**
 ```
-# Script that uses Orchestr8
-async function generateFeature(description) {
-  // 1. Load workflow
-  const workflow = await loadResource('orchestr8://workflows/_fragments/workflow-add-feature')
+# Script that implements JIT loading pattern
+async function generateFeature(description, techStack) {
+  // 1. Load workflow definition (2,400 tokens)
+  const workflow = await loadResource('orchestr8://workflows/workflow-add-feature')
 
-  // 2. Dynamic expertise loading
-  const expertise = await query(`orchestr8://match?query=${description}&mode=full&maxTokens=2500`)
+  // 2. Phase-based JIT loading
+  const phases = {
+    design: {
+      query: `codebase+analysis+feature+design+${techStack}`,
+      maxTokens: 1000,
+      phase: '0-20%'
+    },
+    implementation: {
+      query: `${techStack}+${extractFeatureType(description)}+implementation`,
+      maxTokens: 2500,
+      phase: '20-70%'
+    },
+    qa: {
+      query: `${techStack}+testing+security+quality`,
+      maxTokens: 1500,
+      phase: '70-90%'
+    },
+    deploy: {
+      query: `${platform}+deployment+feature+flags`,
+      maxTokens: 1000,
+      phase: '90-100%',
+      conditional: true  // Only if deployment requested
+    }
+  }
 
-  // 3. Execute workflow with expertise
-  return executeWorkflow(workflow, expertise, description)
+  // 3. Execute workflow with progressive loading
+  return await executeWorkflowWithJIT(workflow, phases, description)
 }
+
+async function executeWorkflowWithJIT(workflow, phases, description) {
+  for (const [phaseName, config] of Object.entries(phases)) {
+    if (config.conditional && !shouldDeploy()) continue
+
+    // Load expertise for this phase only
+    const expertise = await query(
+      `orchestr8://match?query=${config.query}&maxTokens=${config.maxTokens}&mode=full`
+    )
+
+    // Execute phase with loaded expertise
+    await executePhase(phaseName, expertise, description)
+  }
+}
+
+// Token efficiency:
+// - Traditional: Load all 10,000 tokens upfront
+// - JIT pattern: Load 2,400-6,000 tokens progressively
+// - Savings: 76%
 ```
 
 ---
@@ -577,7 +634,7 @@ agents.forEach(agent => {
 describe('API Tests', () => {
   beforeAll(async () => {
     // Load testing patterns
-    testPatterns = await loadResource('orchestr8://skills/_fragments/testing-integration')
+    testPatterns = await loadResource('orchestr8://skills/testing-integration')
   })
 
   test('API endpoints', () => {

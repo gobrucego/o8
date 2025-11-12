@@ -44,8 +44,8 @@ export interface MatchRequest {
   maxTokens?: number;
   /** Tags that must be present in matched resources */
   requiredTags?: string[];
-  /** Response mode: 'full' returns content, 'catalog' returns lightweight index, 'index' uses useWhen index */
-  mode?: 'full' | 'catalog' | 'index';
+  /** Response mode: 'full' returns content, 'catalog' returns lightweight index, 'index' uses useWhen index, 'minimal' returns ultra-compact JSON */
+  mode?: 'full' | 'catalog' | 'index' | 'minimal';
   /** Maximum number of results to return in catalog mode */
   maxResults?: number;
   /** Minimum relevance score threshold (0-100) */
@@ -145,10 +145,11 @@ export class FuzzyMatcher {
       ),
     });
 
-    // 6. Assemble content (catalog or full)
-    const assembled = mode === 'catalog'
-      ? this.assembleCatalog(selected)
-      : this.assembleContent(selected);
+    // 6. Assemble content (minimal, catalog, or full)
+    const assembled =
+      mode === 'minimal' ? this.assembleMinimal(selected) :
+      mode === 'catalog' ? this.assembleCatalog(selected) :
+      this.assembleContent(selected);
 
     return {
       fragments: selected.map((s) => s.resource),
@@ -244,9 +245,11 @@ export class FuzzyMatcher {
    * Calculate relevance score for a resource
    *
    * Scoring algorithm considers:
-   * - Keyword matches in tags (+10 per match)
-   * - Keyword matches in capabilities (+8 per match)
-   * - Keyword matches in useWhen (+5 per match)
+   * - EXACT matches in tags (+15 per match)
+   * - EXACT matches in capabilities (+12 per match)
+   * - EXACT matches in useWhen (+8 per match)
+   * - FUZZY matches (Levenshtein-based, scaled by similarity)
+   * - Multi-keyword phrase matching (+20 for phrases)
    * - Category filter bonus (+15 if matches)
    * - Required tags (must have all or score = 0)
    * - Size preference (smaller resources < 1000 tokens get +5)
@@ -256,6 +259,7 @@ export class FuzzyMatcher {
    * - Use Sets for O(1) tag lookup instead of array.includes
    * - Batch keyword processing to reduce iterations
    * - Early exit on disqualification
+   * - Fuzzy matching only for keywords without exact matches
    *
    * @param resource - Resource fragment to score
    * @param keywords - Extracted keywords from query
@@ -265,7 +269,7 @@ export class FuzzyMatcher {
    * @example
    * ```typescript
    * const score = matcher.calculateScore(resource, ["typescript", "api"], request);
-   * // Returns: 25 (if resource has matching tags and capabilities)
+   * // Returns: 25+ (if resource has matching tags and capabilities)
    * ```
    */
   calculateScore(
@@ -303,32 +307,109 @@ export class FuzzyMatcher {
     const capabilitiesLower = resource.capabilities.map((c) => c.toLowerCase());
     const useWhenLower = resource.useWhen.map((u) => u.toLowerCase());
 
-    // Keyword matching - optimized with single pass
+    // Track which keywords found exact matches (for fuzzy fallback)
+    const keywordsWithoutExactMatch = new Set(keywords);
+
+    // Detect multi-word phrases in query (e.g., "rest api", "error handling")
+    const queryText = keywords.join(" ");
+
+    // Exact keyword matching - optimized with single pass
     for (const keyword of keywords) {
-      // Tag matches (+10 each) - tags are already lowercase
+      let foundExact = false;
+
+      // EXACT Tag matches (+15 each) - higher weight for exact matches
       for (const tag of tagsLower) {
-        if (tag.includes(keyword)) {
+        if (tag === keyword) {
+          score += 15;
+          foundExact = true;
+          logger.debug(`EXACT tag match for "${keyword}" in ${resource.id}`);
+          break;
+        } else if (tag.includes(keyword)) {
           score += 10;
-          logger.debug(`Tag match for "${keyword}" in ${resource.id}`);
-          break; // Only count once per keyword
+          foundExact = true;
+          logger.debug(`Substring tag match for "${keyword}" in ${resource.id}`);
+          break;
         }
       }
 
-      // Capability matches (+8 each)
+      // EXACT Capability matches (+12 each)
       for (const cap of capabilitiesLower) {
-        if (cap.includes(keyword)) {
+        if (cap === keyword) {
+          score += 12;
+          foundExact = true;
+          logger.debug(`EXACT capability match for "${keyword}" in ${resource.id}`);
+          break;
+        } else if (cap.includes(keyword)) {
           score += 8;
-          logger.debug(`Capability match for "${keyword}" in ${resource.id}`);
-          break; // Only count once per keyword
+          foundExact = true;
+          logger.debug(`Substring capability match for "${keyword}" in ${resource.id}`);
+          break;
         }
       }
 
-      // Use-when matches (+5 each)
+      // EXACT Use-when matches (+8 each)
       for (const useCase of useWhenLower) {
         if (useCase.includes(keyword)) {
           score += 5;
+          foundExact = true;
           logger.debug(`Use-when match for "${keyword}" in ${resource.id}`);
-          break; // Only count once per keyword
+          break;
+        }
+      }
+
+      if (foundExact) {
+        keywordsWithoutExactMatch.delete(keyword);
+      }
+    }
+
+    // Phrase matching bonus - check for multi-word sequences
+    // e.g., "rest api" should score higher than separate "rest" + "api"
+    if (keywords.length >= 2) {
+      const allFields = [...tagsLower, ...capabilitiesLower, ...useWhenLower];
+      for (const field of allFields) {
+        // Check if the field contains multiple consecutive keywords
+        for (let i = 0; i < keywords.length - 1; i++) {
+          const phrase = `${keywords[i]} ${keywords[i + 1]}`;
+          if (field.includes(phrase)) {
+            score += 20;
+            logger.debug(`Multi-word phrase match: "${phrase}" in ${resource.id}`);
+            break; // Only count once per field
+          }
+        }
+      }
+    }
+
+    // Fuzzy matching for keywords without exact matches
+    // Uses Levenshtein distance for typo tolerance
+    if (keywordsWithoutExactMatch.size > 0 && keywords.length <= 5) {
+      // Only do fuzzy matching for reasonable query sizes
+      const allFields = [...tagsLower, ...capabilitiesLower];
+
+      for (const keyword of keywordsWithoutExactMatch) {
+        let bestFuzzyScore = 0;
+
+        for (const field of allFields) {
+          // Split field into words for word-level fuzzy matching
+          const fieldWords = field.split(/\s+/);
+
+          for (const word of fieldWords) {
+            if (word.length > 2 && keyword.length > 2) {
+              const similarity = this.calculateLevenshteinSimilarity(keyword, word);
+
+              // Only count if similarity is high enough (>70%)
+              if (similarity > 0.7) {
+                const fuzzyScore = Math.floor(similarity * 8); // Max +8 points for perfect fuzzy match
+                if (fuzzyScore > bestFuzzyScore) {
+                  bestFuzzyScore = fuzzyScore;
+                }
+              }
+            }
+          }
+        }
+
+        if (bestFuzzyScore > 0) {
+          score += bestFuzzyScore;
+          logger.debug(`Fuzzy match for "${keyword}" in ${resource.id}: +${bestFuzzyScore}`);
         }
       }
     }
@@ -340,6 +421,86 @@ export class FuzzyMatcher {
 
     logger.debug(`Final score for ${resource.id}: ${score}`);
     return score;
+  }
+
+  /**
+   * Calculate Levenshtein-based similarity between two strings
+   * Returns a value between 0 (no similarity) and 1 (identical)
+   *
+   * Uses normalized Levenshtein distance for fuzzy matching.
+   * This helps catch typos and minor variations in keywords.
+   *
+   * @param str1 - First string (keyword)
+   * @param str2 - Second string (field word)
+   * @returns Similarity score (0.0 to 1.0)
+   *
+   * @example
+   * ```typescript
+   * calculateLevenshteinSimilarity("typescript", "typscript") // Returns ~0.9
+   * calculateLevenshteinSimilarity("async", "sync") // Returns ~0.6
+   * calculateLevenshteinSimilarity("foo", "bar") // Returns ~0.0
+   * ```
+   */
+  private calculateLevenshteinSimilarity(str1: string, str2: string): number {
+    // Early exit optimizations
+    if (str1 === str2) return 1.0;
+    if (str1.length === 0 || str2.length === 0) return 0.0;
+
+    // Optimize: if length difference is too large, similarity will be low
+    const lengthDiff = Math.abs(str1.length - str2.length);
+    const maxLength = Math.max(str1.length, str2.length);
+    if (lengthDiff / maxLength > 0.5) return 0.0; // >50% length difference = not similar
+
+    const distance = this.levenshteinDistance(str1, str2);
+
+    // Normalize: similarity = 1 - (distance / maxLength)
+    const similarity = 1 - (distance / maxLength);
+
+    return Math.max(0, similarity);
+  }
+
+  /**
+   * Calculate Levenshtein distance between two strings
+   * Returns the minimum number of single-character edits required
+   *
+   * Optimized implementation with single-row space complexity O(n)
+   * instead of full matrix O(m*n)
+   *
+   * @param str1 - First string
+   * @param str2 - Second string
+   * @returns Edit distance (0 = identical)
+   */
+  private levenshteinDistance(str1: string, str2: string): number {
+    // Optimize: always process shorter string as columns
+    if (str1.length > str2.length) {
+      [str1, str2] = [str2, str1];
+    }
+
+    const len1 = str1.length;
+    const len2 = str2.length;
+
+    // Early exit
+    if (len1 === 0) return len2;
+    if (len2 === 0) return len1;
+
+    // Use single row optimization (O(n) space instead of O(m*n))
+    let prevRow = Array.from({ length: len1 + 1 }, (_, i) => i);
+
+    for (let i = 1; i <= len2; i++) {
+      let currentRow = [i];
+
+      for (let j = 1; j <= len1; j++) {
+        const insertCost = currentRow[j - 1] + 1;
+        const deleteCost = prevRow[j] + 1;
+        const substituteCost = prevRow[j - 1] + (str1[j - 1] === str2[i - 1] ? 0 : 1);
+
+        currentRow[j] = Math.min(insertCost, deleteCost, substituteCost);
+      }
+
+      prevRow = currentRow;
+    }
+
+    return prevRow[len1];
   }
 
   /**
@@ -510,8 +671,8 @@ This catalog provides a lightweight index of relevant resources. Each entry incl
 **To load a resource:**
 \`\`\`
 ReadMcpResourceTool(
-  server="plugin:orchestr8-mcp-plugin:orchestr8-resources",
-  uri="orchestr8://[category]/_fragments/[resource-id]"
+  server="plugin:orchestr8:orchestr8-resources",
+  uri="orchestr8://[category]/[resource-id]"
 )
 \`\`\`
 
@@ -528,7 +689,8 @@ orchestr8://match?query=<refined-search>&categories=<cats>&minScore=15
     // Build catalog entries
     const entries = ordered.map(({ resource, score }, index) => {
       const categoryLabel = this.categoryLabel(resource.category);
-      const mcpUri = `orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}`;
+      const resourceId = resource.id.split('/').pop();
+      const mcpUri = `orchestr8://${resource.category}s/${resourceId}`;
 
       // Format useWhen section
       const useWhenSection = resource.useWhen && resource.useWhen.length > 0
@@ -548,7 +710,7 @@ ${useWhenSection}
 
 **Load this resource:**
 \`\`\`
-orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}
+orchestr8://${resource.category}s/${resourceId}
 \`\`\`
 `;
     });
@@ -564,9 +726,44 @@ orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}
   }
 
   /**
+   * Assemble minimal JSON response (ultra-compact)
+   *
+   * Returns bare minimum: URIs, scores, tokens, and top tags only.
+   * Token cost: ~300-500 tokens (vs ~1500 for catalog mode)
+   *
+   * @param fragments - Selected scored resources
+   * @returns Object with minimal JSON content and token count
+   */
+  assembleMinimal(fragments: ScoredResource[]): { content: string; tokens: number } {
+    const results = fragments.map(({ resource, score }) => ({
+      uri: `orchestr8://${resource.category}s/${resource.id.split('/').pop()}`,
+      category: resource.category,
+      score,
+      tokens: resource.estimatedTokens,
+      tags: resource.tags.slice(0, 5)  // Top 5 tags only
+    }));
+
+    const output = {
+      matches: results.length,
+      totalTokens: results.reduce((sum, r) => sum + r.tokens, 0),
+      results,
+      usage: "Load resources via ReadMcpResourceTool using the uri field"
+    };
+
+    const jsonStr = JSON.stringify(output, null, 2);
+
+    logger.info(`Assembled minimal mode: ${results.length} resources, ~${Math.ceil(jsonStr.length / 4)} tokens`);
+
+    return {
+      content: jsonStr,
+      tokens: Math.ceil(jsonStr.length / 4)
+    };
+  }
+
+  /**
    * Load resource index (cached)
    *
-   * Scans the resources directory recursively for markdown files in _fragments subdirectories,
+   * Scans the resources directory recursively for markdown files in category directories,
    * parses frontmatter metadata, and builds an in-memory index of ResourceFragment objects.
    * Results are cached for performance.
    *
@@ -626,7 +823,7 @@ orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}
 
       // Scan all categories in parallel for faster initial load
       const categoryPromises = categories.map(async ({ dir, type }) => {
-        const categoryPath = join(this.resourcesPath, dir, "_fragments");
+        const categoryPath = join(this.resourcesPath, dir);
         const categoryFragments: ResourceFragment[] = [];
 
         try {
@@ -638,7 +835,7 @@ orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}
             categoryFragments,
           );
         } catch (error) {
-          logger.debug(`Fragments directory not found: ${categoryPath}`);
+          logger.debug(`Category directory not found: ${categoryPath}`);
         }
 
         return categoryFragments;
@@ -720,12 +917,16 @@ orchestr8://${resource.category}s/_fragments/${resource.id.split('/').pop()}
     const body = parsed.content;
 
     // Extract metadata from frontmatter with fallbacks
+    // Extract ID from file path - look for category directory pattern
+    const pathParts = filePath.split(/[\/\\]/);
+    const resourcesIndex = pathParts.findIndex(p => p === 'resources');
+    const categoryIndex = resourcesIndex + 1;
+    const filenameIndex = pathParts.length - 1;
+
     const id =
       frontmatter.id ||
-      filePath
-        .split("_fragments/")[1]
-        ?.replace(/\.md$/, "")
-        .replace(/\\/g, "/") ||
+      pathParts.slice(categoryIndex + 1, filenameIndex + 1).join('/')
+        .replace(/\.md$/, "") ||
       "unknown";
 
     const tags = Array.isArray(frontmatter.tags)

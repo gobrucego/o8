@@ -269,7 +269,7 @@ loader.loadPrompt('my-prompt').then(console.log);
 ls -la resources/agents/typescript-core.md
 
 # Or for fragments
-ls -la resources/agents/_fragments/typescript-core.md
+ls -la resources/agents/typescript-core.md
 ```
 
 #### 2. Check URI Format
@@ -277,7 +277,7 @@ ls -la resources/agents/_fragments/typescript-core.md
 Correct format:
 ```
 orchestr8://agents/typescript-core
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 orchestr8://skills/api-design-rest
 ```
 
@@ -302,7 +302,7 @@ mv resources/agents/my-resource.txt resources/agents/my-resource.md
 
 ```bash
 # Check for valid YAML frontmatter
-head -15 resources/agents/_fragments/typescript-core.md
+head -15 resources/agents/typescript-core.md
 ```
 
 Required frontmatter fields:
@@ -341,14 +341,14 @@ loader.getResource('orchestr8://agents/typescript-core').then(console.log);
 
 ```bash
 # Verify file has content beyond frontmatter
-cat resources/agents/_fragments/typescript-core.md
+cat resources/agents/typescript-core.md
 ```
 
 #### 2. Check Encoding
 
 ```bash
 # Ensure files are UTF-8 encoded
-file resources/agents/_fragments/typescript-core.md
+file resources/agents/typescript-core.md
 
 # Convert if needed
 iconv -f ISO-8859-1 -t UTF-8 file.md > file_utf8.md
@@ -358,7 +358,7 @@ iconv -f ISO-8859-1 -t UTF-8 file.md > file_utf8.md
 
 ```bash
 # Check for null bytes
-cat -v resources/agents/_fragments/typescript-core.md | grep "\\^@"
+cat -v resources/agents/typescript-core.md | grep "\\^@"
 
 # Remove null bytes if found
 tr -d '\000' < file.md > file_clean.md
@@ -393,7 +393,7 @@ Ensure fragments have relevant tags and capabilities:
 
 ```bash
 # Search for matching tags
-grep -r "typescript" resources/agents/_fragments/*.md | grep "tags:"
+grep -r "typescript" resources/agents/*.md | grep "tags:"
 ```
 
 #### 3. Increase Token Budget
@@ -733,7 +733,7 @@ Break large fragments into smaller pieces:
 iostat -x 1
 
 # Check for slow disk
-time cat resources/agents/_fragments/*.md > /dev/null
+time cat resources/agents/*.md > /dev/null
 ```
 
 ### High Memory Usage

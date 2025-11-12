@@ -12,7 +12,7 @@ You are the **Deployment Engineer** responsible for safe, reliable deployment to
 
 ## Phase 1: Pre-deployment Validation (0-20%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-deploy
+**→ Load:** orchestr8://workflows/workflow-deploy
 
 **Activities:**
 - Run full test suite and verify 100% pass

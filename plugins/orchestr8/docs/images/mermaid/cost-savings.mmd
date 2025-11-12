@@ -1,0 +1,16 @@
+%%{init: {'theme':'base', 'themeVariables': { 'primaryColor':'#1168bd','primaryTextColor':'#fff','primaryBorderColor':'#0b4884','lineColor':'#666','secondaryColor':'#5cb85c','tertiaryColor':'#d9534f'}}}%%
+graph TB
+    subgraph "Monthly Cost Comparison"
+        Traditional["Traditional Approach<br/>$400-600/month<br/><br/>❌ Load all resources upfront<br/>❌ 200KB+ per session<br/>❌ 85-95% context usage"]
+
+        Orchestr8["orchestr8 v8.0<br/>$60-100/month<br/><br/>✅ JIT loading (77-83% savings)<br/>✅ Progressive loading (52-82% savings)<br/>✅ 10-20% context usage"]
+
+        Savings["💰 85% Cost Savings<br/><br/>$300-500/month saved<br/>$3,600-6,000/year saved"]
+    end
+
+    Traditional -->|vs| Orchestr8
+    Orchestr8 -->|Result| Savings
+
+    style Traditional fill:#d9534f,stroke:#a94442,color:#fff
+    style Orchestr8 fill:#5cb85c,stroke:#4cae4c,color:#fff
+    style Savings fill:#f0ad4e,stroke:#eea236,color:#333

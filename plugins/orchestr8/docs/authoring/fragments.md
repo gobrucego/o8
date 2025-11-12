@@ -482,6 +482,197 @@ Link to related fragments:
 | Example | 300-500 tokens | 500 |
 | Any fragment | 500-1000 tokens | 1000 |
 
+### Example Extraction Pattern (Phase 1 Optimization)
+
+**When to extract examples to separate files:**
+
+1. **Fragment exceeds 100 lines** with multiple code examples
+2. **Examples consume >30%** of fragment token count
+3. **Complex implementations** (>50 lines) that could be referenced
+4. **Multiple variations** of same pattern
+
+**Before extraction:**
+```markdown
+# error-handling-resilience.md (1200 tokens)
+
+## Retry Pattern
+Brief explanation...
+
+### TypeScript Implementation
+```typescript
+// 50 lines of retry implementation
+// Multiple variations and edge cases
+// Detailed comments
+```
+
+### Python Implementation
+```python
+# 45 lines of Python retry code
+# Multiple variations
+```
+
+### Go Implementation
+```go
+// 40 lines of Go retry code
+```
+
+## Circuit Breaker Pattern
+// Another 60 lines...
+```
+
+**After extraction:**
+```markdown
+# error-handling-resilience.md (680 tokens - 43% reduction)
+
+## Retry Pattern
+Brief explanation with key concepts.
+
+**Basic pattern:**
+```typescript
+// 10-line minimal example showing core concept
+async function retry(fn, maxRetries = 3) {
+  for (let i = 0; i < maxRetries; i++) {
+    try { return await fn(); }
+    catch (err) { if (i === maxRetries - 1) throw err; }
+  }
+}
+```
+
+**See detailed implementations:**
+- [TypeScript Retry Patterns](orchestr8://examples/typescript-retry-patterns)
+- [Python Retry Patterns](orchestr8://examples/python-retry-patterns)
+- [Go Retry Patterns](orchestr8://examples/go-retry-patterns)
+
+## Circuit Breaker Pattern
+// Concise explanation with minimal example...
+```
+
+**Example files:**
+```markdown
+# examples/typescript-retry-patterns.md (450 tokens)
+Complete TypeScript retry implementations:
+- Basic retry with exponential backoff
+- Advanced retry with jitter
+- Conditional retry with error types
+- Integration with circuit breaker
+```
+
+**Token savings calculation:**
+```
+Original: 1200 tokens (always loaded)
+Optimized: 680 tokens (core) + 450 tokens (on-demand examples)
+Savings: 43% for users who don't need detailed examples
+Load time: 520 tokens saved when examples not needed
+```
+
+### Example File Naming Conventions
+
+**Pattern:** `${language-or-framework}-${pattern-name}.md`
+
+**Examples:**
+- `typescript-retry-patterns.md`
+- `python-async-context-managers.md`
+- `express-middleware-patterns.md`
+- `fastapi-dependency-injection.md`
+- `docker-multistage-builds.md`
+
+**Frontmatter for example files:**
+```yaml
+---
+id: typescript-retry-patterns
+category: example
+tags: [typescript, retry, error-handling, resilience, async]
+capabilities:
+  - Complete retry pattern implementations in TypeScript
+  - Exponential backoff with jitter strategies
+  - Error classification and conditional retry logic
+useWhen:
+  - Implementing retry logic in TypeScript applications
+  - Need detailed retry pattern implementations with variations
+  - Building resilient async operations with proper error handling
+estimatedTokens: 450
+relatedTo:
+  - error-handling-resilience  # Main skill fragment
+  - typescript-async-patterns  # Related agent
+---
+```
+
+### Progressive Loading Pattern (Phase 3 Optimization)
+
+**Splitting fragments into core + advanced modules:**
+
+**When to use progressive loading:**
+1. Fragment has clear **always-needed** vs **sometimes-needed** split
+2. Advanced content is >40% of total tokens
+3. Most queries need only core concepts
+4. Advanced topics are independent from core
+
+**Example: Python Async Programming**
+
+**Before (monolithic):**
+```markdown
+# python-async-fundamentals.md (1400 tokens)
+- Async/await basics (400 tokens) ← Always needed
+- Event loop internals (300 tokens) ← Always needed
+- Advanced concurrency patterns (400 tokens) ← Sometimes needed
+- Context managers (350 tokens) ← Sometimes needed
+```
+
+**After (progressive):**
+```markdown
+# python-async-fundamentals.md (700 tokens - Core)
+---
+id: python-async-fundamentals
+estimatedTokens: 700
+advancedTopics:
+  - orchestr8://agents/python-async-concurrency
+  - orchestr8://agents/python-async-context-managers
+---
+
+Core async/await concepts and event loop basics.
+
+**For advanced topics:**
+- [Advanced Concurrency Patterns](orchestr8://agents/python-async-concurrency)
+- [Async Context Managers](orchestr8://agents/python-async-context-managers)
+
+# python-async-concurrency.md (400 tokens - Advanced)
+---
+id: python-async-concurrency
+prerequisite: [python-async-fundamentals]
+estimatedTokens: 400
+---
+
+Advanced concurrency patterns (loaded only when needed).
+
+# python-async-context-managers.md (350 tokens - Advanced)
+---
+id: python-async-context-managers
+prerequisite: [python-async-fundamentals]
+estimatedTokens: 350
+---
+
+Async context manager patterns (loaded only when needed).
+```
+
+**Token efficiency:**
+```
+Generic query "python async": Load core only (700 tokens)
+Specific query "python async concurrency": Load core + concurrency (1100 tokens)
+Specific query "python async context managers": Load core + context (1050 tokens)
+
+Average savings: 50% for generic queries
+```
+
+**Using prerequisite field:**
+```yaml
+---
+id: advanced-module
+category: agent
+prerequisite: [core-module-id]  # Ensures core loads first
+estimatedTokens: 450
+---
+```
+
 ### When to Split
 
 **Split a fragment if:**
@@ -836,7 +1027,7 @@ category: skill
    - Check for duplicates
 
 5. Deploy
-   - Save to resources/*/\_fragments/
+   - Save to resources/*/\
    - Index rebuilds automatically
    - Commit with descriptive message
 ```

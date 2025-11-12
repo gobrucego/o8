@@ -128,7 +128,7 @@ Starting Phase 1: Discovery & Assessment...
 
 ```markdown
 → Load and execute:
-orchestr8://workflows/_fragments/workflow-cloud-migration-planning
+orchestr8://workflows/workflow-cloud-migration-planning
 
 Phases:
 1. Legacy System Assessment (0-25%)
@@ -150,7 +150,7 @@ Deliverables:
 
 ```markdown
 → Load and execute:
-orchestr8://workflows/_fragments/workflow-microservices-transformation
+orchestr8://workflows/workflow-microservices-transformation
 
 Phases:
 1. Monolith Analysis (0-25%)
@@ -376,25 +376,25 @@ This command automatically loads:
 
 **Patterns:**
 ```
-orchestr8://patterns/_fragments/session-output-management
+orchestr8://patterns/session-output-management
 ```
 
 **Agents:**
 ```
-orchestr8://agents/_fragments/legacy-system-analyst
-orchestr8://agents/_fragments/cloud-migration-architect
-orchestr8://agents/_fragments/knowledge-base-agent
+orchestr8://agents/legacy-system-analyst
+orchestr8://agents/cloud-migration-architect
+orchestr8://agents/knowledge-base-agent
 ```
 
 **Skills:**
 ```
-orchestr8://skills/_fragments/service-dependency-mapping
+orchestr8://skills/service-dependency-mapping
 ```
 
 **Workflows:**
 ```
-orchestr8://workflows/_fragments/workflow-cloud-migration-planning
-orchestr8://workflows/_fragments/workflow-microservices-transformation
+orchestr8://workflows/workflow-cloud-migration-planning
+orchestr8://workflows/workflow-microservices-transformation
 ```
 
 ## Examples

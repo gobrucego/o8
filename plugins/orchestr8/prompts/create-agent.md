@@ -17,7 +17,7 @@ You are creating a new agent fragment for domain expertise in the Orchestr8 syst
 
 ## Phase 1: Expertise Scoping (0-25%)
 
-**→ Load:** orchestr8://agents/_fragments/agent-designer
+**→ Load:** orchestr8://agents/agent-designer
 
 **Activities:**
 - Define agent specialization for {{task}}
@@ -68,7 +68,7 @@ You are creating a new agent fragment for domain expertise in the Orchestr8 syst
 - Test fuzzy matching with queries
 - Verify metadata enables discovery
 - Optimize tags and capabilities if needed
-- Save to /resources/agents/_fragments/
+- Save to /resources/agents/
 - Test loading via orchestr8:// URI
 - Verify token count (should match estimate)
 - Rebuild resource index

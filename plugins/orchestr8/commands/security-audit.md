@@ -12,7 +12,7 @@ You are the **Security Auditor** responsible for comprehensive security assessme
 
 ## Phase 1: Authentication & Authorization (0-25%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-security-audit
+**→ Load:** orchestr8://workflows/workflow-security-audit
 
 **Activities:**
 - Review authentication implementation

@@ -67,7 +67,7 @@
 │  │  └────────────────────────┘  │  │  └────────────────────────────┘ │   │
 │  │  ┌────────────────────────┐  │  │  ┌────────────────────────────┐ │   │
 │  │  │  Arg Substitution      │  │  │  │  Fragment Scanner          │ │   │
-│  │  │  • ${arg-name}         │  │  │  │  • _fragments/ subdirs     │ │   │
+│  │  │  • ${arg-name}         │  │  │  │  •  subdirs     │ │   │
 │  │  │  • $ARGUMENTS          │  │  │  │  • Metadata extraction     │ │   │
 │  │  │  • Template filling    │  │  │  │  • Index building          │ │   │
 │  │  └────────────────────────┘  │  │  └────────────────────────────┘ │   │
@@ -129,13 +129,13 @@
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐   │
 │  │   agents/    │  │   skills/    │  │  examples/   │  │  patterns/   │   │
 │  │  • Main docs │  │  • Main docs │  │  • Main docs │  │  • Main docs │   │
-│  │  • _fragments│  │  • _fragments│  │  • _fragments│  │  • _fragments│   │
+│  │  • │  │  • │  │  • │  │  • │   │
 │  └──────────────┘  └──────────────┘  └──────────────┘  └──────────────┘   │
 │                                                                             │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────────────────────────┐ │
 │  │   guides/    │  │best-practices│  │  .index/                        │ │
 │  │  • Main docs │  │  • Main docs │  │  • usewhen-index.json (~125KB)  │ │
-│  │  • _fragments│  │  • _fragments│  │  • keyword-index.json (~80KB)   │ │
+│  │  • │  │  • │  │  • keyword-index.json (~80KB)   │ │
 │  └──────────────┘  └──────────────┘  └──────────────────────────────────┘ │
 │                                                                             │
 └─────────────────────────────────────────────────────────────────────────────┘
@@ -818,5 +818,141 @@ User         Claude       MCP        Prompt      Resource
 
 ---
 
-**Last Updated:** 2025-11-11
-**Document Version:** 1.0.0
+## Hierarchical Resource Organization
+
+### Fragment Family Structure (Post-Optimization)
+
+```
+┌──────────────────────────────────────────────────────────────────────┐
+│                   RESOURCE LIBRARY (384 fragments)                    │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │  SKILL FAMILIES (86 fragments, 6 families)                      │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Performance Family (5 skills, ~570 tokens saved)          │ │ │
+│  │  │                                                            │ │ │
+│  │  │  performance-optimization (core, 500 tokens)               │ │ │
+│  │  │  ├──> performance-api-optimization (specialized, 450)      │ │ │
+│  │  │  ├──> performance-database-optimization (specialized, 480) │ │ │
+│  │  │  ├──> performance-frontend-optimization (specialized, 460) │ │ │
+│  │  │  └──> performance-profiling-techniques (specialized, 420)  │ │ │
+│  │  │                                                            │ │ │
+│  │  │  Cross-refs: 15 orchestr8:// URIs                          │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Security Family (7 skills, ~3,320 tokens saved)           │ │ │
+│  │  │                                                            │ │ │
+│  │  │  security-api-security (core, 550 tokens)                  │ │ │
+│  │  │  ├──> security-authentication-jwt (specialized, 480)       │ │ │
+│  │  │  ├──> security-authentication-oauth (specialized, 520)     │ │ │
+│  │  │  ├──> security-input-validation (specialized, 450)         │ │ │
+│  │  │  ├──> security-owasp-top10 (specialized, 680)             │ │ │
+│  │  │  └──> security-secrets-management (specialized, 440)       │ │ │
+│  │  │                                                            │ │ │
+│  │  │  Cross-refs: 28 orchestr8:// URIs                          │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Testing Family (5 skills, ~570 tokens saved)              │ │ │
+│  │  │  Observability Family (4 skills, +365 tokens, 26 refs)     │ │ │
+│  │  │  Error Handling Family (4 skills, ~150 tokens saved)       │ │ │
+│  │  │  IaC Family (5 skills, +130 tokens, 20 refs)               │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  └──────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │  PATTERN FAMILIES (29 fragments, 9 families)                   │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Event-Driven Family (6 patterns)                          │ │ │
+│  │  │                                                            │ │ │
+│  │  │  event-driven-pubsub (core messaging)                      │ │ │
+│  │  │  ├──> event-driven-cqrs (command-query separation)         │ │ │
+│  │  │  ├──> event-driven-eventsourcing (event store)             │ │ │
+│  │  │  ├──> event-driven-saga (distributed transactions)         │ │ │
+│  │  │  ├──> event-driven-best-practices (design patterns)        │ │ │
+│  │  │  └──> message-broker-comparison (Kafka/RabbitMQ/NATS)      │ │ │
+│  │  │                                                            │ │ │
+│  │  │  Cross-refs: 18 orchestr8:// URIs                          │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Database Family (3 patterns)                              │ │ │
+│  │  │  database-connection-pooling-scaling                       │ │ │
+│  │  │  database-indexing-strategies                              │ │ │
+│  │  │  database-query-optimization                               │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  │                                                                  │ │
+│  │  ┌────────────────────────────────────────────────────────────┐ │ │
+│  │  │  Architecture Family (3 patterns) + 6 more families        │ │ │
+│  │  └────────────────────────────────────────────────────────────┘ │ │
+│  └──────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │  EXAMPLES (28 fragments, extracted from skills/agents)         │ │
+│  │                                                                  │ │
+│  │  docker-multistage-go.md, docker-multistage-nodejs.md          │ │
+│  │  express-error-handling.md, express-jwt-auth.md                │ │
+│  │  fastapi-async-crud.md, go-grpc-service.md                     │ │
+│  │  kubernetes-deployment-basic.md, rust-actix-handlers.md        │ │
+│  │  typescript-rest-api-complete.md, ...                          │ │
+│  │                                                                  │ │
+│  │  Token savings: ~45,000 tokens                                  │ │
+│  └──────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │  AGENTS (149 fragments) + WORKFLOWS (36) + GUIDES (10)         │ │
+│  │                                                                  │ │
+│  │  Progressive Loading Examples:                                  │ │
+│  │  • project-manager.md (500 tokens core)                         │ │
+│  │    └──> project-manager-advanced.md (700 tokens, on-demand)     │ │
+│  │  • knowledge-base-agent.md (600 tokens core)                    │ │
+│  │    └──> knowledge-base-agent-advanced.md (600 tokens, on-demand)│ │
+│  └──────────────────────────────────────────────────────────────────┘ │
+│                                                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐ │
+│  │  CROSS-REFERENCE NETWORK (207+ total)                          │ │
+│  │                                                                  │ │
+│  │  Sibling References (horizontal):                               │ │
+│  │  performance-api ↔ performance-database ↔ performance-frontend  │ │
+│  │                                                                  │ │
+│  │  Parent-Child References (vertical):                            │ │
+│  │  testing-strategies → testing-unit → testing-integration        │ │
+│  │                                                                  │ │
+│  │  Cross-Category References:                                     │ │
+│  │  security-jwt (skill) → express-jwt-auth (example)              │ │
+│  │  performance-caching (pattern) → performance-api (skill)        │ │
+│  └──────────────────────────────────────────────────────────────────┘ │
+└───────────────────────────────────────────────────────────────────────┘
+```
+
+### Optimization Metrics
+
+**Token Efficiency:**
+```
+Phase 1 (Example Extraction):
+  37 files optimized → 77 examples → ~45,000 tokens saved
+
+Phase 2 (Hierarchical Families):
+  6 skill families → ~5,000 tokens net saved
+  9 pattern families → organized, cross-referenced
+
+Phase 3 (Progressive Loading):
+  2 agents split → 50-58% savings in common cases
+  5 workflows enhanced → 78% average savings
+
+Total Impact:
+  384 fragments indexed
+  1,675 useWhen scenarios (+40% vs pre-optimization)
+  4,036 unique keywords
+  207+ cross-references
+  ~50,000+ tokens saved overall
+```
+
+---
+
+**Last Updated:** 2025-11-12
+**Document Version:** 2.0.0 (Post-Optimization)
+**Resource Library:** 384 fragments, 1,675 scenarios, 207+ cross-refs

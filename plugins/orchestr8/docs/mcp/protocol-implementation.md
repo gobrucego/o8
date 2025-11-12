@@ -99,7 +99,8 @@ logger.info(`Loaded ${resources.length} resources`);
 
 **Loaders Responsibilities**:
 - `PromptLoader`: Scans `./prompts/**/*.md` and extracts metadata
-- `ResourceLoader`: Scans `./resources/**/*.md` and builds resource index
+- `ResourceLoader`: Scans `./resources/**/*.md` and builds resource index (383 fragments)
+- `IndexBuilder`: Pre-builds keyword and useWhen indexes (1,675 scenarios, 4,036 keywords)
 
 ### 4. Pre-load Resource Index
 
@@ -114,10 +115,14 @@ try {
 
 **File**: `src/index.ts:42-48`
 
-The resource index enables fuzzy matching. It contains:
-- All resource fragments with metadata (tags, capabilities, use-when)
+The resource index enables intelligent matching. It contains:
+- All 383 resource fragments with metadata (tags, capabilities, useWhen scenarios)
+- Pre-built keyword index (4,036 unique keywords → scenario hashes)
+- UseWhen index (1,675 scenarios with extracted keywords)
+- Quick lookup cache (top 20 common queries)
 - Token estimates for budget management
 - Category mappings for filtering
+- Cross-references between related resources (207+ bidirectional links)
 
 **Note**: Index loading is optional at startup. If it fails, the index loads on first dynamic query.
 
@@ -479,8 +484,8 @@ Resources are the core of Orchestr8's expertise delivery. There are two types:
 Static resources map directly to files:
 
 ```
-URI:  orchestr8://agents/_fragments/typescript-core
-File: ./resources/agents/_fragments/typescript-core.md
+URI:  orchestr8://agents/typescript-core
+File: ./resources/agents/typescript-core.md
 ```
 
 **Registration**:
@@ -488,7 +493,7 @@ File: ./resources/agents/_fragments/typescript-core.md
 ```typescript
 server.registerResource(
   resource.name,           // "typescript-core"
-  resource.uri,            // "orchestr8://agents/_fragments/typescript-core"
+  resource.uri,            // "orchestr8://agents/typescript-core"
   {
     mimeType: resource.mimeType,    // "text/markdown"
     description: resource.description,
@@ -628,7 +633,7 @@ constructor(logger: Logger) {
 **File**: `src/loaders/resourceLoader.ts:34-38`
 
 **Cache Key**: Full URI including query parameters
-- `orchestr8://agents/_fragments/typescript-core` → Cached
+- `orchestr8://agents/typescript-core` → Cached
 - `orchestr8://agents/match?query=api&maxTokens=2000` → Cached
 - `orchestr8://agents/match?query=database&maxTokens=2000` → Separate cache entry
 
@@ -644,7 +649,7 @@ MCP uses JSON-RPC 2.0 over stdio. The SDK handles protocol details, but understa
   "id": 1,
   "method": "resources/read",
   "params": {
-    "uri": "orchestr8://agents/_fragments/typescript-core"
+    "uri": "orchestr8://agents/typescript-core"
   }
 }
 ```
@@ -658,7 +663,7 @@ MCP uses JSON-RPC 2.0 over stdio. The SDK handles protocol details, but understa
   "result": {
     "contents": [
       {
-        "uri": "orchestr8://agents/_fragments/typescript-core",
+        "uri": "orchestr8://agents/typescript-core",
         "mimeType": "text/markdown",
         "text": "# TypeScript Core Expert\n\n..."
       }
@@ -765,9 +770,9 @@ Lists all static resources and templates.
   "result": {
     "resources": [
       {
-        "uri": "orchestr8://agents/_fragments/typescript-core",
+        "uri": "orchestr8://agents/typescript-core",
         "name": "typescript-core",
-        "description": "Resource: orchestr8://agents/_fragments/typescript-core",
+        "description": "Resource: orchestr8://agents/typescript-core",
         "mimeType": "text/markdown"
       },
       {

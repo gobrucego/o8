@@ -643,13 +643,13 @@ Resources are the heart of Orchestr8. Follow these guidelines when adding new co
 
 ### Fragment Structure
 
-Resources should be broken into focused fragments in `_fragments/` subdirectories:
+Resources should be broken into focused fragments in `` subdirectories:
 
 ```
 resources/
 └── agents/
     ├── typescript-developer.md          # Main resource (optional)
-    └── _fragments/
+    └── 
         ├── typescript-core.md            # Type system expertise
         ├── typescript-async-patterns.md  # Async patterns
         ├── typescript-testing.md         # Testing practices
@@ -771,7 +771,7 @@ function useCase() {
 
 1. **Create the file**
    ```bash
-   vim resources/agents/_fragments/my-fragment.md
+   vim resources/agents/my-fragment.md
    ```
 
 2. **Add frontmatter and content**

@@ -135,7 +135,7 @@ Orchestr8 organizes knowledge into **resources** - fragments of expertise that c
 
 **Static loading** (specific resource):
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Dynamic matching** (find by query):
@@ -349,7 +349,7 @@ Then load specific resources you need.
 orchestr8://patterns/match?query=circuit+breaker+resilience&mode=catalog
 
 # Review results and load:
-orchestr8://patterns/_fragments/resilience-patterns
+orchestr8://patterns/resilience-patterns
 ```
 
 ## Troubleshooting

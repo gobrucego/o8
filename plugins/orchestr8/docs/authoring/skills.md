@@ -496,22 +496,105 @@ Step 5: Performance
 └─ Load: performance-api-optimization
 ```
 
-### Skill Hierarchies
+### Skill Hierarchies (Phase 2 Optimization)
 
-**Skills can have parent-child relationships:**
+**Skills can have parent-child relationships with cross-references:**
 
 ```markdown
-Parent: testing-strategies
-├─ Child: testing-unit
-├─ Child: testing-integration-patterns
-├─ Child: testing-e2e-best-practices
-└─ Child: testing-performance
+Parent: testing-strategies (600 tokens)
+├─ Overview of testing approaches
+├─ When to use each type
+├─ relatedTo: [testing-unit, testing-integration-patterns, testing-e2e-best-practices]
+│
+├─ Child: testing-unit (550 tokens)
+│  ├─ prerequisite: [testing-strategies]
+│  ├─ relatedTo: [testing-integration-patterns, testing-strategies]
+│
+├─ Child: testing-integration-patterns (650 tokens)
+│  ├─ prerequisite: [testing-strategies, testing-unit]
+│  ├─ relatedTo: [testing-e2e-best-practices, testing-unit]
+│
+├─ Child: testing-e2e-best-practices (580 tokens)
+│  ├─ prerequisite: [testing-strategies]
+│  ├─ relatedTo: [testing-integration-patterns]
+│
+└─ Child: testing-performance (520 tokens)
+   ├─ prerequisite: [testing-strategies]
+   ├─ relatedTo: [performance-optimization, performance-profiling-techniques]
 
-Parent: security
-├─ Child: security-authentication-jwt
-├─ Child: security-authentication-oauth
-├─ Child: security-api-security
-└─ Child: security-input-validation
+Parent: security (500 tokens - Overview)
+├─ Security principles and overview
+├─ relatedTo: [security-authentication-jwt, security-api-security, security-input-validation]
+│
+├─ Child: security-authentication-jwt (620 tokens)
+│  ├─ prerequisite: [security]
+│  ├─ relatedTo: [security-authentication-oauth, security-api-security]
+│
+├─ Child: security-authentication-oauth (680 tokens)
+│  ├─ prerequisite: [security]
+│  ├─ relatedTo: [security-authentication-jwt, security-api-security]
+│
+├─ Child: security-api-security (600 tokens)
+│  ├─ prerequisite: [security]
+│  ├─ relatedTo: [security-authentication-jwt, security-input-validation]
+│
+└─ Child: security-input-validation (540 tokens)
+   ├─ prerequisite: [security]
+   ├─ relatedTo: [security-api-security, error-handling-validation]
+```
+
+**Implementing skill families in frontmatter:**
+
+```yaml
+# Parent skill
+---
+id: testing-strategies
+category: skill
+tags: [testing, strategies, unit, integration, e2e, performance]
+capabilities:
+  - Overview of testing approaches and when to use each
+  - Testing strategy selection based on project needs
+  - Balancing test types in testing pyramid
+useWhen:
+  - Planning testing strategy for a project
+  - Deciding which types of tests to implement
+  - Understanding testing trade-offs
+estimatedTokens: 600
+relatedTo:
+  - testing-unit
+  - testing-integration-patterns
+  - testing-e2e-best-practices
+---
+
+# Child skill
+---
+id: testing-integration-patterns
+category: skill
+tags: [testing, integration, api, mocking, fixtures, test-isolation]
+prerequisite: [testing-strategies, testing-unit]
+relatedTo:
+  - testing-unit
+  - testing-e2e-best-practices
+  - testing-strategies
+capabilities:
+  - Integration test structure with database fixtures
+  - Test isolation strategies preventing test interference
+  - External service mocking and stubbing
+useWhen:
+  - Writing integration tests for API endpoints with database
+  - Testing async operations with proper setup and teardown
+  - Mocking external services in integration tests
+estimatedTokens: 650
+---
+```
+
+**Token efficiency with hierarchies:**
+```
+Query "testing overview": Load parent only (600 tokens)
+Query "integration testing": Load parent + child (1250 tokens)
+Query "testing strategies unit integration": Load parent + 2 children (1800 tokens)
+
+Savings: 50-60% when only high-level overview needed
 ```
 
 ## Testing Skills
@@ -961,7 +1044,7 @@ Server Errors:
    └─ No duplication
 
 8. Deploy
-   ├─ Save to resources/skills/_fragments/
+   ├─ Save to resources/skills/
    ├─ Commit with descriptive message
    └─ Index rebuilds automatically
 ```
@@ -983,7 +1066,7 @@ Server Errors:
 - [ ] Related skills referenced
 - [ ] Discoverable via test queries
 - [ ] No duplication with existing skills
-- [ ] Saved to `resources/skills/_fragments/`
+- [ ] Saved to `resources/skills/`
 
 ## Next Steps
 

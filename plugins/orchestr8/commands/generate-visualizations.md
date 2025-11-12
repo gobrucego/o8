@@ -485,6 +485,6 @@ medium/
 
 **Related Resources:**
 - [Visualization Specialist Agent](../prompts/agents/visualization-specialist.md)
-- [Mermaid Diagram Generation Skill](../resources/skills/_fragments/mermaid-diagram-generation.md)
-- [Chart Generation Skill](../resources/skills/_fragments/data-chart-generation.md)
-- [Hero Image Generation Skill](../resources/skills/_fragments/medium-hero-image-generation.md)
+- [Mermaid Diagram Generation Skill](../resources/skills/mermaid-diagram-generation.md)
+- [Chart Generation Skill](../resources/skills/data-chart-generation.md)
+- [Hero Image Generation Skill](../resources/skills/medium-hero-image-generation.md)

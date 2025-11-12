@@ -1,0 +1,65 @@
+%%{init: {'theme':'base'}}%%
+graph TB
+    subgraph "Client Layer"
+        Claude["Claude Code<br/>AI Assistant"]
+    end
+
+    subgraph "MCP Server - orchestr8 v8.0"
+        Server["MCP Server<br/>(stdio + HTTP dual mode)"]
+
+        subgraph "Core Components"
+            PromptLoader["Prompt Loader<br/>Cached 1hr TTL"]
+            ResourceLoader["Resource Loader<br/>Progressive Loading"]
+            URIParser["URI Parser<br/>orchestr8:// + cross-refs"]
+            FuzzyMatcher["Fuzzy Matcher<br/>1,675 scenarios<br/>4,036 keywords"]
+            IndexLookup["Index Lookup<br/>3-tier strategy"]
+        end
+
+        subgraph "Provider System (Multi-Source)"
+            Local["Local Provider<br/>Priority 0<br/>Custom resources"]
+            AITMPL["AITMPL Provider<br/>Priority 10<br/>400+ community"]
+            GitHub["GitHub Provider<br/>Priority 15<br/>Team repos"]
+        end
+
+        Server --> PromptLoader
+        Server --> ResourceLoader
+        ResourceLoader --> URIParser
+        ResourceLoader --> FuzzyMatcher
+        ResourceLoader --> IndexLookup
+        ResourceLoader --> Local
+        ResourceLoader --> AITMPL
+        ResourceLoader --> GitHub
+    end
+
+    subgraph "Resource Library - 383 Fragments (Hierarchical)"
+        Agents["147+ Agents<br/>Core + Advanced modules"]
+        Skills["90+ Skills<br/>6 families organized"]
+        Patterns["25+ Patterns<br/>9 families<br/>207+ cross-refs"]
+        Examples["77+ Examples<br/>Extracted samples"]
+        Workflows["25+ Workflows<br/>JIT loading"]
+    end
+
+    subgraph "Index System (v8.0)"
+        UseWhenIndex["useWhen Index<br/>1,675 scenarios"]
+        KeywordIndex["Keyword Index<br/>4,036 keywords"]
+        QuickLookup["Quick Cache<br/><2ms hits"]
+    end
+
+    Claude <-->|MCP Protocol| Server
+
+    Local --> Agents
+    Local --> Skills
+    Local --> Patterns
+    Local --> Examples
+    Local --> Workflows
+
+    IndexLookup --> UseWhenIndex
+    IndexLookup --> KeywordIndex
+    IndexLookup --> QuickLookup
+
+    style Server fill:#1168bd,stroke:#0b4884,color:#fff
+    style ResourceLoader fill:#5bc0de,stroke:#46b8da,color:#fff
+    style IndexLookup fill:#5cb85c,stroke:#4cae4c,color:#fff
+    style Local fill:#f0ad4e,stroke:#eea236,color:#333
+    style Skills fill:#d9534f,stroke:#a94442,color:#fff
+    style Patterns fill:#d9534f,stroke:#a94442,color:#fff

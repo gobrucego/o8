@@ -134,7 +134,7 @@ All messages follow JSON-RPC 2.0 specification.
   "id": 1,
   "method": "resources/read",
   "params": {
-    "uri": "orchestr8://agents/_fragments/typescript-core"
+    "uri": "orchestr8://agents/typescript-core"
   }
 }
 ```
@@ -154,7 +154,7 @@ All messages follow JSON-RPC 2.0 specification.
   "result": {
     "contents": [
       {
-        "uri": "orchestr8://agents/_fragments/typescript-core",
+        "uri": "orchestr8://agents/typescript-core",
         "mimeType": "text/markdown",
         "text": "# TypeScript Core Expert\n\n..."
       }
@@ -351,7 +351,7 @@ export class Logger {
 [2025-01-15T10:30:00.789Z] [INFO] [orchestr8-mcp] Loaded 150 resources
 [2025-01-15T10:30:01.012Z] [INFO] [orchestr8-mcp] Resource index pre-loaded for dynamic matching
 [2025-01-15T10:30:01.234Z] [INFO] [orchestr8-mcp] orchestr8 MCP server started successfully
-[2025-01-15T10:30:05.567Z] [DEBUG] [orchestr8-mcp] Loading resource: orchestr8://agents/_fragments/typescript-core
+[2025-01-15T10:30:05.567Z] [DEBUG] [orchestr8-mcp] Loading resource: orchestr8://agents/typescript-core
 [2025-01-15T10:30:05.890Z] [INFO] [orchestr8-mcp] Dynamic resource request: orchestr8://agents/match?query=api
 [2025-01-15T10:30:06.123Z] [INFO] [orchestr8-mcp] Assembled 3 fragments (2456 tokens)
 ```

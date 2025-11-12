@@ -254,7 +254,7 @@ Response:
 
 **Static resource:**
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Dynamic matching (catalog):**
@@ -359,7 +359,7 @@ Result: Complete resource catalog
 **Example 3: Load TypeScript Agent**
 ```
 Request Type: Read Resource
-URI: orchestr8://agents/_fragments/typescript-core
+URI: orchestr8://agents/typescript-core
 
 Result: TypeScript core expertise (~650 tokens)
 ```

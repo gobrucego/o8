@@ -1,0 +1,48 @@
+%%{init: {'theme':'base'}}%%
+sequenceDiagram
+    participant User
+    participant Claude as Claude Code
+    participant MCP as MCP Server
+    participant Index as Index Lookup
+    participant Loader as Resource Loader
+    participant Resources
+
+    User->>Claude: /orchestr8:new-project<br/>"Build TypeScript API"
+    Claude->>MCP: Request workflow
+    MCP->>Loader: Load workflow-new-project
+    Loader-->>MCP: JIT loading pattern
+    MCP-->>Claude: Workflow ready
+
+    Note over Claude,MCP: Phase 1: Research (0-20%)<br/>Match relevant resources
+    Claude->>MCP: orchestr8://match?<br/>query=typescript+api&mode=index
+    MCP->>Index: Keyword lookup
+    Index->>Index: Tier 1: Quick cache (2ms)
+    Index-->>MCP: 5 matches (500 tokens)
+    MCP-->>Claude: Lightweight catalog
+
+    Note over Claude,Resources: Phase 2: Load Core (20-40%)<br/>Core agent only
+    Claude->>MCP: orchestr8://agents/<br/>typescript-core
+    MCP->>Loader: Load static resource
+    Loader->>Resources: Read typescript-core.md
+    Resources-->>Loader: Core (600 tokens)
+    Loader-->>MCP: Cached
+    MCP-->>Claude: Core agent
+
+    Note over Claude,Resources: Phase 3: JIT Examples (40-70%)<br/>Load as needed
+    Claude->>MCP: orchestr8://examples/<br/>express-jwt-auth
+    MCP->>Loader: Load example
+    Loader->>Resources: Read example
+    Resources-->>Loader: Example (350 tokens)
+    Loader-->>MCP: Cached
+    MCP-->>Claude: Example ready
+
+    Note over Claude,Resources: Phase 4: Progressive (70-90%)<br/>Advanced features only if needed
+    Claude->>MCP: orchestr8://agents/<br/>typescript-api-development
+    MCP->>Loader: Load advanced
+    Loader->>Resources: Read advanced module
+    Resources-->>Loader: Advanced (400 tokens)
+    Loader-->>MCP: Cached
+    MCP-->>Claude: Advanced loaded
+
+    Note over User,Claude: ✅ Total: 1,850 tokens<br/>vs 11,250 traditional<br/>84% savings
+    Claude->>User: Implementation complete

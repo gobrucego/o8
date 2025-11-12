@@ -446,26 +446,80 @@ const asyncHandler = (fn: Function) => (
 
 ## Agent Composition
 
-### Designing Agent Families
+### Designing Agent Families (Phase 2 Optimization)
 
-**Strategy:** Core + Specializations
+**Strategy:** Core + Specializations with Cross-References
 
 ```markdown
 Agent Family: TypeScript Developer
 ├─ typescript-core (650 tokens)
 │  └─ Always loaded for TypeScript queries
+│  └─ Cross-refs: typescript-api-development, typescript-async-patterns, typescript-testing
 ├─ typescript-api-development (520 tokens)
 │  └─ Loaded for: "typescript api", "express typescript"
+│  └─ Cross-refs: typescript-core, error-handling-api-patterns, api-design-rest
 ├─ typescript-async-patterns (480 tokens)
 │  └─ Loaded for: "typescript async", "promises typescript"
+│  └─ Cross-refs: typescript-core, error-handling-resilience
 └─ typescript-testing (450 tokens)
    └─ Loaded for: "typescript testing", "jest typescript"
+   └─ Cross-refs: typescript-core, testing-integration-patterns
 
 Query Behavior:
 - "typescript development" → typescript-core (650 tokens)
 - "typescript express api" → typescript-core + typescript-api-development (1170 tokens)
 - "typescript async testing" → typescript-core + typescript-async + typescript-testing (1580 tokens)
 ```
+
+### Cross-Reference ROI Analysis
+
+**Investment vs Return:**
+
+**Cost of cross-references:**
+```yaml
+# Adding cross-references costs 50-100 tokens per fragment
+---
+id: typescript-api-development
+relatedTo:
+  - typescript-core
+  - error-handling-api-patterns
+  - api-design-rest
+  - security-api-security
+---
+
+## Related Expertise
+- [TypeScript Core](orchestr8://agents/typescript-core)
+- [Error Handling Patterns](orchestr8://skills/error-handling-api-patterns)
+- [API Design](orchestr8://skills/api-design-rest)
+
+Token cost: ~80 tokens
+```
+
+**Return on investment:**
+```
+Discoverability improvement: 15-20%
+- Users find related content faster
+- Reduced need for multiple queries
+- Better exploration of expertise
+
+ROI calculation:
+- Cost: 80 tokens per fragment
+- Benefit: 3-5x improved related content discovery
+- Worthwhile when: Fragment is frequently used with specific others
+
+Example:
+typescript-api-development is almost always used with:
+- error-handling-api-patterns (85% co-occurrence)
+- api-design-rest (70% co-occurrence)
+
+Cross-refs save users from making 2-3 additional queries
+```
+
+**When cross-references are worthwhile:**
+1. **High co-occurrence:** Fragments used together >60% of the time
+2. **Complementary expertise:** Skills that enhance the agent's domain
+3. **Related workflows:** Commonly used in same development tasks
+4. **Learning paths:** Logical progression of related concepts
 
 ### Composition Rules
 
@@ -498,29 +552,77 @@ No duplicate content between fragments:
 ❌ Core: fundamentals + API basics, Specialized: API basics + advanced
 ```
 
-### Multi-Level Agent Families
+### Multi-Level Agent Families with Prerequisites
 
 **Pattern:** Language → Framework → Specialization
 
 ```markdown
 Python Agent Family:
 
-Level 1: Language Core
+Level 1: Language Core (prerequisite for all)
 python-core (650 tokens)
+├─ relatedTo: [python-fastapi-dependencies, python-async-fundamentals]
 
 Level 2: Framework Specializations
 python-fastapi-dependencies (500 tokens)
+├─ prerequisite: [python-core]
+├─ relatedTo: [python-fastapi-validation, python-fastapi-middleware]
+
 python-fastapi-validation (480 tokens)
+├─ prerequisite: [python-core, python-fastapi-dependencies]
+├─ relatedTo: [python-fastapi-middleware]
+
 python-fastapi-middleware (520 tokens)
+├─ prerequisite: [python-core, python-fastapi-dependencies]
+├─ relatedTo: [python-fastapi-validation]
 
 Level 3: Cross-cutting Specializations
 python-async-fundamentals (450 tokens)
+├─ prerequisite: [python-core]
+├─ relatedTo: [python-async-concurrency, python-async-context-managers]
+
 python-async-concurrency (520 tokens)
+├─ prerequisite: [python-core, python-async-fundamentals]
+├─ relatedTo: [python-async-context-managers]
 
 Composition Examples:
-- "python fastapi" → python-core + python-fastapi-dependencies
-- "python async" → python-core + python-async-fundamentals
-- "fastapi async" → python-core + python-fastapi + python-async
+- "python fastapi" → python-core + python-fastapi-dependencies (1150 tokens)
+- "python async" → python-core + python-async-fundamentals (1100 tokens)
+- "fastapi async validation" → python-core + python-fastapi-dependencies +
+  python-fastapi-validation + python-async-fundamentals (2080 tokens)
+```
+
+**Using relatedTo field for family relationships:**
+
+```yaml
+---
+id: python-fastapi-dependencies
+category: agent
+prerequisite: [python-core]  # Must load first
+relatedTo:  # Suggest loading together
+  - python-fastapi-validation
+  - python-fastapi-middleware
+  - python-async-fundamentals
+tags: [python, fastapi, dependencies, injection, async]
+---
+
+## Related FastAPI Expertise
+**Core prerequisite:**
+- [Python Core](orchestr8://agents/python-core) - Required foundation
+
+**Related specializations:**
+- [FastAPI Validation](orchestr8://agents/python-fastapi-validation)
+- [FastAPI Middleware](orchestr8://agents/python-fastapi-middleware)
+
+**Complementary skills:**
+- [Python Async Fundamentals](orchestr8://agents/python-async-fundamentals)
+```
+
+**Token efficiency with families:**
+```
+Single specialization query: Core + 1 specialized (1150 tokens)
+Multiple specialization query: Core + 2-3 specialized (1630-2080 tokens)
+Savings vs monolithic: 40-60% for single specialization queries
 ```
 
 ## Testing Agent Effectiveness
@@ -709,7 +811,7 @@ Queries:
    └─ Links valid
 
 7. Deploy
-   ├─ Save to resources/agents/_fragments/
+   ├─ Save to resources/agents/
    ├─ Commit with descriptive message
    └─ Index rebuilds automatically
 ```
@@ -737,7 +839,7 @@ Queries:
 - [ ] Discoverable via test queries
 - [ ] Code examples (2-3)
 - [ ] No duplication
-- [ ] Saved to `resources/agents/_fragments/`
+- [ ] Saved to `resources/agents/`
 
 ## Next Steps
 

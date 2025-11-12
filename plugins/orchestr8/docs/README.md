@@ -147,7 +147,7 @@ TIER 3: Resources (Fragments)
 ### Load Specific Resource
 
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 ### Discover Resources Dynamically
@@ -202,7 +202,7 @@ All URIs in documentation follow the `orchestr8://` protocol:
 
 ```
 orchestr8://category/resource
-orchestr8://category/_fragments/fragment-id
+orchestr8://category/fragment-id
 orchestr8://match?query=search+terms
 orchestr8://category/match?query=search+terms
 ```

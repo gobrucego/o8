@@ -37,8 +37,10 @@ This document provides detailed performance comparisons between **Fuzzy Matching
 **Test Environment:**
 - Platform: Darwin (macOS)
 - Node.js: v20.x
-- Resources: 221 fragments, 1,142 scenarios
+- Resources: 383 fragments, 1,675 useWhen scenarios
 - Indexes: 1.2MB total (692KB + 525KB + 7.8KB)
+- Keywords: 4,036 unique keywords
+- Cross-references: 207+ bidirectional links
 
 **Metrics Collected:**
 - Query latency (ms)
@@ -104,19 +106,19 @@ Response Content:
   ## Top Matches
 
   1. **Agent: typescript-developer** (~1200 tokens)
-     orchestr8://agents/_fragments/typescript-developer
+     orchestr8://agents/typescript-developer
 
   2. **Skill: async-patterns** (~600 tokens)
-     orchestr8://skills/_fragments/async-patterns
+     orchestr8://skills/async-patterns
 
   3. **Pattern: error-handling** (~500 tokens)
-     orchestr8://patterns/_fragments/error-handling
+     orchestr8://patterns/error-handling
 
   4. **Pattern: rest-api-design** (~800 tokens)
-     orchestr8://patterns/_fragments/rest-api-design
+     orchestr8://patterns/rest-api-design
 
   5. **Skill: typescript-best-practices** (~550 tokens)
-     orchestr8://skills/_fragments/typescript-best-practices
+     orchestr8://skills/typescript-best-practices
 
   **To load:** Use ReadMcpResourceTool with URIs above
 
@@ -153,7 +155,7 @@ Response Content:
     - Need type-safe Node.js development
   **Estimated Tokens:** ~1200
   **Load this resource:**
-  orchestr8://agents/_fragments/typescript-developer
+  orchestr8://agents/typescript-developer
 
   [7 more entries: ~70 tokens each]
 
@@ -170,7 +172,7 @@ Response Content:
   ## Top Matches
 
   1. **Agent: typescript-developer** (~1200 tokens)
-     orchestr8://agents/_fragments/typescript-developer
+     orchestr8://agents/typescript-developer
 
   [7 more entries: ~8 tokens each]
 
@@ -924,15 +926,19 @@ Index Hit Rate < 80%:      WARNING
 
 ### Capacity Planning
 
-**Current Capacity (221 resources):**
+**Current Capacity (383 resources):**
 - Query throughput: ~200 qps (index mode)
-- Memory usage: ~1.3 MB (indexes)
+- Memory usage: ~1.5 MB (indexes + cross-references)
 - Disk usage: ~1.2 MB (index files)
+- Scenarios indexed: 1,675 useWhen scenarios
+- Keywords: 4,036 unique keywords
 
 **Projected Capacity (1000 resources):**
 - Query throughput: ~150 qps (index mode)
-- Memory usage: ~5.4 MB (indexes)
+- Memory usage: ~5.8 MB (indexes + cross-references)
 - Disk usage: ~5.4 MB (index files)
+- Scenarios indexed: ~4,400 useWhen scenarios (est.)
+- Keywords: ~10,500 unique keywords (est.)
 
 **Scaling Strategy:**
 - <500 resources: Single instance, in-memory indexes

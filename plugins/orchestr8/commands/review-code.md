@@ -12,7 +12,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 1: Code Quality Analysis (0-30%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-code-review
+**→ Load:** orchestr8://workflows/workflow-code-review
 
 **Activities:**
 - Check code style and formatting consistency

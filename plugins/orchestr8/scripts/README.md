@@ -204,5 +204,5 @@ For issues or feature requests, open an issue in the main repository.
 ---
 
 **Related Documentation:**
-- [Hero Image Generation Skill Fragment](../resources/skills/_fragments/medium-hero-image-generation.md)
-- [Medium Workflow](../resources/workflows/_fragments/workflow-create-medium-story.md)
+- [Hero Image Generation Skill Fragment](../resources/skills/medium-hero-image-generation.md)
+- [Medium Workflow](../resources/workflows/workflow-create-medium-story.md)

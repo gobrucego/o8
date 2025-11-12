@@ -38,7 +38,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 3: Core Implementation (30-70%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-new-project
+**→ Load:** orchestr8://workflows/workflow-new-project
 
 **Parallel tracks:**
 - **Backend Track:** Database schema, business logic, API endpoints, authentication

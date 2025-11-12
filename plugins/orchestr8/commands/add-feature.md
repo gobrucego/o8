@@ -26,7 +26,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 2: Implementation (20-70%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-add-feature
+**→ Load:** orchestr8://workflows/workflow-add-feature
 
 **Parallel tracks:**
 - **Backend Track:** Schema/migrations, models, business logic, API endpoints, authentication

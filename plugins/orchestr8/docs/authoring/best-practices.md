@@ -134,6 +134,166 @@ Why these work:
 | Workflow | 800-1200 | 1500 | 1600 |
 | Any fragment | 500-1000 | 1000 | 1100 |
 
+### Token Efficiency Optimization Patterns
+
+#### Phase 1: Example Extraction
+
+**Pattern:** Move detailed code examples to separate example files
+
+**When to apply:**
+- Fragment >100 lines with multiple examples
+- Examples are >30% of token count
+- Complex implementations >50 lines
+
+**Implementation:**
+```yaml
+# Main fragment (optimized)
+---
+id: error-handling-resilience
+estimatedTokens: 680  # Down from 1200
+examples:
+  - orchestr8://examples/typescript-retry-patterns
+  - orchestr8://examples/python-retry-patterns
+---
+
+Content with brief inline examples and references to detailed implementations.
+
+# Example file
+---
+id: typescript-retry-patterns
+category: example
+estimatedTokens: 450
+relatedTo: [error-handling-resilience]
+---
+
+Complete implementation with all variations.
+```
+
+**ROI:**
+- Cost: ~50 tokens for references + time to extract
+- Benefit: 25-40% token reduction on main fragment
+- Savings: 300-500 tokens for users not needing detailed examples
+- Worthwhile when: Fragment has >3 code examples or >100 lines
+
+#### Phase 2: Structural Organization with Cross-References
+
+**Pattern:** Create skill families with parent-child relationships and cross-references
+
+**When to apply:**
+- Related skills frequently used together (>60% co-occurrence)
+- Logical learning path exists
+- Users benefit from discovering related content
+
+**Implementation:**
+```yaml
+# Parent skill
+---
+id: testing-strategies
+category: skill
+estimatedTokens: 600
+relatedTo:
+  - testing-unit
+  - testing-integration-patterns
+  - testing-e2e-best-practices
+---
+
+## Related Testing Skills
+- [Unit Testing](orchestr8://skills/testing-unit)
+- [Integration Testing](orchestr8://skills/testing-integration-patterns)
+- [E2E Testing](orchestr8://skills/testing-e2e-best-practices)
+
+# Child skill
+---
+id: testing-integration-patterns
+prerequisite: [testing-strategies, testing-unit]
+relatedTo: [testing-unit, testing-e2e-best-practices]
+---
+
+## Prerequisites
+- [Testing Strategies](orchestr8://skills/testing-strategies)
+- [Unit Testing](orchestr8://skills/testing-unit)
+
+## Related
+- [E2E Testing](orchestr8://skills/testing-e2e-best-practices)
+```
+
+**ROI Analysis:**
+- Cost: 50-100 tokens per fragment for cross-references
+- Benefit: 15-20% improved discoverability
+- Return: 3-5x better related content discovery
+- Saves: 2-3 additional queries for users
+- Worthwhile when: Co-occurrence >60% or logical progression exists
+
+#### Phase 3: Progressive Loading
+
+**Pattern:** Split fragments into core + advanced modules with prerequisites
+
+**When to apply:**
+- Clear always-needed vs sometimes-needed split
+- Advanced content >40% of tokens
+- Most queries only need core
+
+**Implementation:**
+```yaml
+# Core module
+---
+id: python-async-fundamentals
+category: agent
+estimatedTokens: 700  # Down from 1400
+advancedTopics:
+  - orchestr8://agents/python-async-concurrency
+  - orchestr8://agents/python-async-context-managers
+---
+
+Core concepts with references to advanced topics.
+
+## Advanced Topics
+- [Concurrency Patterns](orchestr8://agents/python-async-concurrency)
+- [Context Managers](orchestr8://agents/python-async-context-managers)
+
+# Advanced module
+---
+id: python-async-concurrency
+category: agent
+prerequisite: [python-async-fundamentals]
+estimatedTokens: 400
+---
+
+Advanced content loaded only when needed.
+```
+
+**ROI:**
+- Cost: ~30 tokens for references in core
+- Benefit: 40-60% savings for generic queries
+- Savings: 400-700 tokens when advanced not needed
+- Worthwhile when: <50% of queries need advanced content
+
+### Token Efficiency Metrics
+
+**Measuring optimization success:**
+
+```markdown
+Metric 1: Average tokens per query
+Before optimization: 1500 tokens average
+After optimization: 900 tokens average
+Improvement: 40% reduction
+
+Metric 2: Token waste (loaded but not needed)
+Before: 60% waste (e.g., loading examples not used)
+After: 15% waste (only relevant content loaded)
+Improvement: 75% reduction in waste
+
+Metric 3: Query satisfaction
+Before: 70% (users needed multiple queries)
+After: 85% (better targeting with cross-refs)
+Improvement: 21% increase
+
+Metric 4: Discoverability
+Before: 3.2 queries average to find all needed content
+After: 1.8 queries average (cross-refs help discovery)
+Improvement: 44% reduction in queries needed
+```
+
 ### Token Reduction Techniques
 
 **1. Remove redundancy:**
@@ -190,17 +350,47 @@ const validateEmail = (email: string): boolean =>
 
 ### Calculating Tokens
 
+**Accuracy requirement: ±10%**
+
+All fragments must have `estimatedTokens` accurate within ±10% of actual token count.
+
 ```bash
-# Method 1: Word count approximation
+# Method 1: Word count approximation (recommended)
 wc -w fragment.md
 # Multiply by 0.75 for token estimate
 
 # Example:
 # 800 words × 0.75 = 600 tokens
+# Acceptable range: 540-660 tokens (±10%)
 
 # Method 2: Check actual tokens (if available)
-# Use Claude or GPT tokenizer
+# Use Claude or GPT tokenizer for precise count
+
+# Method 3: Conservative estimate
+# 1 token ≈ 0.75 words (English text)
+# Round up to nearest 10 or 50
 ```
+
+**Validation:**
+```markdown
+✅ Valid: estimatedTokens: 650, actual: 620 (4.6% error)
+✅ Valid: estimatedTokens: 700, actual: 750 (7.1% error)
+❌ Invalid: estimatedTokens: 650, actual: 800 (23% error - exceeds ±10%)
+❌ Invalid: estimatedTokens: 500, actual: 350 (30% error - exceeds ±10%)
+```
+
+**Why accuracy matters:**
+- Token budgets in workflows depend on accurate estimates
+- Over-estimation wastes quota
+- Under-estimation causes budget overruns
+- ±10% provides reasonable tolerance for variation
+
+**Updating token counts:**
+When editing fragments significantly:
+1. Recalculate word count
+2. Update estimatedTokens
+3. Ensure still within ±10% of actual
+4. Update if error exceeds 10%
 
 ## Discoverability Optimization
 
@@ -545,7 +735,7 @@ Before committing any content:
 - [ ] Discovery tested (4-6 test queries, top-3 ranking for core)
 - [ ] Cross-references added (related fragments linked)
 - [ ] No duplication (checked existing content)
-- [ ] File saved to correct location (resources/*/\_fragments/)
+- [ ] File saved to correct location (resources/*/\)
 - [ ] Commit message descriptive
 
 ## Next Steps

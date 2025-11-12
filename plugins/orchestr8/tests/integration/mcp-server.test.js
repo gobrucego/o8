@@ -226,7 +226,7 @@ class MCPTester {
       console.log("\n📋 Test 3: Read Resource Content");
       try {
         const resourceResult = await this.sendRequest("resources/read", {
-          uri: "orchestr8://agents/_fragments/typescript-core",
+          uri: "orchestr8://agents/typescript-core",
         });
 
         this.recordTest(

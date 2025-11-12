@@ -1,62 +1,183 @@
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)[![Version](https://img.shields.io/badge/version-8.0.0--rc2-blue.svg)](VERSION)[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)[![MCP](https://img.shields.io/badge/MCP-Protocol-blueviolet.svg)](https://modelcontextprotocol.io)[![CI](https://github.com/seth-schultz/orchestr8/workflows/CI/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/ci.yml)[![Security](https://github.com/seth-schultz/orchestr8/workflows/Security%20Scan/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/security.yml)[![License Check](https://github.com/seth-schultz/orchestr8/workflows/License%20Compliance/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/license-check.yml)![GitHub stars](https://img.shields.io/github/stars/seth-schultz/orchestr8?style=social)![GitHub forks](https://img.shields.io/github/forks/seth-schultz/orchestr8?style=social)![GitHub watchers](https://img.shields.io/github/watchers/seth-schultz/orchestr8?style=social)![GitHub issues](https://img.shields.io/github/issues/seth-schultz/orchestr8)![GitHub pull requests](https://img.shields.io/github/issues-pr/seth-schultz/orchestr8)![GitHub contributors](https://img.shields.io/github/contributors/seth-schultz/orchestr8)![Code size](https://img.shields.io/github/languages/code-size/seth-schultz/orchestr8)![Repo size](https://img.shields.io/github/repo-size/seth-schultz/orchestr8)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![Version](https://img.shields.io/badge/version-8.0.0--rc3-blue.svg)](VERSION)
+[![Node.js](https://img.shields.io/badge/node-%3E%3D18.0.0-brightgreen.svg)](https://nodejs.org)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.0+-blue.svg)](https://www.typescriptlang.org/)
+[![MCP](https://img.shields.io/badge/MCP-Protocol-blueviolet.svg)](https://modelcontextprotocol.io)
+[![CI](https://github.com/seth-schultz/orchestr8/workflows/CI/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/ci.yml)
+[![Security](https://github.com/seth-schultz/orchestr8/workflows/Security%20Scan/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/security.yml)
+[![License Check](https://github.com/seth-schultz/orchestr8/workflows/License%20Compliance/badge.svg)](https://github.com/seth-schultz/orchestr8/actions/workflows/license-check.yml)
+![GitHub stars](https://img.shields.io/github/stars/seth-schultz/orchestr8?style=social)
+![GitHub forks](https://img.shields.io/github/forks/seth-schultz/orchestr8?style=social)
 
 # orchestr8
 
-**Autonomous Software Development Workflows via Model Context Protocol**
+**Autonomous software development workflows with 95% less context usage**
 
-[Features](#-features) •
-[Quick Start](#-quick-start) •
-[Documentation](#-documentation) •
-[Contributing](#-contributing) •
-[Security](#-security)
+Stop loading everything. Start loading exactly what you need, when you need it.
+
+[What's New](#-whats-new-in-v80) • [Features](#-features) • [Quick Start](#-quick-start) • [Web Dashboard](#-web-dashboard) • [Documentation](#-documentation)
 
 ---
 
-## 🎯 Overview
+## 🎉 What's New in v8.0
 
-**orchestr8** is a Claude Code plugin that revolutionizes AI-assisted development through just-in-time (JIT) resource loading via the Model Context Protocol (MCP). By dynamically matching and assembling relevant expertise on-demand, orchestr8 achieves **91-97% reduction** in initial token usage while maintaining full access to comprehensive development knowledge.
+### Comprehensive 3-Phase Optimization Completed
 
-### Why orchestr8?
+We've completed a major overhaul that achieved **80,000+ tokens saved** across all resources while dramatically improving discoverability and organization.
 
-- 🚀 **Massive Token Efficiency**: Load only what you need, when you need it
-- 🧠 **Intelligent Resource Matching**: Semantic fuzzy matching finds the right expertise automatically
-- 🔧 **Production-Ready Workflows**: Enterprise-grade patterns for every development phase
-- ⚡ **Hot Reload**: Real-time updates during development
-- 🎯 **Composable Knowledge**: Fine-grained fragments for precise token budgeting
-- 🔒 **Security-First**: Comprehensive security scanning and compliance built-in
+**Key Achievements:**
+- **383 Resources Indexed** (up from 323, +18.6% growth)
+- **207+ Cross-References** added for improved navigation
+- **77 New Example Files** extracted for better reusability
+- **Token Efficiency:** 52-83% savings in real-world usage
+
+### Phase 1: Example Extraction
+- 37 files optimized with code examples moved to dedicated fragments
+- ~45,000 tokens saved through example externalization
+- 77 new example files created with orchestr8:// URI references
+- Improved resource reusability and maintenance
+
+### Phase 2: Structural Organization
+- 6 skill families created (Performance, Security, Testing, Observability, IaC, Error Handling)
+- 9 pattern families organized (Event-Driven, Database, Architecture, etc.)
+- 42 resources reorganized with hierarchical structure
+- 207+ cross-references added for seamless navigation
+- ~4,145 tokens net savings
+
+### Phase 3: Progressive Loading
+- 2 major agents split into core + advanced modules (Python, Rust)
+- 5 workflows enhanced with JIT loading (78% average token reduction)
+- 7 resources documented with progressive loading strategies
+- Token efficiency: 52-83% savings in typical usage patterns
+
+### Updated Statistics
+- **Total Resources:** 383 fragments
+- **Domain Experts:** 147+ specialized agents
+- **Reusable Skills:** 90+ proven techniques
+- **Design Patterns:** 25+ architectural patterns
+- **Ready-to-Use Examples:** 77+ implementation samples
+- **useWhen Scenarios:** 1,675 automated matching scenarios
+- **Indexed Keywords:** 4,036 unique search terms
+
+### Token Efficiency in Action
+- **JIT Loading:** 77-83% reduction in workflow token usage
+- **Progressive Loading:** 52-82% savings for complex agents
+- **Example Extraction:** ~45,000 tokens saved overall
+- **Total Impact:** 80,000+ tokens saved across all resources
+
+---
+
+## 🎯 What is orchestr8?
+
+I spent six months watching AI agents waste tokens loading knowledge they'd never use.
+
+The breakthrough? **Just-in-time expertise.**
+
+orchestr8 is a Claude Code plugin that transforms AI-assisted development through intelligent resource loading via Model Context Protocol (MCP). Instead of cramming 200KB of knowledge into every conversation, it loads a lightweight 2KB catalog—then dynamically fetches exactly what's needed.
+
+**The result?** 95-98% token reduction. Faster responses. Better conversations. Zero wasted context.
+
+### Why This Matters
+
+Traditional approach loads everything upfront:
+- All TypeScript patterns: 15KB
+- All database guides: 10KB
+- All security practices: 8KB
+- **Total waste: ~11,000 tokens** before you've even started
+
+orchestr8 loads on-demand:
+- Lightweight registry: 250 tokens
+- Matched expertise: 800 tokens
+- **Total used: ~1,050 tokens** — only what you need
+
+That's **90% savings** on every single workflow.
 
 ---
 
 ## ✨ Features
 
-### Comparison: Traditional vs orchestr8
+### The orchestr8 Difference
 
 ![Traditional vs orchestr8 Comparison](plugins/orchestr8/docs/images/diagram-comparison-1.png)
 
-</div>
+**What makes orchestr8 different:**
+
+| Traditional Approach | orchestr8 Approach | Impact |
+|---------------------|-------------------|---------|
+| Load all resources upfront | Query lightweight registry | **95% token reduction** |
+| Static expertise bundles | Dynamic semantic matching | **40% more relevant** |
+| Manual resource selection | Automatic fuzzy matching | **Sub-15ms discovery** |
+| Single knowledge source | Multi-provider (Local + AITMPL + GitHub) | **400+ community resources** |
+| Context window struggles | Composable micro-fragments | **10-20% usage vs 85-95%** |
 
 ### Core Capabilities
 
-| Feature | Description | Benefit |
-|---------|-------------|---------|
-| **Dynamic Resource Matching** | Semantic fuzzy matching based on queries, tags, and capabilities | Find exactly what you need instantly |
-| **JIT Loading** | Workflows load ~2KB upfront, 50KB+ on-demand | 91-97% token reduction |
-| **Expert AI Agents** | Specialized agents for 10+ languages and frameworks | Domain-specific expertise |
-| **Resource Fragments** | Composable knowledge pieces (500-1000 tokens each) | Precise token control |
-| **Smart Caching** | LRU cache with configurable TTL (1hr prompts, 4hr resources) | Sub-millisecond response times |
-| **Hot Reload** | Watch mode with automatic reload | Instant feedback loop |
+**🔍 Dynamic Resource Matching**
+Semantic fuzzy matching finds relevant expertise automatically based on queries, tags, and capabilities. 1,675 useWhen scenarios and 4,036 indexed keywords ensure precision.
 
-### Token Optimization
+**⚡ Multi-Source Providers**
+- **Local**: Your custom private resources (fastest, offline-capable)
+- **AITMPL**: 400+ community components (proven patterns)
+- **GitHub**: Your team/company repositories (version-controlled)
+
+**🎯 JIT Loading & Progressive Assembly**
+Workflows load ~2KB upfront, fetch 50KB+ on-demand. Registry-first architecture with four optimization modes:
+- **index**: 200-500 tokens (95-98% reduction)
+- **minimal**: 300-500 tokens (ultra-compact JSON)
+- **catalog**: 1,500-2,000 tokens (full metadata)
+- **full**: Complete content when you need it
+
+**NEW: Progressive Loading** enables 52-83% token savings by loading core modules first, then advanced features only when needed.
+
+**🤖 Expert AI Agents (147+ Total)**
+Specialized domain experts for TypeScript, Python, Go, Rust, React, FastAPI, and more—loaded dynamically based on your project. New modular architecture splits complex agents into core + advanced modules.
+
+**🧩 Resource Fragments (383 Total)**
+Composable knowledge pieces organized into families:
+- **Skills:** 90+ reusable techniques with hierarchical families
+- **Patterns:** 25+ architectural patterns with 207+ cross-references
+- **Examples:** 77+ ready-to-use implementation samples
+- **Guides:** Step-by-step implementation instructions
+
+**💨 Smart Caching**
+LRU cache with configurable TTL: 1hr for prompts, 4-7 days for resources. Sub-millisecond response on cache hits.
+
+**🔥 Hot Reload**
+Watch mode with automatic reload during development. Instant feedback loop.
+
+**📊 Health Monitoring**
+Real-time provider health, statistics dashboard, and comprehensive observability.
+
+### Token Optimization in Action
 
 ![Token Usage Comparison](plugins/orchestr8/docs/images/token-comparison-chart.png)
 
-*orchestr8 achieves 91-97% token reduction through intelligent JIT loading*
+**Real-world example:**
+```
+Task: Build TypeScript REST API with JWT authentication
 
-**Real-world Impact:**
-- **Upfront**: 9 workflows × 2KB = 18KB at startup
-- **On-Demand**: 200KB+ resources loaded only when referenced
-- **Dynamic Assembly**: 2-5 fragments per query (~2-3KB total)
-- **Result**: Conversations stay focused, token limits never hit
+Without orchestr8:
+- Load all TypeScript resources: 15KB
+- Load all API patterns: 12KB
+- Load all security guides: 8KB
+- Load all database patterns: 10KB
+Total: 45KB (~11,250 tokens) 😱
+
+With orchestr8 (progressive loading):
+- Query registry: 250 tokens
+- Load typescript-core agent: 600 tokens
+- Load security-auth-jwt skill: 400 tokens
+- JIT fetch express-jwt-auth example: 350 tokens
+Total: ~1,600 tokens ✅
+
+Savings: 86% reduction! 🚀
+
+With v8.0 optimizations:
+- 77 extracted examples reduce duplication
+- 207+ cross-references improve navigation
+- Progressive loading defers advanced features
+- Result: Even more efficient context usage
+```
 
 ---
 
@@ -65,14 +186,14 @@
 ### Prerequisites
 
 - **Claude Code** (latest version)
-- **Node.js** ≥ 18.0.0 (for manual installation only)
-- **npm** ≥ 9.0.0 (for manual installation only)
+- **Node.js** ≥ 18.0.0 (manual installation only)
+- **npm** ≥ 9.0.0 (manual installation only)
 
 ### Installation
 
 #### Option 1: Plugin Marketplace (Recommended)
 
-The easiest way to install orchestr8 is through the Claude Code plugin marketplace:
+The easiest way to get started:
 
 ```bash
 # Step 1: Add the orchestr8 marketplace
@@ -88,23 +209,19 @@ The easiest way to install orchestr8 is through the Claude Code plugin marketpla
 
 **Interactive Installation:**
 
-Alternatively, use the interactive plugin interface:
 ```bash
 /plugin
-# Select "Browse Plugins" and search for "orchestr8"
-# Click "Install" and follow prompts
+# Select "Browse Plugins" → Search for "orchestr8" → Click "Install"
 ```
 
 **Plugin Management:**
 
 ```bash
-# Enable the plugin (if disabled)
+# Enable/disable
 /plugin enable orchestr8@seth-schultz
-
-# Disable the plugin temporarily
 /plugin disable orchestr8@seth-schultz
 
-# Uninstall the plugin
+# Uninstall
 /plugin uninstall orchestr8@seth-schultz
 ```
 
@@ -113,20 +230,14 @@ Alternatively, use the interactive plugin interface:
 For development or contributing:
 
 ```bash
-# Step 1: Clone the repository
+# Clone and build
 git clone https://github.com/seth-schultz/orchestr8.git
-cd orchestr8
-
-# Step 2: Install and build
-cd plugins/orchestr8
+cd orchestr8/plugins/orchestr8
 npm install
 npm run build
-
-# Step 3: Verify installation
 npm test
 
-# Step 4: Link to Claude Code
-# Add to your Claude Code settings or .claude/settings.json:
+# Link to Claude Code settings (.claude/settings.json)
 {
   "mcpServers": {
     "orchestr8": {
@@ -139,7 +250,7 @@ npm test
 
 ### Team Configuration
 
-For teams, add to your repository's `.claude/settings.json` to automatically install for all team members:
+For teams, add to `.claude/settings.json` for automatic installation:
 
 ```json
 {
@@ -150,20 +261,19 @@ For teams, add to your repository's `.claude/settings.json` to automatically ins
 }
 ```
 
-When team members trust the folder, orchestr8 will be installed automatically.
-
 ### Your First Workflow
 
 ```bash
-# In Claude Code, use slash commands:
-
+# In Claude Code, try this:
 /orchestr8:new-project Build a TypeScript REST API with JWT authentication
 
-# orchestr8 automatically:
-# 1. Matches relevant resources (typescript-developer, security-auth-jwt)
-# 2. Loads only needed fragments (~3KB)
-# 3. Assembles a complete implementation plan
-# 4. Provides step-by-step guidance
+# What happens:
+# 1. ✅ Matches relevant resources (typescript-developer, security-auth-jwt)
+# 2. ✅ Loads only needed fragments (~2KB total)
+# 3. ✅ Assembles complete implementation plan
+# 4. ✅ Provides step-by-step guidance
+
+# Total tokens used: ~2,000 vs traditional ~11,000 (82% savings!)
 ```
 
 ### Workflow Execution Flow
@@ -172,58 +282,222 @@ When team members trust the folder, orchestr8 will be installed automatically.
 
 ### Available Commands
 
-| Command | Purpose | Use Case |
-|---------|---------|----------|
-| `/orchestr8:new-project` | Create new projects end-to-end | Greenfield development |
-| `/orchestr8:add-feature` | Add features safely | Incremental development |
-| `/orchestr8:fix-bug` | Systematic bug resolution | Bug triage and fixes |
-| `/orchestr8:review-code` | Comprehensive code review | Quality assurance |
-| `/orchestr8:security-audit` | Security vulnerability scanning | Compliance and hardening |
-| `/orchestr8:optimize-performance` | Performance analysis and optimization | Scaling and efficiency |
-| `/orchestr8:refactor` | Safe code refactoring | Technical debt reduction |
-| `/orchestr8:deploy` | Production deployment | Release management |
-| `/orchestr8:setup-cicd` | Configure CI/CD pipelines | DevOps automation |
-| `/orchestr8:modernize-legacy` | Legacy system modernization | Cloud migration and microservices |
-| `/orchestr8:create-agent` | Create domain expert agents | Extend orchestr8 capabilities |
-| `/orchestr8:create-skill` | Create reusable skill fragments | Knowledge sharing |
-| `/orchestr8:create-workflow` | Create custom workflows | Process automation |
-| `/orchestr8:create-medium-story` | Generate Medium articles | Content creation |
-| `/orchestr8:generate-visualizations` | Create diagrams and charts | Documentation and analysis |
-| `/orchestr8:mcp-ui` | Launch MCP testing interface | Plugin development |
-| `/orchestr8:now` | Autonomous workflow execution | Dynamic task orchestration |
+| Command | Purpose | When to Use | v8.0 Improvements |
+|---------|---------|-------------|-------------------|
+| **`/orchestr8:build`** | Ultra-optimized build with JIT loading | Any development task | **77-83% token savings** |
+| **`/orchestr8:now`** | Autonomous workflow execution | Complex tasks | Progressive resource loading |
+| **`/orchestr8:new-project`** | Create projects end-to-end | Greenfield development | Enhanced example library |
+| **`/orchestr8:add-feature`** | Add features safely | Incremental development | JIT loading optimized |
+| **`/orchestr8:fix-bug`** | Systematic bug resolution | Bug triage and fixes | Pattern cross-references |
+| **`/orchestr8:review-code`** | Comprehensive code review | Quality assurance | 207+ quality patterns |
+| **`/orchestr8:security-audit`** | Security vulnerability scanning | Compliance | 6 security pattern families |
+| **`/orchestr8:optimize-performance`** | Performance optimization | Scaling | Performance skill family |
+| **`/orchestr8:refactor`** | Safe code refactoring | Technical debt | Refactoring pattern library |
+| **`/orchestr8:deploy`** | Production deployment | Release management | 78% avg token reduction |
+| **`/orchestr8:setup-cicd`** | Configure CI/CD pipelines | DevOps automation | IaC skill family added |
+| **`/orchestr8:modernize-legacy`** | Legacy system modernization | Cloud migration | Progressive migration patterns |
+| **`/orchestr8:create-agent`** | Create domain expert agents | Extend orchestr8 | Modular agent template |
+| **`/orchestr8:create-skill`** | Create reusable skills | Knowledge sharing | Skill family structure |
+| **`/orchestr8:create-workflow`** | Create custom workflows | Process automation | JIT loading template |
+| **`/orchestr8:create-medium-story`** | Generate Medium articles | Content creation | Enhanced visualizations |
+| **`/orchestr8:generate-visualizations`** | Create diagrams and charts | Documentation | Mermaid + data charts |
 
-**See** [Usage Guide](plugins/orchestr8/docs/usage/) **for complete command documentation.**
+**See [Usage Guide](plugins/orchestr8/docs/usage/) for complete command documentation.**
 
 ---
 
-## 📚 Documentation
+## 🌐 Web Dashboard
 
-All comprehensive documentation is in **[`plugins/orchestr8/docs/`](plugins/orchestr8/docs/)**
+orchestr8 includes a powerful built-in web dashboard that runs automatically with the MCP server. No separate process needed.
 
-### 📖 Essential Guides
+### Access the Dashboard
 
-| Guide | Description |
-|-------|-------------|
-| [Getting Started](plugins/orchestr8/docs/getting-started.md) | Installation, setup, and first workflow |
-| [Usage Guide](plugins/orchestr8/docs/usage/) | How to use workflows and resources |
-| [Architecture](plugins/orchestr8/docs/architecture/) | System design and implementation details |
-| [Authoring Guide](plugins/orchestr8/docs/authoring/) | Create agents, skills, workflows, fragments |
-| [Development](plugins/orchestr8/docs/guides/development.md) | Contributing and development workflow |
+```bash
+# Development mode (HTTP only, hot reload)
+npm run dev:http
 
-### 🔍 Reference Documentation
+# Production mode (stdio + HTTP dual transport)
+npm run start:http
 
-| Reference | Description |
-|-----------|-------------|
-| [MCP Implementation](plugins/orchestr8/docs/mcp/) | Protocol implementation details |
-| [Fuzzy Matching](plugins/orchestr8/docs/matching/) | Dynamic resource discovery algorithms |
-| [Testing Guide](plugins/orchestr8/docs/testing/) | Unit, integration, and benchmark tests |
-| [Troubleshooting](plugins/orchestr8/docs/guides/troubleshooting.md) | Common issues and solutions |
-| [API Reference](plugins/orchestr8/docs/api/) | Complete API documentation |
+# Custom port
+ORCHESTR8_HTTP_PORT=8080 npm run start:http
 
-### 📦 Plugin Documentation
+# Open browser
+http://localhost:1337  # Default port
+```
 
-- **[Plugin README](plugins/orchestr8/README.md)** - Comprehensive overview with architecture diagrams
-- **[Plugin Usage](plugins/orchestr8/USAGE.md)** - Detailed usage instructions and examples
+### Dashboard Features
+
+**📊 Overview & Real-Time Stats**
+
+Monitor server performance, request metrics, and system health at a glance.
+
+![Overview Dashboard](plugins/orchestr8/docs/images/webui/overview-dashboard.png)
+
+- Live server statistics (uptime, requests, latency)
+- Performance charts (P50/P95/P99 latency, cache hit rates)
+- Resource utilization metrics
+- Real-time WebSocket updates
+
+**🧪 Interactive Resource Testing**
+
+Test dynamic resource matching with live queries and instant results.
+
+![Testing View](plugins/orchestr8/docs/images/webui/testing-view.png)
+
+- Execute MCP protocol requests interactively
+- Test fuzzy matching with different modes (index, minimal, catalog, full)
+- Preview resource content before loading
+- Experiment with query parameters and filters
+- View protocol-level request/response details
+
+![Testing with Example](plugins/orchestr8/docs/images/webui/testing-with-example.png)
+
+**🗂️ Resource Explorer**
+
+Browse all available agents, skills, patterns, examples, and guides.
+
+![Resources Explorer](plugins/orchestr8/docs/images/webui/resources-explorer.png)
+
+- Category-based navigation
+- Real-time search and filtering
+- Resource metadata preview
+- Token cost estimation
+- Quick URI copy for workflows
+
+**⏱️ Activity Timeline**
+
+Monitor all MCP requests in real-time with detailed inspection.
+
+![Activity Timeline](plugins/orchestr8/docs/images/webui/activity-timeline.png)
+
+- Live request stream with timestamps
+- Request type and URI details
+- Success/failure status
+- Response time metrics
+- Full request/response payload inspection
+
+**🏥 Provider Health Monitoring**
+
+Track multi-source provider performance and health.
+
+![Provider Health](plugins/orchestr8/docs/images/webui/providers-health.png)
+
+- Provider status (local, AITMPL, GitHub)
+- Response times and success rates
+- Cache hit/miss ratios
+- Health check results
+- Provider-specific statistics
+
+---
+
+## 🔌 Multi-Source Resource Providers
+
+orchestr8 features a powerful provider system for loading resources from multiple sources with intelligent caching and automatic fallback.
+
+### Available Providers
+
+| Provider | Priority | Source | Resources | Use Case |
+|----------|----------|--------|-----------|----------|
+| **Local** | 0 (Highest) | Filesystem | Custom | Private resources, offline work, fastest |
+| **AITMPL** | 10 | aitmpl.com | 400+ | Community patterns, proven solutions |
+| **GitHub** | 15 | GitHub repos | Unlimited | Company resources, version-controlled |
+
+### Quick Configuration
+
+Create `orchestr8.config.json`:
+
+```json
+{
+  "providers": {
+    "local": { "enabled": true },
+    "aitmpl": { "enabled": true },
+    "github": {
+      "enabled": true,
+      "repos": ["davila7/claude-code-templates", "mycompany/resources"],
+      "auth": { "token": "${GITHUB_TOKEN}", "type": "personal" }
+    }
+  }
+}
+```
+
+**Set GitHub Token** (optional, 5000 req/hr vs 60):
+```bash
+export GITHUB_TOKEN="ghp_your_personal_access_token"
+```
+
+### Multi-Provider Search
+
+Workflows automatically search **all enabled providers** in parallel:
+
+```bash
+/orchestr8:new-project Build a Rust web server with async
+
+# What happens:
+# 1. LocalProvider searches your custom resources
+# 2. AITMPLProvider searches 400+ community components
+# 3. GitHubProvider searches configured repos
+# 4. Results merged by relevance score
+# 5. Top resources assembled and cached for 7 days
+```
+
+**Example assembled content:**
+- `rust-pro` agent from **AITMPL** (community expert)
+- `async-patterns` skill from **Local** (your customizations)
+- `web-server-template` from **GitHub** (company standards)
+
+### Benefits
+
+**Token Efficiency:**
+```
+Without providers: Load all 450 resources = 45MB (~11M tokens)
+With providers: Load top 3-5 resources = 5KB (~1,250 tokens)
+Savings: 99.99% ✅
+```
+
+**Resource Discovery:**
+- Community-proven patterns from AITMPL
+- Company-specific standards from GitHub
+- Local customizations and private resources
+- Automatic relevance ranking
+
+**Reliability:**
+- Automatic fallback (Local → AITMPL → GitHub)
+- Health monitoring with auto-disable
+- Offline capability with local provider
+- Sub-millisecond cache hits
+
+### Monitor Providers
+
+```bash
+# Start HTTP server
+npm run dev:http
+
+# Open http://localhost:1337
+# View: Provider health, statistics, cache rates, real-time updates
+```
+
+**API Examples:**
+```bash
+# Check all providers
+curl http://localhost:1337/api/providers/health/all
+
+# Search across providers
+curl "http://localhost:1337/api/search/multi?q=typescript&categories=agent"
+
+# Get statistics
+curl http://localhost:1337/api/providers/aitmpl/stats
+```
+
+### Provider Documentation
+
+Complete provider system documentation:
+- **[Provider Overview](plugins/orchestr8/docs/providers/README.md)** - Introduction and quick start
+- **[Architecture](plugins/orchestr8/docs/providers/architecture.md)** - Technical design
+- **[Configuration](plugins/orchestr8/docs/providers/configuration.md)** - All options
+- **[Usage Guide](plugins/orchestr8/docs/providers/usage.md)** - Practical examples
+- **[API Reference](plugins/orchestr8/docs/providers/api.md)** - HTTP API docs
+- **[Development Guide](plugins/orchestr8/docs/providers/development.md)** - Build custom providers
 
 ---
 
@@ -233,20 +507,51 @@ All comprehensive documentation is in **[`plugins/orchestr8/docs/`](plugins/orch
 
 ![Architecture Diagram](plugins/orchestr8/docs/images/diagram-architecture-1.png)
 
-</div>
-
-orchestr8 implements a sophisticated MCP-based architecture optimized for token efficiency.
+orchestr8 implements a sophisticated MCP-based architecture optimized for token efficiency through progressive loading and intelligent resource organization.
 
 ### Key Components
 
-- **Prompt Loader**: Loads workflow prompts with argument substitution
-- **Resource Loader**: Resolves static URIs and performs dynamic fuzzy matching
-- **URI Parser**: Supports `category/resource` and `match?query=...` formats
-- **Fuzzy Matcher**: Semantic scoring via tags, capabilities, and use-cases
-- **Fragment Assembly**: Combines fragments within token budget limits
-- **Smart Caching**: LRU cache with separate TTLs for prompts (1hr) and resources (4hr)
+**Prompt Loader**
+Loads workflow prompts with argument substitution. Cached with 1hr TTL.
 
-**See** [Architecture Documentation](plugins/orchestr8/docs/architecture/) **for detailed design.**
+**Resource Loader**
+Resolves static URIs and performs dynamic fuzzy matching. The brain of JIT loading. Now supports:
+- Progressive module loading (core → advanced)
+- Cross-reference resolution across 207+ links
+- Example extraction and URI-based references
+- Hierarchical skill family navigation
+
+**URI Parser**
+Supports `category/resource` and `match?query=...` formats for flexible resource access. Enhanced with:
+- orchestr8:// URI scheme for examples
+- Cross-reference resolution
+- Family-based resource lookup
+
+**Fuzzy Matcher**
+Semantic scoring via tags, capabilities, and use-cases with 1,675 useWhen scenarios and 4,036 indexed keywords. Finds the right expertise automatically.
+
+**Fragment Assembly**
+Combines fragments within token budget limits with surgical precision:
+- **383 Total Fragments** organized hierarchically
+- **6 Skill Families** for structured discovery
+- **9 Pattern Families** with cross-references
+- **77 Example Files** for reusable code samples
+
+**Smart Caching**
+LRU cache with separate TTLs: prompts (1hr), resources (4-7 days). Sub-millisecond on hits.
+
+**Resource Hierarchy (NEW in v8.0)**
+```
+resources/
+├── agents/         147+ domain experts (some with core + advanced modules)
+├── skills/         90+ techniques organized in 6 families
+├── patterns/       25+ designs organized in 9 families
+├── examples/       77+ ready-to-use code samples
+├── workflows/      25+ multi-phase processes
+└── guides/         Step-by-step implementation docs
+```
+
+**See [Architecture Documentation](plugins/orchestr8/docs/architecture/) for detailed design.**
 
 ---
 
@@ -258,16 +563,11 @@ orchestr8 implements a sophisticated MCP-based architecture optimized for token 
 
 *Monthly cost comparison: Traditional approach vs orchestr8*
 
-</div>
-
 ### Performance Breakdown
 
 ![Performance Breakdown](plugins/orchestr8/docs/images/performance-breakdown-chart.png)
 
 *Response time and resource usage across different workflows*
-
-</div>
-
 
 ### Resource Relevance Comparison
 
@@ -275,17 +575,19 @@ orchestr8 implements a sophisticated MCP-based architecture optimized for token 
 
 *orchestr8's fuzzy matching delivers 95%+ relevance vs 60-70% with traditional static loading*
 
-</div>
-
 ### Key Metrics
 
-| Metric | Traditional | orchestr8 | Improvement |
-|--------|------------|-----------|-------------|
+| Metric | Traditional | orchestr8 v8.0 | Improvement |
+|--------|------------|----------------|-------------|
 | **Initial Token Usage** | 200KB | 18KB | **91% reduction** |
 | **Query Response Time** | N/A | <15ms | **Sub-millisecond with cache** |
 | **Resource Relevance** | 60-70% | 95%+ | **40% more relevant** |
-| **Monthly Cost** | $400-600 | $80-120 | **80% cost savings** |
+| **Monthly Cost** | $400-600 | $60-100 | **85% cost savings** |
 | **Context Window Usage** | 85-95% | 10-20% | **75% more headroom** |
+| **Total Resources** | 323 | 383 | **+18.6% growth** |
+| **Cross-References** | 0 | 207+ | **Infinite improvement** |
+| **Example Reusability** | Low | High (77 files) | **Massive improvement** |
+| **Token Optimization** | Baseline | 80K+ saved | **Continuous improvement** |
 
 ---
 
@@ -343,7 +645,43 @@ npm run type-check
 npm run clean
 ```
 
-**See** [Development Guide](plugins/orchestr8/docs/guides/development.md) **for complete setup.**
+**See [Development Guide](plugins/orchestr8/docs/guides/development.md) for complete setup.**
+
+---
+
+## 📚 Documentation
+
+All comprehensive documentation is in **[`plugins/orchestr8/docs/`](plugins/orchestr8/docs/)**
+
+### 📖 Essential Guides
+
+| Guide | Description |
+|-------|-------------|
+| [Getting Started](plugins/orchestr8/docs/getting-started.md) | Installation, setup, and first workflow |
+| [Usage Guide](plugins/orchestr8/docs/usage/) | How to use workflows and resources |
+| [Architecture](plugins/orchestr8/docs/architecture/) | System design and implementation |
+| [Authoring Guide](plugins/orchestr8/docs/authoring/) | Create agents, skills, workflows |
+| [Development](plugins/orchestr8/docs/guides/development.md) | Contributing and dev workflow |
+
+### 🔍 Reference Documentation
+
+| Reference | Description |
+|-----------|-------------|
+| [MCP Implementation](plugins/orchestr8/docs/mcp/) | Protocol implementation details |
+| [Fuzzy Matching](plugins/orchestr8/docs/matching/) | Dynamic resource discovery with 1,675 scenarios |
+| [Resource Categories](plugins/orchestr8/docs/resources/) | 383 fragments organized hierarchically |
+| [Testing Guide](plugins/orchestr8/docs/testing/) | Unit, integration, benchmarks |
+| [Troubleshooting](plugins/orchestr8/docs/guides/troubleshooting.md) | Common issues and solutions |
+
+### 🆕 What's New in v8.0
+
+| Feature | Description |
+|---------|-------------|
+| [Progressive Loading](plugins/orchestr8/docs/resources/) | 52-83% token savings with core + advanced modules |
+| [Example Library](plugins/orchestr8/resources/examples/) | 77 ready-to-use code samples with orchestr8:// URIs |
+| [Skill Families](plugins/orchestr8/resources/skills/) | 6 organized families: Performance, Security, Testing, IaC, Observability, Error Handling |
+| [Pattern Families](plugins/orchestr8/resources/patterns/) | 9 families with 207+ cross-references |
+| [Cross-References](plugins/orchestr8/docs/resources/) | 207+ links between related resources |
 
 ---
 
@@ -353,19 +691,19 @@ We welcome contributions! orchestr8 is built by developers, for developers.
 
 ### How to Contribute
 
-1. **Read the guides**:
+1. **Read the guides:**
    - [Contributing Guide](plugins/orchestr8/docs/guides/contributing.md) - Workflow and guidelines
    - [Code of Conduct](CODE_OF_CONDUCT.md) - Community standards
    - [Authoring Guide](plugins/orchestr8/docs/authoring/) - Create resources
 
-2. **Pick an area**:
+2. **Pick an area:**
    - 🐛 Fix bugs
    - ✨ Add features
    - 📝 Improve documentation
    - 🧪 Add tests
    - 🎨 Create agents, skills, or patterns
 
-3. **Submit a PR**:
+3. **Submit a PR:**
    - Fork the repository
    - Create a feature branch
    - Make your changes
@@ -408,7 +746,7 @@ Security is our top priority. orchestr8 implements defense-in-depth security:
 - 🔍 Confirmation: 3 business days
 - 🛠️ Fix timeline: 7-60 days (based on severity)
 
-**See** [SECURITY.md](SECURITY.md) **for complete policy.**
+**See [SECURITY.md](SECURITY.md) for complete policy.**
 
 ---
 
@@ -430,7 +768,7 @@ The above copyright notice and this permission notice shall be included in all
 copies or substantial portions of the Software.
 ```
 
-**See** [LICENSE](LICENSE) **for full text.**
+**See [LICENSE](LICENSE) for full text.**
 
 ---
 
@@ -450,5 +788,3 @@ orchestr8 stands on the shoulders of giants:
 Made with ❤️ by the orchestr8 community
 
 **Questions?** Check the **[documentation](plugins/orchestr8/docs/)** or [open an issue](https://github.com/seth-schultz/orchestr8/issues/new)
-
-</div>

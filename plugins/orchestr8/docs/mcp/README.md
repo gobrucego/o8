@@ -23,19 +23,22 @@ Orchestr8 uses MCP to create a **plugin architecture for Claude Code** that enab
 
 Rather than loading all expertise upfront (which would consume 100,000+ tokens), MCP enables:
 - **Just-in-Time Loading**: Load only relevant expertise when needed
-- **Query-Based Matching**: Fuzzy matching to find the most relevant resources
-- **Token Budget Management**: Assemble content within specified token limits
-- **Progressive Loading**: Start with summaries, load details as needed
+- **Three-Tier Matching**: Quick cache → Index lookup → Fuzzy fallback
+- **Token Budget Management**: Assemble content within specified token limits or maxResults
+- **Progressive Loading**: Start with minimal/index mode, load full content as needed
+- **85-95% Token Reduction**: Index mode uses 200-500 tokens vs 5,000-10,000+ for full mode
 
 ### 2. Modular Knowledge Organization
 
 MCP's resource model maps perfectly to Orchestr8's knowledge structure:
-- **Agents**: Specialized expert personas (TypeScript Expert, Database Architect, etc.)
-- **Skills**: Specific capabilities (API Design, Error Handling, Testing, etc.)
-- **Examples**: Reference implementations and code patterns
-- **Patterns**: Architectural patterns and best practices
-- **Guides**: Step-by-step implementation guides
-- **Workflows**: Multi-step procedures for complex tasks
+- **Agents**: Specialized expert personas (83 agents across TypeScript, Python, Rust, etc.)
+- **Skills**: Specific capabilities (87 skills for API design, error handling, testing, etc.)
+- **Examples**: Reference implementations and code patterns (16 working examples)
+- **Patterns**: Architectural patterns and best practices (24 patterns)
+- **Guides**: Step-by-step implementation guides (10 deployment guides)
+- **Workflows**: Multi-step procedures for complex tasks (26 workflows)
+
+**Total**: 383 fragments with 1,675 useWhen scenarios and 4,036 unique keywords
 
 ### 3. Slash Command Integration
 
@@ -93,10 +96,11 @@ Each MCP server provides:
 
 ### For Orchestr8
 
-1. **Token Efficiency**: 85-95% reduction through dynamic loading
-2. **Scalability**: Add unlimited expertise without increasing startup cost
-3. **Flexibility**: Users query what they need, system finds best matches
-4. **Evolution**: Update resources without protocol changes
+1. **Token Efficiency**: 85-95% reduction through index-based loading
+2. **Query Performance**: 5-10ms latency (index mode), <2ms with quick cache
+3. **Scalability**: 383 fragments with room to grow to 1,000+ without performance degradation
+4. **Flexibility**: Users query what they need, three-tier system finds best matches
+5. **Evolution**: Update resources without protocol changes, rebuild indexes automatically
 
 ## Architecture Overview
 
@@ -143,10 +147,10 @@ Each MCP server provides:
 │                                                            │
 │  ┌──────────────────────────────────────────────────────┐ │
 │  │  File System (./resources/)                        │ │
-│  │  - agents/_fragments/*.md                         │ │
-│  │  - skills/_fragments/*.md                         │ │
-│  │  - examples/_fragments/*.md                       │ │
-│  │  - patterns/_fragments/*.md                       │ │
+│  │  - agents/*.md                         │ │
+│  │  - skills/*.md                         │ │
+│  │  - examples/*.md                       │ │
+│  │  - patterns/*.md                       │ │
 │  └──────────────────────────────────────────────────────┘ │
 └────────────────────────────────────────────────────────────┘
 ```
@@ -158,27 +162,35 @@ Each MCP server provides:
 Static resources are direct file mappings:
 
 ```
-URI:  orchestr8://agents/_fragments/typescript-core
-File: ./resources/agents/_fragments/typescript-core.md
+URI:  orchestr8://agents/typescript-core
+File: ./resources/agents/typescript-core.md
 ```
 
 When Claude Code requests this URI, the server reads the file and returns its contents.
 
 ### 2. Resources (Dynamic)
 
-Dynamic resources use fuzzy matching to assemble content:
+Dynamic resources use intelligent matching to assemble content:
 
 ```
-URI: orchestr8://agents/match?query=build+typescript+api&maxTokens=2000
+URI: orchestr8://match?query=build+typescript+api&maxTokens=2000
 
 Process:
 1. Parse query: "build typescript api"
-2. Scan resource index for matches
-3. Score each fragment by relevance
-4. Select top matches within token budget
-5. Assemble into cohesive document
-6. Return assembled content
+2. Extract keywords and check quick lookup cache (TIER 1)
+3. If not cached, search keyword index for matches (TIER 2)
+4. If insufficient results, fallback to fuzzy matching (TIER 3)
+5. Score and rank fragments by relevance
+6. Select top matches within budget or maxResults
+7. Assemble into format based on mode (index/minimal/catalog/full)
+8. Return assembled content
 ```
+
+**Four Response Modes:**
+- `mode=index` (default): Ultra-compact useWhen scenarios (~200-500 tokens)
+- `mode=minimal`: Compact JSON with URIs and scores (~300-500 tokens)
+- `mode=catalog`: Full metadata with capabilities (~1,500-2,000 tokens)
+- `mode=full`: Complete resource content (~5,000-10,000+ tokens)
 
 ### 3. Resource Templates
 
@@ -187,16 +199,43 @@ Templates use wildcards to capture parameters:
 ```
 Template: orchestr8://agents/match{+rest}
 Matches:  orchestr8://agents/match?query=...
-          orchestr8://agents/match?query=...&maxTokens=1000
+          orchestr8://agents/match?query=...&mode=index&maxResults=5
 
 Template: orchestr8://match{+rest}
 Matches:  orchestr8://match?query=...
-          orchestr8://match?query=...&categories=agent,skill
+          orchestr8://match?query=...&categories=agents,skills&mode=catalog
 ```
 
 The `{+rest}` wildcard captures everything after `/match`, including query parameters.
 
-### 4. Prompts
+### 4. Advanced URI Patterns
+
+**Cross-References:**
+```
+orchestr8://skills/api-design-rest?refs=true
+  → Returns resource with cross-references to related skills and patterns
+```
+
+**Example References:**
+```
+orchestr8://examples/express-jwt-auth
+  → Code example that references prerequisite skills
+```
+
+**Match Queries with Filters:**
+```
+orchestr8://match?query=retry+timeout&mode=index&maxResults=5&categories=skills,patterns
+orchestr8://match?query=kubernetes&mode=minimal&minScore=20
+orchestr8://match?query=typescript+api&mode=catalog&tags=async,rest
+```
+
+**Registry Access:**
+```
+orchestr8://registry
+  → Returns catalog of all available resources with statistics
+```
+
+### 5. Prompts
 
 Prompts are registered as slash commands:
 
@@ -267,13 +306,31 @@ Technical details of the stdio transport:
 // Static resource
 ReadMcpResourceTool({
   server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/_fragments/typescript-core"
+  uri: "orchestr8://agents/typescript-core"
 })
 
-// Dynamic resource (fuzzy matching)
+// Index mode (DEFAULT) - ultra-fast, minimal tokens
 ReadMcpResourceTool({
   server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/match?query=build+api&maxTokens=2000"
+  uri: "orchestr8://match?query=retry+timeout&mode=index&maxResults=5"
+})
+
+// Minimal mode - compact JSON output
+ReadMcpResourceTool({
+  server: "plugin:orchestr8:orchestr8-resources",
+  uri: "orchestr8://match?query=typescript+api&mode=minimal"
+})
+
+// Catalog mode - full metadata
+ReadMcpResourceTool({
+  server: "plugin:orchestr8:orchestr8-resources",
+  uri: "orchestr8://agents/match?query=build+api&mode=catalog&maxResults=10"
+})
+
+// Full mode - complete content
+ReadMcpResourceTool({
+  server: "plugin:orchestr8:orchestr8-resources",
+  uri: "orchestr8://agents/match?query=typescript&mode=full&maxTokens=2500"
 })
 ```
 

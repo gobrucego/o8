@@ -45,6 +45,7 @@ useWhen:
 
 # Estimated Tokens: Count content only (exclude frontmatter)
 # Calculate: wc -w content | multiply by 0.75
+# MUST be accurate within ±10% of actual token count
 # Target ranges:
 #   - Core agent: 600-750
 #   - Specialized agent: 450-650
@@ -53,6 +54,12 @@ useWhen:
 #   - Example: 300-500
 #   - Maximum: 1000 for any fragment
 estimatedTokens: ${calculated-token-count}
+
+# Optional: For optimization patterns (Phase 1-3)
+# prerequisite: [fragment-id-that-must-load-first]  # Phase 3: Progressive loading
+# relatedTo: [related-fragment-id-1, related-fragment-id-2]  # Phase 2: Cross-referencing
+# examples: [orchestr8://examples/example-id]  # Phase 1: Example extraction
+# advancedTopics: [orchestr8://category/advanced-module-id]  # Phase 3: Progressive loading
 ---
 
 # Fragment Title
@@ -135,12 +142,12 @@ Mistakes to watch out for and how to prevent them.
 Links to related fragments that complement this knowledge.
 
 **Related [Category]:**
-- [Related Fragment 1](orchestr8://category/_fragments/fragment-id)
-- [Related Fragment 2](orchestr8://category/_fragments/fragment-id)
+- [Related Fragment 1](orchestr8://category/fragment-id)
+- [Related Fragment 2](orchestr8://category/fragment-id)
 
 **See Also:**
-- [Complementary Topic 1](orchestr8://category/_fragments/fragment-id)
-- [Complementary Topic 2](orchestr8://category/_fragments/fragment-id)
+- [Complementary Topic 1](orchestr8://category/fragment-id)
+- [Complementary Topic 2](orchestr8://category/fragment-id)
 
 ---
 

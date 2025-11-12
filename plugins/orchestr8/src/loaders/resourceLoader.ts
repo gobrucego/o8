@@ -10,6 +10,21 @@ import { ResourceMetadata } from "../types.js";
 import { URIParser, ParsedURI } from "../utils/uriParser.js";
 import { FuzzyMatcher, ResourceFragment } from "../utils/fuzzyMatcher.js";
 import { IndexLookup } from "../utils/indexLookup.js";
+// ============================================================================
+// NEW IMPORTS: Provider system integration
+// ============================================================================
+import { ProviderRegistry } from "../providers/registry.js";
+import { LocalProvider } from "../providers/local.js";
+import { AITMPLProvider } from "../providers/aitmpl.js";
+import { GitHubProvider } from "../providers/github.js";
+import { ProviderConfigManager } from "../config/providers.js";
+import { ConfigLoader } from "../config/loader.js";
+import type {
+  SearchOptions,
+  SearchResult,
+  ProviderHealth,
+  ProviderStats,
+} from "../providers/types.js";
 
 export class ResourceLoader {
   private logger: Logger;
@@ -24,6 +39,12 @@ export class ResourceLoader {
   private indexLookup: IndexLookup;
   private resourceIndex: ResourceFragment[] | null = null;
   private indexLoadPromise: Promise<ResourceFragment[]> | null = null;
+
+  // ============================================================================
+  // NEW: Provider system components
+  // ============================================================================
+  private registry: ProviderRegistry;
+  private providerConfigManager: ProviderConfigManager | null = null;
 
   constructor(logger: Logger) {
     this.logger = logger;
@@ -43,6 +64,17 @@ export class ResourceLoader {
     this.uriParser = new URIParser();
     this.fuzzyMatcher = new FuzzyMatcher();
     this.indexLookup = new IndexLookup(this.resourcesPath);
+
+    // ============================================================================
+    // NEW: Initialize provider registry
+    // ============================================================================
+    this.registry = new ProviderRegistry({
+      enableHealthChecks: true,
+      healthCheckInterval: 60000, // 1 minute
+      autoDisableUnhealthy: true,
+      maxConsecutiveFailures: 3,
+      enableEvents: true,
+    });
 
     this.logger.debug(
       `Resource loader initialized with path: ${this.resourcesPath}`,
@@ -79,6 +111,102 @@ export class ResourceLoader {
     }
 
     return resources;
+  }
+
+  // ============================================================================
+  // NEW: Provider system initialization
+  // ============================================================================
+  /**
+   * Initialize resource providers
+   *
+   * Loads provider configuration and initializes all enabled providers:
+   * - LocalProvider (always enabled, priority 0)
+   * - AITMPLProvider (if enabled in config)
+   * - GitHubProvider (if enabled in config)
+   *
+   * Should be called after basic ResourceLoader initialization.
+   */
+  async initializeProviders(): Promise<void> {
+    this.logger.info("Initializing resource providers");
+
+    try {
+      // Load configuration
+      const configLoader = new ConfigLoader(this.logger);
+      this.providerConfigManager = new ProviderConfigManager(
+        this.logger,
+        configLoader,
+      );
+      await this.providerConfigManager.initialize();
+
+      // Validate configuration
+      const validation = this.providerConfigManager.validateConfiguration();
+      if (!validation.valid) {
+        this.logger.warn(
+          "Provider configuration has issues:",
+          validation.warnings,
+        );
+      }
+      if (validation.errors.length > 0) {
+        this.logger.error("Provider configuration errors:", validation.errors);
+      }
+
+      // Initialize LocalProvider (always enabled, highest priority)
+      this.logger.info("Initializing LocalProvider");
+      const localProvider = new LocalProvider(
+        { resourcesPath: this.resourcesPath },
+        this.logger,
+      );
+      await this.registry.register(localProvider);
+      this.logger.info("LocalProvider registered successfully");
+
+      // Initialize AITMPLProvider (if enabled)
+      const aitmplConfig = this.providerConfigManager.getAitmplConfig();
+      if (aitmplConfig.enabled) {
+        this.logger.info("Initializing AITMPLProvider");
+        try {
+          const aitmplProvider = new AITMPLProvider(aitmplConfig, this.logger);
+          await this.registry.register(aitmplProvider);
+          this.logger.info("AITMPLProvider registered successfully");
+        } catch (error) {
+          this.logger.error("Failed to initialize AITMPLProvider:", error);
+          // Continue with other providers
+        }
+      } else {
+        this.logger.debug("AITMPLProvider is disabled in configuration");
+      }
+
+      // Initialize GitHubProvider (if enabled)
+      const githubConfig = this.providerConfigManager.getGithubConfig();
+      if (githubConfig.enabled) {
+        this.logger.info("Initializing GitHubProvider");
+        try {
+          const githubProvider = new GitHubProvider(githubConfig, this.logger);
+          await this.registry.register(githubProvider);
+          this.logger.info("GitHubProvider registered successfully");
+        } catch (error) {
+          this.logger.error("Failed to initialize GitHubProvider:", error);
+          // Continue with other providers
+        }
+      } else {
+        this.logger.debug("GitHubProvider is disabled in configuration");
+      }
+
+      const registeredProviders = this.registry.getProviders();
+      this.logger.info(
+        `Provider initialization complete. Registered ${registeredProviders.length} providers:`,
+        registeredProviders.map((p) => p.name),
+      );
+
+      // Log provider health status
+      const healthStatuses = await this.registry.checkAllHealth();
+      for (const [name, health] of healthStatuses.entries()) {
+        this.logger.info(`Provider ${name} health: ${health.status}`);
+      }
+    } catch (error) {
+      this.logger.error("Failed to initialize providers:", error);
+      // Don't throw - allow ResourceLoader to work with just local filesystem
+      this.logger.warn("Continuing with local filesystem access only");
+    }
   }
 
   /**
@@ -464,7 +592,118 @@ export class ResourceLoader {
     }
 
     try {
-      // Parse the URI
+      // ============================================================================
+      // Special URIs (registry, etc.)
+      // ============================================================================
+
+      // Handle orchestr8://registry - Generate catalog JSON
+      if (uri === "orchestr8://registry") {
+        this.logger.debug("Generating registry catalog");
+        await this.ensureIndexLoaded();
+
+        const resources = this.resourceIndex || [];
+        const catalog = {
+          version: "1.0.0",
+          totalResources: resources.length,
+          categories: {
+            agents: resources.filter((r) => r.category === "agent").length,
+            skills: resources.filter((r) => r.category === "skill").length,
+            patterns: resources.filter((r) => r.category === "pattern").length,
+            examples: resources.filter((r) => r.category === "example").length,
+            workflows: resources.filter((r) => r.category === "workflow")
+              .length,
+          },
+          searchUri:
+            "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+          usage:
+            "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
+        };
+
+        const content = JSON.stringify(catalog, null, 2);
+        this.cache.set(uri, content);
+        return content;
+      }
+
+      // ============================================================================
+      // NEW: Check for provider-specific URIs FIRST (before parsing)
+      // ============================================================================
+
+      // Check for AITMPL provider URI: aitmpl://category/resourceId
+      if (uri.startsWith("aitmpl://")) {
+        this.logger.debug(`Routing to AITMPL provider: ${uri}`);
+        const [_, pathPart] = uri.split("aitmpl://");
+        const [categoryPart, ...resourceIdParts] = pathPart.split("/");
+        const resourceId = resourceIdParts.join("/");
+
+        // Convert plural category to singular (AITMPL uses singular: agent, skill, etc.)
+        const categorySingular =
+          categoryPart === "agents"
+            ? "agent"
+            : categoryPart === "skills"
+              ? "skill"
+              : categoryPart === "examples"
+                ? "example"
+                : categoryPart === "patterns"
+                  ? "pattern"
+                  : categoryPart === "workflows"
+                    ? "workflow"
+                    : categoryPart; // Use as-is if already singular
+
+        try {
+          const resource = await this.registry.fetchResource(
+            "aitmpl",
+            resourceId,
+            categorySingular,
+          );
+          this.cache.set(uri, resource.content);
+          return resource.content;
+        } catch (error) {
+          this.logger.error(
+            `Failed to fetch from AITMPL provider: ${uri}`,
+            error,
+          );
+          throw error;
+        }
+      }
+
+      // Check for GitHub provider URI: github://owner/repo/path
+      if (uri.startsWith("github://")) {
+        this.logger.debug(`Routing to GitHub provider: ${uri}`);
+        const [_, fullPath] = uri.split("github://");
+        const pathParts = fullPath.split("/");
+
+        if (pathParts.length < 3) {
+          throw new Error(
+            `Invalid GitHub URI format: ${uri}. Expected github://owner/repo/category/path`,
+          );
+        }
+
+        const owner = pathParts[0];
+        const repo = pathParts[1];
+        const category = pathParts[2]; // First path component is category
+        const resourcePath = pathParts.slice(2).join("/"); // Full path including category
+        const resourceId = `${owner}/${repo}/${resourcePath}`;
+
+        try {
+          const resource = await this.registry.fetchResource(
+            "github",
+            resourceId,
+            category,
+          );
+          this.cache.set(uri, resource.content);
+          return resource.content;
+        } catch (error) {
+          this.logger.error(
+            `Failed to fetch from GitHub provider: ${uri}`,
+            error,
+          );
+          throw error;
+        }
+      }
+
+      // ============================================================================
+      // Parse orchestr8:// URIs only
+      // ============================================================================
       const parsed = this.uriParser.parse(uri);
 
       if (parsed.type === "static") {
@@ -481,13 +720,17 @@ export class ResourceLoader {
   }
 
   /**
-   * Load static resource (direct file access)
+   * Load static resource (direct file access or remote provider)
    * @private
    */
   private async _loadStaticResource(
     uri: string,
     parsed: ParsedURI & { type: "static" },
   ): Promise<string> {
+    // ============================================================================
+    // Local resource (orchestr8:// URIs only - providers handled in parent)
+    // ============================================================================
+
     // Parse URI to file path
     const filePath = this.uriToFilePath(uri);
 
@@ -508,12 +751,12 @@ export class ResourceLoader {
     this.logger.info(`Dynamic resource request: ${uri}`);
 
     // Feature flag: Use index lookup vs fuzzy match
-    // - Mode explicitly set to 'index' in URI
-    // - Environment variable USE_INDEX_LOOKUP=true (default for index mode)
-    // - Default is 'catalog' (fuzzy match) for backward compatibility
+    // - Default mode is 'index' for optimal efficiency (70-85% token reduction)
+    // - Explicitly set mode to 'catalog' or 'full' in URI to use fuzzy match
+    // - Environment variable USE_INDEX_LOOKUP can override (but defaults to true)
     const useIndexLookup =
-      parsed.matchParams.mode === "index" ||
-      process.env.USE_INDEX_LOOKUP === "true";
+      parsed.matchParams.mode !== "catalog" && // Only use catalog if explicitly requested
+      parsed.matchParams.mode !== "full";
 
     if (useIndexLookup) {
       // NEW: Index-based lookup (85-95% token reduction)
@@ -607,7 +850,10 @@ export class ResourceLoader {
       .filter((fragment) => fragment.category === normalizedCategory)
       .map((fragment) => ({
         id: fragment.id,
-        uri: `orchestr8://${category}/${fragment.id}`,
+        name: fragment.id, // Add name field for display
+        uri: `orchestr8://${fragment.id}`,
+        description:
+          fragment.capabilities?.slice(0, 3).join(", ") || "No description", // Use capabilities as description
         tags: fragment.tags || [],
         capabilities: fragment.capabilities || [],
         tokens: fragment.estimatedTokens,
@@ -639,7 +885,7 @@ export class ResourceLoader {
       })
       .map((fragment) => ({
         id: fragment.id,
-        uri: `orchestr8://${fragment.category}/${fragment.id}`,
+        uri: `orchestr8://${fragment.id}`,
         category: fragment.category,
         tags: fragment.tags || [],
         capabilities: fragment.capabilities || [],
@@ -648,11 +894,270 @@ export class ResourceLoader {
       .slice(0, 50); // Limit results
   }
 
+  // ============================================================================
+  // NEW: Multi-provider search methods
+  // ============================================================================
+
+  /**
+   * Search across all enabled resource providers
+   *
+   * Queries all registered providers in parallel and returns merged results
+   * sorted by relevance score.
+   *
+   * @param query - Search query string
+   * @param options - Search options (categories, tags, limits, etc.)
+   * @returns Promise resolving to array of search results
+   *
+   * @example
+   * ```typescript
+   * const results = await loader.searchAllProviders('typescript api', {
+   *   categories: ['agent', 'skill'],
+   *   maxResults: 20,
+   *   minScore: 50
+   * });
+   * ```
+   */
+  async searchAllProviders(
+    query: string,
+    options?: SearchOptions,
+  ): Promise<SearchResult[]> {
+    this.logger.info(`Searching all providers for: ${query}`);
+
+    try {
+      const searchResponse = await this.registry.searchAll(query, options);
+      this.logger.info(
+        `Found ${searchResponse.totalMatches} matches across all providers (returned ${searchResponse.results.length})`,
+      );
+      return searchResponse.results;
+    } catch (error) {
+      this.logger.error("Failed to search across providers:", error);
+      // Fallback to local search if providers fail
+      this.logger.warn("Falling back to local search only");
+      return [];
+    }
+  }
+
+  /**
+   * Search in a specific provider
+   *
+   * @param providerName - Name of provider to search ('local', 'aitmpl', 'github')
+   * @param query - Search query string
+   * @param options - Search options
+   * @returns Promise resolving to array of search results
+   */
+  async searchProvider(
+    providerName: string,
+    query: string,
+    options?: SearchOptions,
+  ): Promise<SearchResult[]> {
+    this.logger.info(`Searching ${providerName} provider for: ${query}`);
+
+    try {
+      const searchResponse = await this.registry.search(
+        providerName,
+        query,
+        options,
+      );
+      this.logger.info(
+        `Found ${searchResponse.totalMatches} matches in ${providerName} (returned ${searchResponse.results.length})`,
+      );
+      return searchResponse.results;
+    } catch (error) {
+      this.logger.error(`Failed to search ${providerName} provider:`, error);
+      return [];
+    }
+  }
+
+  // ============================================================================
+  // NEW: Provider health and statistics endpoints
+  // ============================================================================
+
+  /**
+   * Get health status for all providers
+   *
+   * Checks health of all registered providers and returns their status.
+   * Useful for monitoring and diagnostics.
+   *
+   * @returns Promise resolving to map of provider names to health status
+   *
+   * @example
+   * ```typescript
+   * const health = await loader.getProvidersHealth();
+   * for (const [name, status] of Object.entries(health)) {
+   *   console.log(`${name}: ${status.status} (${status.responseTime}ms)`);
+   * }
+   * ```
+   */
+  async getProvidersHealth(): Promise<Record<string, ProviderHealth>> {
+    this.logger.debug("Checking health of all providers");
+
+    try {
+      const healthMap = await this.registry.checkAllHealth();
+
+      // Convert Map to plain object for easier serialization
+      const healthObj: Record<string, ProviderHealth> = {};
+      for (const [name, health] of healthMap.entries()) {
+        healthObj[name] = health;
+      }
+
+      return healthObj;
+    } catch (error) {
+      this.logger.error("Failed to check provider health:", error);
+      return {};
+    }
+  }
+
+  /**
+   * Get statistics for all providers
+   *
+   * Returns aggregate statistics including request counts, cache hit rates,
+   * average response times, and rate limit status.
+   *
+   * @returns Object containing statistics for each provider
+   *
+   * @example
+   * ```typescript
+   * const stats = loader.getProvidersStats();
+   * for (const [name, stat] of Object.entries(stats)) {
+   *   console.log(`${name}: ${stat.totalRequests} requests, ${stat.cacheHitRate}% cache hit rate`);
+   * }
+   * ```
+   */
+  getProvidersStats(): Record<string, ProviderStats> {
+    this.logger.debug("Getting statistics for all providers");
+
+    try {
+      const providers = this.registry.getProviders();
+      const statsObj: Record<string, ProviderStats> = {};
+
+      for (const provider of providers) {
+        statsObj[provider.name] = provider.getStats();
+      }
+
+      return statsObj;
+    } catch (error) {
+      this.logger.error("Failed to get provider statistics:", error);
+      return {};
+    }
+  }
+
+  /**
+   * Get aggregate statistics across all providers
+   *
+   * Returns registry-wide statistics including total providers, enabled providers,
+   * healthy providers, and aggregate metrics.
+   *
+   * @returns Registry statistics object
+   */
+  getAggregateProviderStats() {
+    try {
+      return this.registry.getAggregateStats();
+    } catch (error) {
+      this.logger.error("Failed to get aggregate provider statistics:", error);
+      return {
+        totalProviders: 0,
+        enabledProviders: 0,
+        healthyProviders: 0,
+        aggregate: {
+          totalRequests: 0,
+          successfulRequests: 0,
+          failedRequests: 0,
+          totalResourcesFetched: 0,
+          totalTokensFetched: 0,
+          avgResponseTime: 0,
+        },
+      };
+    }
+  }
+
+  /**
+   * Get list of all registered providers
+   *
+   * @param enabledOnly - If true, only return enabled providers
+   * @returns Array of provider names
+   */
+  getProviderNames(enabledOnly = false): string[] {
+    const providers = this.registry.getProviders(enabledOnly);
+    return providers.map((p) => p.name);
+  }
+
   /**
    * Get cached resource content
    */
   getCachedResource(uri: string): string | undefined {
     return this.cache.get(uri);
+  }
+
+  /**
+   * Get detailed information about all providers
+   *
+   * @returns Array of provider details including health and stats
+   */
+  async getProviders(): Promise<any[]> {
+    const providers = this.registry.getProviders();
+    return Promise.all(
+      providers.map(async (provider) => ({
+        name: provider.name,
+        enabled: provider.enabled,
+        priority: provider.priority,
+        health: await provider.healthCheck(),
+        stats: provider.getStats(),
+      })),
+    );
+  }
+
+  /**
+   * Get index from a specific provider
+   *
+   * @param name - Provider name
+   * @returns Provider's resource index
+   */
+  async getProviderIndex(name: string): Promise<any> {
+    return this.registry.fetchIndex(name);
+  }
+
+  /**
+   * Get health status for a specific provider
+   *
+   * @param name - Provider name
+   * @returns Provider health status
+   */
+  async getProviderHealth(name: string): Promise<any> {
+    return this.registry.checkHealth(name);
+  }
+
+  /**
+   * Get statistics for a specific provider
+   *
+   * @param name - Provider name
+   * @returns Provider statistics
+   */
+  getProviderStats(name: string): any {
+    return this.registry.getProviderStats(name);
+  }
+
+  /**
+   * Enable a provider
+   *
+   * @param name - Provider name
+   */
+  async enableProvider(name: string): Promise<void> {
+    const success = this.registry.enable(name);
+    if (!success) {
+      throw new Error(`Provider ${name} not found`);
+    }
+  }
+
+  /**
+   * Disable a provider
+   *
+   * @param name - Provider name
+   */
+  async disableProvider(name: string): Promise<void> {
+    const success = this.registry.disable(name);
+    if (!success) {
+      throw new Error(`Provider ${name} not found`);
+    }
   }
 
   /**

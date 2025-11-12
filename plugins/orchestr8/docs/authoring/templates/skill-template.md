@@ -34,7 +34,13 @@ useWhen:
 
 # Estimated Tokens: 500-700 tokens (max 1000)
 # Calculate: wc -w content | multiply by 0.75
+# MUST be accurate within ±10%
 estimatedTokens: ${calculated-count}
+
+# Optional: Optimization fields (Phases 2-3)
+# prerequisite: [parent-skill-id]  # For child skills in hierarchy (Phase 2)
+# relatedTo: [related-skill-1, related-skill-2]  # Cross-references (Phase 2)
+# examples: [orchestr8://examples/example-id]  # Example extraction (Phase 1)
 ---
 
 # ${Technique-Name}: ${Context-or-Specialization}
@@ -152,12 +158,20 @@ ${code-example}
 
 ## Related Skills
 
-**Complementary Skills:**
+**Prerequisites (Phase 2 - if child skill):**
+- [${Parent-Skill}](orchestr8://skills/${parent-skill-id}) - Required foundation
+
+**Parent Skill (if this is a child):**
+- [${Parent-Skill}](orchestr8://skills/${parent-skill-id})
+
+**Complementary Skills (Phase 2 - Cross-references):**
 - [${Related-Skill-1}](orchestr8://skills/${skill-id})
 - [${Related-Skill-2}](orchestr8://skills/${skill-id})
 
-**See Also:**
+**Related Patterns:**
 - [${Related-Pattern}](orchestr8://patterns/${pattern-id})
+
+**Detailed Examples (Phase 1 - if extracted):**
 - [${Related-Example}](orchestr8://examples/${example-id})
 
 ---
@@ -248,6 +262,7 @@ Before committing skill fragments:
 - [ ] 3-5 concrete capabilities (technique and approach)
 - [ ] 3-5 specific useWhen scenarios (problem contexts)
 - [ ] 500-700 tokens (max 1000)
+- [ ] Token estimate accurate within ±10%
 - [ ] 2-3 code examples (tested and working)
 - [ ] Multi-language examples if applicable
 - [ ] Best practices included
@@ -256,6 +271,29 @@ Before committing skill fragments:
 - [ ] Discoverable via test queries (5-6 queries)
 - [ ] Unique technique (not duplicate of existing)
 - [ ] Reusable across contexts
+
+### Optimization Patterns Checklist
+
+Apply these optimization patterns when appropriate:
+
+**Phase 1: Example Extraction**
+- [ ] Fragment >100 lines with multiple language examples?
+- [ ] Code examples >30% of content? Extract to example files
+- [ ] Added `examples: [orchestr8://examples/...]` field?
+- [ ] Brief inline examples (10-15 lines) remain?
+
+**Phase 2: Skill Families**
+- [ ] Part of a skill family? (e.g., testing-*, security-*, error-handling-*)
+- [ ] Is this a parent skill (overview)? Added `relatedTo: [child-skills]`?
+- [ ] Is this a child skill? Added `prerequisite: [parent-skill]`?
+- [ ] Related skills used together >60% of time? Add cross-refs
+- [ ] ROI justified (50-100 token cost vs 3-5x discoverability)?
+
+**Token Efficiency:**
+- [ ] Calculated token savings from optimizations?
+- [ ] Example extraction: 25-40% reduction achieved?
+- [ ] Hierarchical organization: Better targeted loading?
+- [ ] Multi-language examples: Consider splitting by language?
 
 ### Testing Skills
 

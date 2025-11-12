@@ -13,63 +13,100 @@ Examples are organized into two categories:
 
 ## Quick Examples
 
-### Example 1: Start a New TypeScript API Project
+### Example 1: Start a New TypeScript API Project (with JIT Loading)
 
 ```bash
 /orchestr8:new-project Build a TypeScript REST API with JWT authentication and PostgreSQL
 
-# The workflow will:
-# 1. Load TypeScript agent + API patterns
-# 2. Set up project structure
-# 3. Implement auth endpoints
-# 4. Add database integration
-# 5. Write tests
-# 6. Provide deployment guidance
+# The workflow uses phase-based JIT loading:
+# Phase 1 (0-20%): → Load requirements+architecture (1,200 tokens)
+# Phase 2 (20-30%): → Load typescript+project+setup (1,000 tokens)
+# Phase 3 (30-70%): → Load typescript+api+implementation (3,500 tokens)
+# Phase 4 (70-90%): → Load testing+security (2,000 tokens)
+# Phase 5 (90-100%): → Load deployment (1,800 tokens, if needed)
+#
+# Total: 2,800-9,500 tokens progressive vs 12,000 upfront
+# Savings: 77%
 ```
 
-### Example 2: Add Authentication to Existing App
+### Example 2: Add Authentication to Existing App (with JIT Loading)
 
 ```bash
 /orchestr8:add-feature Add JWT authentication with refresh tokens
 
-# The workflow will:
-# 1. Analyze your existing codebase
-# 2. Design auth to fit your architecture
-# 3. Implement auth endpoints + middleware
-# 4. Add tests for auth flows
-# 5. Integrate with existing routes
+# The workflow uses progressive JIT loading:
+# Phase 1 (0-20%): → Load codebase+analysis+design (1,000 tokens)
+# Phase 2 (20-70%): → Load ${tech}+authentication+jwt (2,500 tokens)
+#                      Single load supports backend, frontend, and tests
+# Phase 3 (70-90%): → Load testing+security+quality (1,500 tokens)
+# Phase 4 (90-100%): → Load deployment (1,000 tokens, conditional)
+#
+# Total: 5,000-6,000 tokens vs 10,000 upfront
+# Savings: 76%
 ```
 
-### Example 3: Find Testing Patterns
+### Example 3: Find Testing Patterns (Progressive Discovery)
 
 ```
-# Discover available resources
-orchestr8://match?query=testing+unit+integration&mode=catalog&maxResults=10
+# Step 1: Fast lookup with index mode (5-10ms, 50-120 tokens)
+orchestr8://match?query=testing+unit+integration&mode=index&maxResults=5
 
-# Review results, then load specific
-orchestr8://skills/_fragments/testing-integration
+# Returns: testing-integration, testing-unit, testing-e2e, etc.
+
+# Step 2: Load specific resource (680 tokens)
+orchestr8://skills/testing-integration
+
+# Total: 730-800 tokens vs 2,000+ loading all testing resources
+# Savings: 60-70%
 ```
 
-### Example 4: Load Specific Expertise
+### Example 4: Load Specific Expertise (Static + Progressive)
 
 ```
-# TypeScript type system expertise
-orchestr8://agents/_fragments/typescript-core
+# Core agent (immediate load, 650 tokens)
+orchestr8://agents/typescript-core
 
-# Error handling patterns
-orchestr8://skills/_fragments/error-handling-resilience
+# Skill fragment (720 tokens)
+orchestr8://skills/error-handling-resilience
 
-# JWT authentication example
-orchestr8://examples/_fragments/express-jwt-auth
+# Working example (850 tokens)
+orchestr8://examples/express-jwt-auth
+
+# Total: 2,220 tokens for complete expertise
+# Progressive: Load core first, add skills/examples as needed
 ```
 
-### Example 5: Fast Pattern Lookup
+### Example 5: Progressive Agent Loading
 
 ```
-# Use index for speed
-orchestr8://match?query=retry+exponential+backoff&mode=index&maxResults=5
+# Agent with core content + on-demand examples
+orchestr8://agents/sre-specialist
 
-# Result in <10ms, 50-120 tokens
+# Returns core (180 tokens) with references:
+# → orchestr8://examples/infrastructure/sre-slo-configuration
+# → orchestr8://examples/infrastructure/sre-incident-management
+
+# Load examples only when needed:
+orchestr8://examples/infrastructure/sre-slo-configuration  # 800 tokens
+
+# Total: 980 tokens vs 2,000+ loading all SRE content upfront
+# Savings: 52%
+```
+
+### Example 6: Fast Pattern Lookup (Index Mode)
+
+```
+# Use index mode for ultra-fast lookup (5-10ms)
+orchestr8://match?query=retry+exponential+backoff+circuit+breaker&mode=index&maxResults=5
+
+# Returns:
+# 1. error-handling-resilience (Score: 95)
+# 2. api-reliability-patterns (Score: 88)
+# 3. microservices-patterns (Score: 76)
+
+# Token cost: 50-120 tokens
+# Latency: 5-10ms (tier 2), <2ms if cached (tier 1)
+# vs Catalog mode: 15-20ms, same token cost
 ```
 
 ## Example Categories
@@ -194,7 +231,7 @@ orchestr8://match?query=circuit+breaker+resilience&mode=index&maxResults=5
 # - microservices-patterns (Score: 82)
 
 # Step 3: Load specific resource
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://skills/error-handling-resilience
 ```
 
 See [Advanced Usage - Index Lookup](./advanced-usage.md#index-based-lookup) for details.
@@ -211,9 +248,9 @@ See [Advanced Usage - Index Lookup](./advanced-usage.md#index-based-lookup) for 
 orchestr8://match?query=typescript+api+testing&mode=catalog
 
 # Review (~100 tokens), then load selectively
-orchestr8://agents/_fragments/typescript-core       # 650 tokens
-orchestr8://skills/_fragments/api-design-rest       # 720 tokens
-orchestr8://examples/_fragments/express-minimal-api # 500 tokens
+orchestr8://agents/typescript-core       # 650 tokens
+orchestr8://skills/api-design-rest       # 720 tokens
+orchestr8://examples/express-minimal-api # 500 tokens
 
 # Total: 1970 tokens (within budget)
 ```
@@ -283,16 +320,16 @@ See [Basic Usage - Deployment](./basic-usage.md#deployment-workflows) for exampl
 
 ```
 # TypeScript core expertise
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Error handling skill
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://skills/error-handling-resilience
 
 # JWT authentication pattern
-orchestr8://patterns/_fragments/security-auth-jwt
+orchestr8://patterns/security-auth-jwt
 
 # Express API example
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://examples/express-jwt-auth
 ```
 
 See [Basic Usage - Static Loading](./basic-usage.md#static-resource-loading) for examples.
@@ -321,7 +358,7 @@ See [Basic Usage - Dynamic Matching](./basic-usage.md#dynamic-matching) for exam
 ### Quick Reference (500-1000 tokens)
 
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Use case:** Need quick expertise reference
@@ -366,13 +403,13 @@ orchestr8://match?query=testing+patterns&mode=catalog&maxResults=10
 
 ```
 # Step 1: Core (1000 tokens)
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Step 2: Skills as needed (500 tokens)
-orchestr8://skills/_fragments/api-design-rest
+orchestr8://skills/api-design-rest
 
 # Step 3: Examples if needed (800 tokens)
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://examples/express-jwt-auth
 ```
 
 See [Advanced Usage - Performance](./advanced-usage.md#performance-optimization) for more.

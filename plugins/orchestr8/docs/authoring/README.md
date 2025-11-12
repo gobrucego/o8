@@ -11,7 +11,7 @@ The Orchestr8 plugin uses a **dynamic expertise system** powered by fragments - 
 ### 1. **Fragments** (Building Blocks)
 Small, focused units of knowledge (500-1000 tokens) that are dynamically loaded based on semantic matching.
 
-**Location:** `resources/*/\_fragments/`
+**Location:** `resources/*/\`
 
 **Categories:**
 - **Agents:** Domain expertise (e.g., TypeScript Developer, DevOps Expert)
@@ -94,6 +94,80 @@ All content must meet these standards:
 - **Focused scope:** Single clear purpose, not multiple topics
 - **No redundancy:** Avoid duplicating existing content
 
+## Optimization Patterns
+
+Orchestr8 uses several optimization patterns to maximize token efficiency while maintaining discoverability:
+
+### Phase 1: Example Extraction
+**When to extract examples to separate files:**
+- Fragment exceeds 100 lines with multiple code examples
+- Examples are >30% of fragment content
+- Complex implementations that could be referenced
+
+**Pattern:**
+```markdown
+Main Fragment (reduced by 200-300 tokens):
+- Core concepts and principles
+- Brief inline examples (5-10 lines)
+- References to detailed examples
+
+Example File (orchestr8://examples/example-name):
+- Complete working implementation
+- Detailed comments and explanations
+- Multiple variations
+```
+
+**Benefits:**
+- 25-40% token savings on main fragment
+- Examples loaded on-demand
+- Better maintainability
+
+### Phase 2: Structural Organization
+**Creating skill families with parent-child relationships:**
+- Group related skills under parent concepts
+- Add cross-references between related resources
+- Reorganize pattern families by domain
+
+**Pattern:**
+```markdown
+Parent Skill: error-handling (overview)
+├─ error-handling-resilience (retry, circuit breaker)
+├─ error-handling-logging (structured logging)
+└─ error-handling-validation (input validation)
+
+Cross-references improve discoverability by 15-20%
+```
+
+**ROI Analysis:**
+- Investment: 50-100 tokens per fragment for cross-refs
+- Return: 3-5x improved discoverability
+- Worthwhile when: Fragment is frequently used with others
+
+### Phase 3: Progressive Loading
+**Splitting mega-fragments into core + advanced modules:**
+- Identify always-needed vs sometimes-needed content
+- Create prerequisite relationships
+- Use phase-based JIT loading in workflows
+
+**Pattern:**
+```markdown
+Core Module (600-750 tokens):
+- Fundamentals everyone needs
+- Common patterns
+- Basic examples
+
+Advanced Module (450-650 tokens):
+prerequisite: [core-module-id]
+- Advanced techniques
+- Edge cases
+- Performance optimizations
+```
+
+**Token Savings:**
+- Generic queries: Load core only (40-60% savings)
+- Specific queries: Load core + advanced (selective loading)
+- Total efficiency: 50-70% reduction in unnecessary token loading
+
 ### Clarity
 - **Clear structure:** Organized sections with headers
 - **Actionable content:** Practical knowledge, not just theory
@@ -127,6 +201,55 @@ All content must meet these standards:
 | **Workflow** | Designing multi-phase execution strategy (Bug fix workflow, Feature development) |
 | **Command** | Creating user-facing slash command (Autonomous organization, UI tools) |
 
+## Frontmatter Validation Requirements
+
+All fragments MUST include valid YAML frontmatter with these fields:
+
+### Required Fields
+- **id:** Unique identifier following naming conventions
+- **category:** One of: agent, skill, pattern, example, guide, workflow
+- **tags:** Array of 5-8 specific, searchable tags
+- **capabilities:** Array of 3-6 concrete capability statements
+- **useWhen:** Array of 3-6 specific scenario descriptions
+- **estimatedTokens:** Integer estimate accurate within ±10%
+
+### Optional Fields (for optimization)
+- **prerequisite:** Array of fragment IDs that should be loaded first
+- **relatedTo:** Array of fragment IDs for cross-referencing
+- **examples:** Array of orchestr8:// URIs to example files
+- **advancedTopics:** Array of orchestr8:// URIs to advanced modules
+
+### Validation Rules
+```yaml
+# ✅ Valid frontmatter
+---
+id: typescript-core
+category: agent
+tags: [typescript, javascript, types, generics, node]
+capabilities:
+  - TypeScript type system with generics and conditional types
+  - Module system and import/export patterns
+useWhen:
+  - Building TypeScript applications or libraries
+  - Reviewing or writing TypeScript code
+estimatedTokens: 650
+examples:
+  - orchestr8://examples/typescript-generics-advanced
+---
+
+# ❌ Invalid - missing required fields
+---
+id: typescript-core
+tags: [typescript]
+---
+
+# ❌ Invalid - inaccurate token count
+---
+id: typescript-core
+estimatedTokens: 650  # Actual: 1200 tokens (>10% error)
+---
+```
+
 ## Review Process
 
 Before committing new content:
@@ -137,7 +260,8 @@ Before committing new content:
    - [ ] 5-8 specific tags included
    - [ ] 3-6 concrete capabilities defined
    - [ ] 3-6 actionable useWhen scenarios
-   - [ ] Accurate token count (use `wc -w file.md | multiply by 0.75`)
+   - [ ] Accurate token count within ±10% (use `wc -w file.md | multiply by 0.75`)
+   - [ ] Optional optimization fields used when appropriate
 
 2. **Content quality:**
    - [ ] Focused on single topic
@@ -152,7 +276,7 @@ Before committing new content:
    - [ ] Metadata accurately reflects content
 
 4. **Integration:**
-   - [ ] Saved to correct `resources/*/\_fragments/` directory
+   - [ ] Saved to correct `resources/*/\` directory
    - [ ] No file conflicts
    - [ ] Index rebuilt (automatic on file changes)
 

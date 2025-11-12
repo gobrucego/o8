@@ -6,7 +6,7 @@
  * This test suite validates the full MCP protocol implementation:
  * 1. Server startup and MCP handshake
  * 2. List all static resources
- * 3. Read a static resource (e.g., orchestr8://agents/_fragments/typescript-core)
+ * 3. Read a static resource (e.g., orchestr8://agents/typescript-core)
  * 4. Read a dynamic resource with fuzzy matching (orchestr8://agents/match?query=typescript+api)
  * 5. Verify dynamic resource returns assembled content from multiple fragments
  * 6. Test invalid URIs return proper errors
@@ -285,9 +285,9 @@ describe("MCP Protocol Integration Tests", () => {
   // Test 3: Read a Static Resource
   // ==========================================================================
   describe("Read Static Resource", () => {
-    it("should read orchestr8://agents/_fragments/typescript-core", async () => {
+    it("should read orchestr8://agents/typescript-core", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/_fragments/typescript-core",
+        uri: "orchestr8://agents/typescript-core",
       });
 
       assert.ok(result, "Should return a result");
@@ -300,7 +300,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should return text content", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/_fragments/typescript-core",
+        uri: "orchestr8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -314,7 +314,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should have substantial content (>500 chars)", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/_fragments/typescript-core",
+        uri: "orchestr8://agents/typescript-core",
       });
 
       const text = result.contents[0].text;
@@ -326,7 +326,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should have correct MIME type", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/_fragments/typescript-core",
+        uri: "orchestr8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -339,7 +339,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should include URI in content response", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/_fragments/typescript-core",
+        uri: "orchestr8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -352,7 +352,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should read nested resource path", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://examples/_fragments/typescript-rest-api-complete",
+        uri: "orchestr8://examples/typescript-rest-api-complete",
       });
 
       assert.ok(result.contents[0].text, "Should read nested resource");
@@ -603,7 +603,7 @@ describe("MCP Protocol Integration Tests", () => {
   // ==========================================================================
   describe("Cache Hit on Second Request", () => {
     it("should cache static resource content", async () => {
-      const uri = "orchestr8://agents/_fragments/typescript-core";
+      const uri = "orchestr8://agents/typescript-core";
 
       // First request (cache miss)
       const result1 = await client.sendRequest("resources/read", { uri });

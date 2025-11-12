@@ -223,32 +223,32 @@ Resources are organized by category:
 ```
 resources/
 ├── agents/
-│   └── _fragments/
+│   └── 
 │       ├── typescript-core.md
 │       ├── python-core.md
 │       └── database-architect-sql.md
 ├── skills/
-│   └── _fragments/
+│   └── 
 │       ├── api-design-rest.md
 │       ├── error-handling-validation.md
 │       └── testing-unit.md
 ├── examples/
-│   └── _fragments/
+│   └── 
 │       ├── express-jwt-auth.md
 │       ├── fastapi-async-crud.md
 │       └── typescript-rest-api-complete.md
 ├── patterns/
-│   └── _fragments/
+│   └── 
 │       ├── architecture-microservices.md
 │       ├── event-driven-cqrs.md
 │       └── autonomous-organization.md
 ├── guides/
-│   └── _fragments/
+│   └── 
 │       ├── ci-cd-github-actions.md
 │       ├── aws-eks-cluster.md
 │       └── prometheus-monitoring-setup.md
 └── workflows/
-    └── _fragments/
+    └── 
         ├── workflow-add-feature.md
         ├── workflow-fix-bug.md
         └── workflow-research-tech.md
@@ -265,14 +265,14 @@ orchestr8://<category>/<path>/<filename>
 **Examples**:
 
 ```
-File:  resources/agents/_fragments/typescript-core.md
-URI:   orchestr8://agents/_fragments/typescript-core
+File:  resources/agents/typescript-core.md
+URI:   orchestr8://agents/typescript-core
 
-File:  resources/skills/_fragments/api-design-rest.md
-URI:   orchestr8://skills/_fragments/api-design-rest
+File:  resources/skills/api-design-rest.md
+URI:   orchestr8://skills/api-design-rest
 
-File:  resources/examples/_fragments/express-jwt-auth.md
-URI:   orchestr8://examples/_fragments/express-jwt-auth
+File:  resources/examples/express-jwt-auth.md
+URI:   orchestr8://examples/express-jwt-auth
 ```
 
 **Note**: File extensions (`.md`, `.json`, `.yaml`) are omitted from URIs.
@@ -409,25 +409,28 @@ orchestr8://match?query=testing&categories=agent,skill
 
 #### `mode` (optional)
 
-Matching mode: `catalog` or `full`.
+Matching mode: `index` (default), `minimal`, `catalog`, or `full`.
 
 ```
-orchestr8://agents/match?query=typescript&mode=catalog
+orchestr8://agents/match?query=typescript&mode=index
 ```
 
 **Modes**:
-- `catalog`: Returns summaries/metadata only (efficient)
-- `full`: Returns full content (default)
+- `index` (default): Returns ultra-compact useWhen scenarios (~200-500 tokens, fastest)
+- `minimal`: Returns compact JSON with URIs and scores (~300-500 tokens)
+- `catalog`: Returns full metadata with capabilities (~1,500-2,000 tokens)
+- `full`: Returns complete resource content (~5,000-10,000+ tokens)
 
 #### `maxResults` (optional)
 
-Maximum number of fragments to return (catalog mode).
+Maximum number of fragments to return (index/minimal/catalog modes).
 
 ```
-orchestr8://agents/match?query=api&mode=catalog&maxResults=5
+orchestr8://agents/match?query=api&mode=index&maxResults=5
+orchestr8://agents/match?query=api&mode=catalog&maxResults=10
 ```
 
-**Default**: 10 results
+**Default**: 5 for index/minimal modes, 10 for catalog mode
 
 #### `minScore` (optional)
 
@@ -571,7 +574,7 @@ The complete resolution flow:
 
 ```
 1. Parse URI
-   ├─ Static? (orchestr8://agents/_fragments/typescript-core)
+   ├─ Static? (orchestr8://agents/typescript-core)
    │  └─> Load file directly
    └─ Dynamic? (orchestr8://agents/match?query=...)
       └─> Continue to step 2
@@ -609,7 +612,7 @@ The complete resolution flow:
 
 ### Example 1: Simple Static Resource
 
-**File**: `resources/skills/_fragments/testing-unit.md`
+**File**: `resources/skills/testing-unit.md`
 
 ```markdown
 ---
@@ -639,7 +642,7 @@ estimatedTokens: 800
 ```typescript
 ReadMcpResourceTool({
   server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://skills/_fragments/testing-unit"
+  uri: "orchestr8://skills/testing-unit"
 })
 ```
 
@@ -765,7 +768,7 @@ orchestr8://examples/match?query={{technology}}&maxTokens=2000
    - URIs: kebab-case (e.g., `orchestr8://agents/typescript-core`)
 
 2. **File Organization**:
-   - Use `_fragments` subdirectories for composable resources
+   - Use `` subdirectories for composable resources
    - Group related resources together
    - Keep files focused and single-purpose
 

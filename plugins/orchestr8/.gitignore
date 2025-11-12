@@ -2,6 +2,13 @@
 dist/
 *.tsbuildinfo
 
+# Orchestr8 output
+.orchestr8/
+
+# O output
+.orchestr8/
+.knowledge/
+
 # Dependencies
 node_modules/
 
@@ -11,6 +18,10 @@ medium/
 # Environment variables
 .env
 .env.local
+
+# Configuration files (may contain tokens/secrets)
+.orchestr8rc.json
+orchestr8.config.json
 
 # IDE
 .vscode/
@@ -26,6 +37,8 @@ Thumbs.db
 
 # Testing
 coverage/
+test-results/
+playwright-report/
 
 # Temporary files
 tmp/

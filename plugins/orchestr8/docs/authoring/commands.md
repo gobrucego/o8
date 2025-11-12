@@ -535,7 +535,7 @@ The catalog indexes agents, skills, patterns, and workflows with tags, capabilit
 
 **REQUIRED FIRST STEP:** Load autonomous organization pattern
 ```
-orchestr8://patterns/_fragments/autonomous-organization
+orchestr8://patterns/autonomous-organization
 ```
 
 **Optional:** Query catalog for additional resources
@@ -567,9 +567,9 @@ Wave 3 = PMs depending ONLY on Waves 1 & 2
 ### 3. Load Agent Resources
 
 ```
-orchestr8://agents/_fragments/project-manager
-orchestr8://agents/_fragments/worker-developer
-orchestr8://agents/_fragments/worker-qa
+orchestr8://agents/project-manager
+orchestr8://agents/worker-developer
+orchestr8://agents/worker-qa
 ```
 
 ### 4. Launch PMs in Waves

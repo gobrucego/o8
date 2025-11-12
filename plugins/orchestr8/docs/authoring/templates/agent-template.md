@@ -37,7 +37,14 @@ useWhen:
 # Estimated Tokens:
 #   - Core agent: 600-750 tokens
 #   - Specialized agent: 450-650 tokens
+#   - MUST be accurate within ±10%
 estimatedTokens: ${calculated-count}
+
+# Optional: Optimization fields (Phases 2-3)
+# prerequisite: [core-agent-id]  # For specialized agents (Phase 3)
+# relatedTo: [related-agent-1, related-skill-1]  # Cross-references (Phase 2)
+# examples: [orchestr8://examples/example-id]  # Example extraction (Phase 1)
+# advancedTopics: [orchestr8://agents/advanced-module]  # Progressive loading (Phase 3)
 ---
 
 # ${Technology} ${Specialization} Expertise
@@ -116,15 +123,25 @@ ${code-example}
 
 ## Related Expertise
 
-**Core Agent:** [${Technology} Core](orchestr8://agents/${technology}-core)
+**Prerequisites (Phase 3 - if specialized agent):**
+- [${Technology} Core](orchestr8://agents/${technology}-core) - Required foundation
 
-**Specialized Agents:**
+**Core Agent (if you're a specialized agent):**
+- [${Technology} Core](orchestr8://agents/${technology}-core)
+
+**Specialized Agents (Phase 2 - Cross-references):**
 - [${Technology} ${Other-Specialization}](orchestr8://agents/${technology}-${other-specialization})
 - [${Technology} ${Another-Specialization}](orchestr8://agents/${technology}-${another-specialization})
 
-**Complementary Skills:**
+**Complementary Skills (Phase 2 - Cross-references):**
 - [${Related-Skill}](orchestr8://skills/${skill-id})
 - [${Another-Skill}](orchestr8://skills/${skill-id})
+
+**Detailed Examples (Phase 1 - if extracted):**
+- [${Example-Name}](orchestr8://examples/${example-id})
+
+**Advanced Topics (Phase 3 - if split for progressive loading):**
+- [${Advanced-Topic}](orchestr8://agents/${advanced-module-id})
 
 ---
 
@@ -252,9 +269,38 @@ Before committing agent fragments:
 - [ ] 4-6 concrete capabilities (domain expertise focus)
 - [ ] 4-6 specific useWhen scenarios (development contexts)
 - [ ] Token count appropriate (600-750 core, 450-650 specialized)
+- [ ] Token estimate accurate within ±10%
 - [ ] 2-3 tested code examples
 - [ ] Best practices included
 - [ ] Common pitfalls documented
 - [ ] Links to related agents/skills
 - [ ] Discoverable via test queries (6-8 queries)
 - [ ] Unique value compared to existing agents
+
+### Optimization Patterns Checklist
+
+Apply these optimization patterns when appropriate:
+
+**Phase 1: Example Extraction**
+- [ ] Fragment >100 lines? Consider extracting detailed examples
+- [ ] Examples >30% of content? Extract to separate example files
+- [ ] Added `examples: [orchestr8://examples/...]` field?
+- [ ] Brief inline examples remain in main content?
+
+**Phase 2: Cross-Referencing**
+- [ ] Identified related agents/skills used together >60% of time?
+- [ ] Added `relatedTo: [...]` field for high co-occurrence fragments?
+- [ ] Added cross-reference links in content (50-100 token cost)?
+- [ ] ROI justified (3-5x improved discoverability)?
+
+**Phase 3: Progressive Loading**
+- [ ] Is this a specialized agent? Added `prerequisite: [core-agent]`?
+- [ ] Core agent? Added `advancedTopics: [...]` for optional advanced content?
+- [ ] Clear always-needed vs sometimes-needed split?
+- [ ] Advanced content >40% of tokens? Consider splitting.
+
+**Token Efficiency:**
+- [ ] Calculated savings from optimizations?
+- [ ] Example extraction: 25-40% reduction achieved?
+- [ ] Progressive loading: 40-60% savings for generic queries?
+- [ ] Cross-refs: Token cost (50-100) justified by benefit?

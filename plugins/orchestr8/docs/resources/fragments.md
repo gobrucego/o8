@@ -9,7 +9,7 @@ Fragments are the fundamental building blocks of the Orchestr8 resource system. 
 - **Focuses on a single concept** (e.g., "TypeScript async patterns", "JWT authentication", "circuit breaker pattern")
 - **Contains 500-1000 tokens** of content (ideal range)
 - **Includes rich metadata** for discovery and matching
-- **Lives in `_fragments/` subdirectories** within resource categories
+- **Lives in `` subdirectories** within resource categories
 - **Can be loaded individually** or combined with other fragments
 
 ### Why Fragments?
@@ -33,7 +33,7 @@ Fragments solve these problems by:
 ```
 resources/
 ├── agents/
-│   ├── _fragments/                      # Fragment subdirectory
+│   ├──                       # Fragment subdirectory
 │   │   ├── typescript-core.md           # Core TypeScript expertise
 │   │   ├── typescript-async-patterns.md # Async/await patterns
 │   │   ├── typescript-api-development.md # API development
@@ -42,18 +42,18 @@ resources/
 │   │   └── ...
 │   └── (optional full resources)        # Not recommended
 ├── skills/
-│   └── _fragments/
+│   └── 
 │       ├── error-handling-resilience.md
 │       ├── testing-integration.md
 │       └── ...
 └── patterns/
-    └── _fragments/
+    └── 
         ├── autonomous-organization.md
         └── ...
 ```
 
 **Key principles:**
-- All fragments go in `_fragments/` subdirectories
+- All fragments go in `` subdirectories
 - One fragment per file
 - Descriptive filenames (lowercase, hyphen-separated)
 - Filename becomes part of fragment ID
@@ -139,8 +139,8 @@ category: agent
 - `workflow` - Execution strategy
 
 **Note:** Must match the directory the fragment is in:
-- `agents/_fragments/` → `category: agent`
-- `skills/_fragments/` → `category: skill`
+- `agents/` → `category: agent`
+- `skills/` → `category: skill`
 - etc.
 
 #### `tags` (array of strings)
@@ -288,8 +288,8 @@ URIs of related fragments that complement this one.
 
 ```yaml
 relatedFragments:
-  - orchestr8://agents/_fragments/typescript-async-patterns
-  - orchestr8://skills/_fragments/error-handling-async
+  - orchestr8://agents/typescript-async-patterns
+  - orchestr8://skills/error-handling-async
 ```
 
 **Use cases:**
@@ -303,7 +303,7 @@ Fragments that should be loaded before this one (prerequisite knowledge).
 
 ```yaml
 dependencies:
-  - orchestr8://agents/_fragments/python-core
+  - orchestr8://agents/python-core
 ```
 
 **Use cases:**
@@ -416,11 +416,11 @@ typescript-core (650 tokens)
 **Loading:**
 ```typescript
 // Basic task: Load core only
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 // API task: Load core + API extension
-orchestr8://agents/_fragments/typescript-core
-orchestr8://agents/_fragments/typescript-api-development
+orchestr8://agents/typescript-core
+orchestr8://agents/typescript-api-development
 ```
 
 ### Pattern 2: Skill Composition
@@ -468,7 +468,7 @@ Total: 2,840 tokens
 
 **Loading:**
 ```typescript
-orchestr8://workflows/_fragments/workflow-deploy
+orchestr8://workflows/workflow-deploy
 // Workflow references other fragments
 // System can auto-load referenced fragments
 ```
@@ -514,7 +514,7 @@ orchestr8://agents/match?query=fastapi+pydantic+async&maxTokens=3000
 
 ### Category-Specific Conventions
 
-#### Agents (`agents/_fragments/`)
+#### Agents (`agents/`)
 
 ```
 {language/domain}-{specialization}.md
@@ -527,7 +527,7 @@ orchestr8://agents/match?query=fastapi+pydantic+async&maxTokens=3000
 - `frontend-react-expert.md`
 - `database-architect-sql.md`
 
-#### Skills (`skills/_fragments/`)
+#### Skills (`skills/`)
 
 ```
 {category}-{specific-skill}.md
@@ -539,7 +539,7 @@ orchestr8://agents/match?query=fastapi+pydantic+async&maxTokens=3000
 - `security-authentication-jwt.md`
 - `performance-database-optimization.md`
 
-#### Patterns (`patterns/_fragments/`)
+#### Patterns (`patterns/`)
 
 ```
 {pattern-category}-{pattern-name}.md
@@ -551,7 +551,7 @@ orchestr8://agents/match?query=fastapi+pydantic+async&maxTokens=3000
 - `security-auth-oauth.md`
 - `autonomous-organization.md`
 
-#### Examples (`examples/_fragments/`)
+#### Examples (`examples/`)
 
 ```
 {technology}-{example-type}.md
@@ -563,7 +563,7 @@ orchestr8://agents/match?query=fastapi+pydantic+async&maxTokens=3000
 - `kubernetes-deployment-basic.md`
 - `terraform-vpc-setup.md`
 
-#### Workflows (`workflows/_fragments/`)
+#### Workflows (`workflows/`)
 
 ```
 workflow-{task-name}.md
@@ -642,19 +642,19 @@ workflow-{task-name}.md
 
 1. **Reference related fragments** in content
    ```markdown
-   For async patterns, see [typescript-async-patterns](orchestr8://agents/_fragments/typescript-async-patterns).
+   For async patterns, see [typescript-async-patterns](orchestr8://agents/typescript-async-patterns).
    ```
 
 2. **Use relatedFragments** frontmatter
    ```yaml
    relatedFragments:
-     - orchestr8://agents/_fragments/typescript-async-patterns
+     - orchestr8://agents/typescript-async-patterns
    ```
 
 3. **Mention dependencies**
    ```yaml
    dependencies:
-     - orchestr8://agents/_fragments/typescript-core
+     - orchestr8://agents/typescript-core
    ```
 
 ### Common Pitfalls
@@ -786,7 +786,7 @@ version: 1.2.0
 2. **Update frontmatter** with deprecation info
    ```yaml
    deprecated: true
-   deprecatedBy: orchestr8://agents/_fragments/new-fragment-id
+   deprecatedBy: orchestr8://agents/new-fragment-id
    deprecationReason: "Split into multiple focused fragments"
    ```
 
@@ -807,7 +807,7 @@ Test if fragments can be discovered with expected queries:
 orchestr8://match?query=retry+exponential+backoff&mode=index
 
 # Expected result should include:
-# orchestr8://skills/_fragments/error-handling-resilience
+# orchestr8://skills/error-handling-resilience
 ```
 
 **Validation:**
@@ -863,7 +863,7 @@ typescript-developer.md (5000 tokens)
 
 **After (fragments):**
 ```
-_fragments/
+
 ├── typescript-core.md (650 tokens)
 ├── typescript-async-patterns.md (580 tokens)
 ├── typescript-api-development.md (720 tokens)
@@ -901,11 +901,11 @@ Combine fragments from multiple categories:
 
 ```
 Full-Stack Developer
-├── agents/_fragments/typescript-core
-├── agents/_fragments/frontend-react-expert
-├── skills/_fragments/api-design-rest
-├── patterns/_fragments/authentication-jwt
-└── examples/_fragments/express-jwt-auth
+├── agents/typescript-core
+├── agents/frontend-react-expert
+├── skills/api-design-rest
+├── patterns/authentication-jwt
+└── examples/express-jwt-auth
 
 Total: ~3,200 tokens
 ```
@@ -916,15 +916,15 @@ Load fragments based on context:
 
 ```
 if (language === 'typescript') {
-  load('agents/_fragments/typescript-core');
+  load('agents/typescript-core');
 } else if (language === 'python') {
-  load('agents/_fragments/python-core');
+  load('agents/python-core');
 }
 
 if (framework === 'express') {
-  load('examples/_fragments/express-jwt-auth');
+  load('examples/express-jwt-auth');
 } else if (framework === 'fastapi') {
-  load('examples/_fragments/fastapi-async-crud');
+  load('examples/fastapi-async-crud');
 }
 ```
 

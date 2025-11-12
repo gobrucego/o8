@@ -67,22 +67,101 @@ Phase 4: orchestr8://skills/testing-integration-patterns
 # Loads 800-1200 tokens per phase
 ```
 
-### 3. Token Budgeting
+### 3. Token Budgeting (Phase 3 Optimization)
 
-**Plan token budgets per phase:**
+**Plan token budgets per phase with progressive loading:**
 
 ```markdown
 Phase 1 (Research): 800-1200 tokens
-└─ Research skills, analysis patterns
+├─ Load: Research skills + analysis patterns
+├─ Strategy: Core concepts only, no advanced topics
+└─ Example: orchestr8://skills/match?query=requirement+analysis&maxTokens=1000
 
 Phase 2 (Design): 1200-1800 tokens
-└─ Core agent + design patterns
+├─ Load: Core agent + design patterns
+├─ Strategy: Fundamentals + architecture, defer implementation details
+└─ Example: orchestr8://match?query=${tech}+architecture&categories=agent,pattern&maxTokens=1500
 
 Phase 3 (Implementation): 2000-2500 tokens
-└─ Core + specialized agents + examples
+├─ Load: Core + specialized agents + targeted examples
+├─ Strategy: Now load detailed implementation knowledge
+├─ Use prerequisite field to ensure core loaded first
+└─ Example:
+    orchestr8://agents/${tech}-core (prerequisite)
+    orchestr8://agents/${tech}-${specialization}
+    orchestr8://examples/${specific-pattern}
 
 Phase 4 (Testing): 800-1200 tokens
-└─ Testing skills + validation
+├─ Load: Testing skills + validation patterns
+├─ Strategy: Only testing-specific knowledge
+└─ Example: orchestr8://skills/match?query=testing+${tech}&maxTokens=1000
+
+Total worst case: 6000-7500 tokens
+But loaded progressively across 4 phases (1500-1875 per phase average)
+```
+
+**Token budget optimization strategies:**
+
+1. **Use maxTokens parameter:**
+```markdown
+# Limit expertise loaded per phase
+orchestr8://match?query=python+api&maxTokens=1500
+
+# Instead of unlimited loading that might fetch 3000+ tokens
+orchestr8://match?query=python+api
+```
+
+2. **Category filtering:**
+```markdown
+# Phase 1: Only load patterns and skills (no examples yet)
+orchestr8://match?query=api+design&categories=pattern,skill&maxTokens=1000
+
+# Phase 3: Now load examples too
+orchestr8://match?query=api+implementation&categories=agent,example&maxTokens=2000
+```
+
+3. **Progressive specificity:**
+```markdown
+# Phase 1: Broad query (loads core only)
+orchestr8://agents/match?query=${technology}
+
+# Phase 2: More specific (loads core + specialization)
+orchestr8://agents/match?query=${technology}+${framework}
+
+# Phase 3: Very specific (loads core + multiple specializations + examples)
+orchestr8://match?query=${technology}+${framework}+${feature}&categories=agent,skill,example
+```
+
+**Example: Feature Development Workflow with Progressive Budgets**
+
+```markdown
+## Phase 1: Planning (0-25%) - Budget: 1000 tokens
+**→ Load:** orchestr8://skills/match?query=feature+planning+requirements&maxTokens=1000
+
+Load only planning skills, no implementation details yet.
+
+## Phase 2: Architecture (25-50%) - Budget: 1500 tokens
+**→ Load:**
+- orchestr8://agents/${tech}-core (prerequisite)
+- orchestr8://patterns/match?query=${architecture}&maxTokens=800
+
+Load core language agent + architectural patterns.
+
+## Phase 3: Implementation (50-80%) - Budget: 2500 tokens
+**→ Load:**
+- orchestr8://agents/${tech}-core (prerequisite, may already be cached)
+- orchestr8://agents/${tech}-${specialization}
+- orchestr8://examples/match?query=${tech}+${pattern}&maxTokens=1000
+
+Now load specialized implementation knowledge and examples.
+
+## Phase 4: Testing (80-100%) - Budget: 1000 tokens
+**→ Load:** orchestr8://skills/match?query=testing+${tech}&maxTokens=1000
+
+Load testing-specific skills only.
+
+Total budget: 6000 tokens maximum
+Actual usage: ~4500 tokens average (25% savings from caching core agent)
 ```
 
 ### 4. Parallelism Opportunities
@@ -553,7 +632,7 @@ estimatedTokens: 520
 **Parallel tracks:**
 - Discovery testing: Verify fuzzy matching
 - Metadata optimization: Enhance if needed
-- Integration: Save to resources/agents/_fragments/
+- Integration: Save to resources/agents/
 
 **→ Checkpoint:** Agent discoverable and integrated
 
@@ -562,7 +641,7 @@ estimatedTokens: 520
 ✅ Appropriate size (600-750 core, 450-650 specialized)
 ✅ Rich metadata (6-8 tags, 4-6 capabilities/useWhen)
 ✅ Discoverable via test queries
-✅ Saved to resources/agents/_fragments/
+✅ Saved to resources/agents/
 ```
 
 ## Workflow Creation Checklist
@@ -595,7 +674,7 @@ Access: Via MCP prompts system
 
 **As pattern fragment:**
 ```markdown
-Location: resources/workflows/_fragments/workflow-name.md
+Location: resources/workflows/workflow-name.md
 Discovery: orchestr8://workflows/match?query=...
 ```
 

@@ -7,6 +7,99 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.0-rc4] - 2025-11-12
+
+### Added
+
+#### Git Expertise Suite (Complete)
+- **3 Git Expert Agents** for comprehensive version control guidance
+  - `git-expert`: Core Git operations, branching, merging, remote operations (~950 tokens)
+  - `github-workflow-specialist`: GitHub features, gh CLI, pull requests, Actions (~1,050 tokens)
+  - `git-troubleshooter`: Error resolution, recovery, conflict resolution (~1,100 tokens)
+
+- **9 Git Skills** covering all Git/GitHub workflows
+  - `git-commit-best-practices`: Conventional Commits, semantic versioning (~750 tokens)
+  - `git-branching-strategies`: Git Flow, GitHub Flow, trunk-based development (~820 tokens)
+  - `git-hooks-automation`: Pre-commit, Husky, lint-staged, secret scanning (~880 tokens)
+  - `git-pr-workflow`: Pull request creation, review, templates (~750 tokens)
+  - `git-rebase-merge`: Rebase vs merge decisions, interactive rebase (~820 tokens)
+  - `git-advanced-commands`: Stash, cherry-pick, bisect, reflog, worktree (~880 tokens)
+  - `github-cli-essentials`: gh command reference and automation (~850 tokens)
+  - `git-security-practices`: GPG signing, secret detection, security best practices (~870 tokens)
+  - `git-workflow`: Team collaboration guidelines (pre-existing, ~450 tokens)
+
+- **3 Git Patterns** for strategic approaches
+  - `git-collaboration-workflow`: Team collaboration, code review culture (~1,094 tokens)
+  - `git-release-management`: Semantic versioning, changelog automation (~1,073 tokens)
+  - `git-monorepo-strategies`: Large codebase management, Turborepo, Nx (~1,352 tokens)
+
+- **5 Git Examples** with copy-paste code in `resources/examples/git/`
+  - `git-commit-examples`: Good vs bad commits, conventional format (~650 tokens)
+  - `git-pr-templates`: Feature, bugfix, and hotfix PR templates (~620 tokens)
+  - `git-hooks-implementations`: Complete hook implementations (~680 tokens)
+  - `github-actions-workflows`: CI/CD pipeline examples (~690 tokens)
+  - `git-troubleshooting-scenarios`: 15 common problems with solutions (~670 tokens)
+
+- **Git Expert Command** (`/orchestr8:git-expert`)
+  - Progressive JIT-loading command for Git assistance
+  - Token-efficient: 3,000-5,000 tokens vs 23,000 static docs (78-87% savings)
+  - Dynamic resource loading based on user's specific need
+  - Phases: Understanding → Targeted Expertise → Examples → Patterns → Implementation
+
+#### Documentation & Resources
+- **GIT_EXPERTISE_SUITE_README.md**: Complete documentation of Git resources
+- Token efficiency analysis and usage guidelines
+- Resource cross-references and discovery patterns
+
+### Changed
+
+#### Resource Organization (Major Restructuring)
+- **Eliminated `_fragments/` subdirectories** - Migrated to flat structure for better discoverability
+  - Moved `resources/agents/_fragments/*.md` → `resources/agents/*.md`
+  - Moved `resources/skills/_fragments/*.md` → `resources/skills/*.md`
+  - Moved `resources/patterns/_fragments/*.md` → `resources/patterns/*.md`
+  - Moved `resources/examples/_fragments/*.md` → category subdirectories
+  - Moved `resources/workflows/_fragments/*.md` → `resources/workflows/*.md`
+
+- **Reorganized Examples** - Created domain-specific subdirectories:
+  - `resources/examples/git/` - Git and GitHub examples (5 files)
+  - `resources/examples/cloud/` - Cloud infrastructure examples
+  - `resources/examples/compliance/` - Compliance and audit examples
+  - `resources/examples/database/` - Database examples
+  - `resources/examples/infrastructure/` - Infrastructure as Code
+  - `resources/examples/ml/` - Machine learning examples
+  - `resources/examples/security/` - Security implementations
+  - `resources/examples/diagrams/` - Diagram generation examples
+  - `resources/examples/patterns/` - Pattern implementations
+  - `resources/examples/research/` - Research methodologies
+  - `resources/examples/skills/` - Skill demonstrations
+  - `resources/examples/workflows/` - Workflow examples
+
+#### Index Updates
+- **Rebuilt resource index** with 404 total fragments (up from ~220)
+- **1,899 useWhen scenarios** for improved discoverability (previously ~900)
+- **4,177 unique keywords** for precise matching (previously ~2,100)
+- **Average 4.7 scenarios per fragment** (improved from 4.1)
+- Index files: usewhen-index.json (1.0 MB), keyword-index.json (720 KB), quick-lookup.json (6.5 KB)
+
+### Technical Details
+
+**Git Expertise Suite Token Efficiency:**
+- Traditional Git documentation approach: ~23,000 tokens
+- Orchestr8 JIT approach: 3,000-5,000 tokens (typical usage)
+- **Token savings: 78-87%**
+
+**Resource Statistics:**
+- Total Git resources: 22 (3 agents + 10 skills + 3 patterns + 5 examples + 1 command)
+- Optimal token sizing: 450-1,352 tokens per resource
+- Rich metadata: 8-15 useWhen scenarios each
+- Cross-referenced for JIT navigation
+
+**Architecture Improvements:**
+- Flat resource structure improves index lookup performance
+- Domain-organized examples improve semantic matching
+- Increased fragment count without token budget increase
+
 ## [8.0.0-rc3] - 2025-11-11
 
 ### Added

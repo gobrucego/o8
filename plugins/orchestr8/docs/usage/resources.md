@@ -27,34 +27,84 @@ Resources are **fragments of specialized knowledge** that can be loaded on-deman
 - **Content**: Expertise, patterns, examples, code
 - **Token estimate**: Size for budget management
 
-### Resource Organization
+### Resource Organization with Progressive Loading
 
 ```
 resources/
-├── agents/           # AI agent definitions
-│   └── _fragments/   # 500-1000 token fragments
-├── skills/           # Reusable techniques
-│   └── _fragments/
+├── agents/           # AI agent definitions with progressive loading
+│   ├── Core content (500-1000 tokens) ← Load immediately
+│   └── Examples via orchestr8:// URIs ← Load on-demand
+│       Example: sre-specialist
+│       - Core: 180 tokens
+│       - Examples: orchestr8://examples/infrastructure/sre-slo-configuration
+│       - Savings: 52-82% typical
+│
+├── skills/           # Reusable techniques (focused fragments)
+│   └── 600-900 token fragments with concrete examples
+│
 ├── patterns/         # Design patterns
-│   └── _fragments/
-├── examples/         # Code examples
-│   └── _fragments/
+│   └── Architecture and implementation guidance
+│
+├── examples/         # Code examples (loaded on-demand)
+│   └── Working code referenced by orchestr8:// URIs
+│
 ├── guides/           # Setup guides
-│   └── _fragments/
-├── best-practices/   # Standards and guidelines
-│   └── _fragments/
-└── workflows/        # Process templates
-    └── _fragments/
+│   └── Step-by-step instructions
+│
+└── workflows/        # Process templates with JIT loading
+    └── Phase-based resource loading with "→ Load" markers
 ```
+
+**Progressive Loading Benefits:**
+- **Core-first**: Essential knowledge loaded immediately
+- **On-demand examples**: Load via orchestr8:// URIs when needed
+- **Token efficiency**: 52-82% savings vs loading all content
+- **Real example**: rust-expert-core (700 tokens) + advanced patterns (orchestr8://agents/rust-expert-advanced) loaded when needed
 
 ### Loading Modes
 
 | Mode | Use Case | Syntax | Tokens | Speed |
 |------|----------|--------|--------|-------|
-| **Static** | Known resource | `orchestr8://category/_fragments/id` | Exact | <5ms |
+| **Static** | Known resource | `orchestr8://category/id` | Exact | <5ms |
 | **Catalog** | Discovery | `orchestr8://match?query=...&mode=catalog` | 50-120 | ~15ms |
 | **Index** | Fast lookup | `orchestr8://match?query=...&mode=index` | 50-120 | ~5ms |
 | **Full** | Ready-to-use | `orchestr8://match?query=...&mode=full` | 800-3000 | ~15ms |
+
+### Resource Discovery Improvements (v8.0)
+
+Orchestr8 maintains optimized indexes for efficient resource discovery:
+
+**Index Statistics:**
+- **383 fragments** indexed across all categories
+- **1,675 useWhen scenarios** for context-aware matching
+- **4,036 unique keywords** for semantic search
+- **Quick-lookup cache** for common queries (<2ms response)
+
+**Matching Performance:**
+- **Index mode**: 5-10ms (keyword-based, tier 2)
+- **Quick cache**: <2ms for common queries (tier 1)
+- **Fuzzy fallback**: 15-20ms when needed (tier 3)
+- **Cache hit rate**: 70-80% in typical usage
+
+**Discovery Examples:**
+
+**Fast lookup (index mode):**
+```
+orchestr8://match?query=retry+exponential+backoff&mode=index&maxResults=5
+→ Returns top 5 in 5-10ms with keyword matching
+```
+
+**Catalog discovery:**
+```
+orchestr8://match?query=typescript+api+authentication&mode=catalog&maxResults=15
+→ Returns 15 ranked results in 15-20ms with semantic scoring
+```
+
+**Full content assembly:**
+```
+orchestr8://match?query=python+async+patterns&mode=full&maxTokens=2500
+→ Returns assembled content within token budget in 15-20ms
+```
 
 ---
 
@@ -84,9 +134,9 @@ resources/
 
 **Example URIs:**
 ```
-orchestr8://agents/_fragments/typescript-core
-orchestr8://agents/_fragments/python-async-fundamentals
-orchestr8://agents/_fragments/go-concurrency-patterns
+orchestr8://agents/typescript-core
+orchestr8://agents/python-async-fundamentals
+orchestr8://agents/go-concurrency-patterns
 ```
 
 **Dynamic loading:**
@@ -120,9 +170,9 @@ orchestr8://agents/match?query=typescript+generics+api
 
 **Example URIs:**
 ```
-orchestr8://skills/_fragments/error-handling-resilience
-orchestr8://skills/_fragments/api-design-rest
-orchestr8://skills/_fragments/database-optimization
+orchestr8://skills/error-handling-resilience
+orchestr8://skills/api-design-rest
+orchestr8://skills/database-optimization
 ```
 
 **Dynamic loading:**
@@ -156,9 +206,9 @@ orchestr8://skills/match?query=retry+exponential+backoff
 
 **Example URIs:**
 ```
-orchestr8://patterns/_fragments/microservices-architecture
-orchestr8://patterns/_fragments/security-auth-jwt
-orchestr8://patterns/_fragments/event-sourcing
+orchestr8://patterns/microservices-architecture
+orchestr8://patterns/security-auth-jwt
+orchestr8://patterns/event-sourcing
 ```
 
 **Dynamic loading:**
@@ -192,9 +242,9 @@ orchestr8://patterns/match?query=microservices+api+gateway
 
 **Example URIs:**
 ```
-orchestr8://examples/_fragments/express-jwt-auth
-orchestr8://examples/_fragments/fastapi-async-crud
-orchestr8://examples/_fragments/docker-multistage-nodejs
+orchestr8://examples/express-jwt-auth
+orchestr8://examples/fastapi-async-crud
+orchestr8://examples/docker-multistage-nodejs
 ```
 
 **Dynamic loading:**
@@ -228,9 +278,9 @@ orchestr8://examples/match?query=express+middleware+auth
 
 **Example URIs:**
 ```
-orchestr8://guides/_fragments/aws-eks-setup
-orchestr8://guides/_fragments/docker-compose-development
-orchestr8://guides/_fragments/github-actions-cicd
+orchestr8://guides/aws-eks-setup
+orchestr8://guides/docker-compose-development
+orchestr8://guides/github-actions-cicd
 ```
 
 **Dynamic loading:**
@@ -264,9 +314,9 @@ orchestr8://guides/match?query=kubernetes+aws+setup
 
 **Example URIs:**
 ```
-orchestr8://best-practices/_fragments/code-review-checklist
-orchestr8://best-practices/_fragments/security-owasp-top10
-orchestr8://best-practices/_fragments/api-versioning
+orchestr8://best-practices/code-review-checklist
+orchestr8://best-practices/security-owasp-top10
+orchestr8://best-practices/api-versioning
 ```
 
 **Dynamic loading:**
@@ -300,9 +350,9 @@ orchestr8://best-practices/match?query=api+design+standards
 
 **Example URIs:**
 ```
-orchestr8://workflows/_fragments/workflow-new-project
-orchestr8://workflows/_fragments/workflow-add-feature
-orchestr8://workflows/_fragments/workflow-code-review
+orchestr8://workflows/workflow-new-project
+orchestr8://workflows/workflow-add-feature
+orchestr8://workflows/workflow-code-review
 ```
 
 **Dynamic loading:**
@@ -320,29 +370,29 @@ Load a specific resource when you know exactly what you need.
 
 **URI Format:**
 ```
-orchestr8://category/_fragments/fragment-id
+orchestr8://category/fragment-id
 ```
 
 **Examples:**
 
 Load TypeScript core expertise:
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 Load error handling skill:
 ```
-orchestr8://skills/_fragments/error-handling-resilience
+orchestr8://skills/error-handling-resilience
 ```
 
 Load JWT auth pattern:
 ```
-orchestr8://patterns/_fragments/security-auth-jwt
+orchestr8://patterns/security-auth-jwt
 ```
 
 Load Express example:
 ```
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://examples/express-jwt-auth
 ```
 
 ### When to Use Static Loading
@@ -392,12 +442,12 @@ orchestr8://match?query=typescript+testing&mode=catalog&maxResults=10
 Top 10 Matches for "typescript testing"
 
 1. TypeScript Testing Patterns (Score: 85)
-   URI: orchestr8://agents/_fragments/typescript-testing
+   URI: orchestr8://agents/typescript-testing
    Tokens: 720
    Tags: typescript, testing, jest, unit-tests
 
 2. Integration Testing Strategies (Score: 72)
-   URI: orchestr8://skills/_fragments/testing-integration
+   URI: orchestr8://skills/testing-integration
    Tokens: 680
    Tags: testing, integration, api, e2e
 
@@ -430,11 +480,11 @@ orchestr8://match?query=retry+exponential+backoff&mode=index&maxResults=5
 Top 5 Matches (Index Lookup)
 
 1. Error Handling Resilience (Score: 95)
-   URI: orchestr8://skills/_fragments/error-handling-resilience
+   URI: orchestr8://skills/error-handling-resilience
    Matches: retry, exponential, backoff, timeout
 
 2. API Reliability Patterns (Score: 78)
-   URI: orchestr8://patterns/_fragments/api-reliability
+   URI: orchestr8://patterns/api-reliability
    Matches: retry, exponential, timeout
 
 [... 3 more results ...]
@@ -566,7 +616,7 @@ orchestr8://agents/match?query=build+graphql+api
 
 **1. Use specific resources when known:**
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 Better than:
 ```
@@ -579,7 +629,7 @@ orchestr8://match?query=typescript&mode=full
 orchestr8://match?query=testing+patterns&mode=catalog
 
 # Then: Load specific
-orchestr8://skills/_fragments/testing-integration
+orchestr8://skills/testing-integration
 ```
 
 **3. Use index mode for speed:**
@@ -628,7 +678,7 @@ backend code
 
 **Quick reference** (500-1000 tokens):
 ```
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 ```
 
 **Task context** (1500-2500 tokens):
@@ -644,13 +694,13 @@ orchestr8://match?query=microservices+kubernetes+deployment&mode=full&maxTokens=
 **Progressive loading:**
 ```
 # Step 1: Core (1000 tokens)
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Step 2: Skills (500 tokens)
-orchestr8://skills/_fragments/api-design-rest
+orchestr8://skills/api-design-rest
 
 # Step 3: Examples (800 tokens)
-orchestr8://examples/_fragments/express-jwt-auth
+orchestr8://examples/express-jwt-auth
 ```
 
 ---
@@ -671,8 +721,8 @@ orchestr8://match?query=kubernetes+deployment&mode=catalog&maxResults=10
 # - docker-compose-dev (600 tokens)
 
 # Step 3: Load specific (2000 tokens)
-orchestr8://guides/_fragments/kubernetes-deployment
-orchestr8://patterns/_fragments/helm-charts
+orchestr8://guides/kubernetes-deployment
+orchestr8://patterns/helm-charts
 ```
 
 **Total:** 2100 tokens (vs 5000+ loading everything)
@@ -693,11 +743,11 @@ orchestr8://match?query=circuit+breaker+timeout&mode=index&maxResults=5
 
 ```
 # Agent for core expertise
-orchestr8://agents/_fragments/typescript-core
+orchestr8://agents/typescript-core
 
 # Skills for specific techniques
-orchestr8://skills/_fragments/error-handling-resilience
-orchestr8://skills/_fragments/testing-integration
+orchestr8://skills/error-handling-resilience
+orchestr8://skills/testing-integration
 ```
 
 ### Pattern 4: Pattern + Example
@@ -706,10 +756,10 @@ orchestr8://skills/_fragments/testing-integration
 
 ```
 # Pattern for design
-orchestr8://patterns/_fragments/microservices-architecture
+orchestr8://patterns/microservices-architecture
 
 # Example for implementation
-orchestr8://examples/_fragments/nodejs-microservice
+orchestr8://examples/nodejs-microservice
 ```
 
 ### Pattern 5: Multi-Category Search

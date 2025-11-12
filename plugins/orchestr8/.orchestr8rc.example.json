@@ -1,0 +1,61 @@
+{
+  "$schema": "https://orchestr8.dev/schema/config.json",
+  "resourceProviders": {
+    "aitmpl": {
+      "enabled": true,
+      "apiUrl": "https://api.aitmpl.com",
+      "cacheTTL": 3600000,
+      "categories": [
+        "agents",
+        "skills",
+        "workflows",
+        "patterns",
+        "examples",
+        "best-practices"
+      ],
+      "rateLimit": {
+        "requestsPerMinute": 60,
+        "requestsPerHour": 1000
+      },
+      "timeout": 30000,
+      "retryAttempts": 3
+    },
+    "github": {
+      "enabled": false,
+      "repos": [
+        "username/repo1",
+        "username/repo2"
+      ],
+      "branch": "main",
+      "cacheTTL": 3600000,
+      "auth": {
+        "token": "ghp_your_token_here",
+        "type": "personal"
+      },
+      "timeout": 30000,
+      "retryAttempts": 3
+    },
+    "custom": {
+      "enabled": false,
+      "endpoints": [
+        {
+          "name": "my-custom-api",
+          "url": "https://api.example.com/resources",
+          "headers": {
+            "Authorization": "Bearer your_token_here",
+            "X-Custom-Header": "value"
+          }
+        }
+      ],
+      "cacheTTL": 3600000,
+      "timeout": 30000,
+      "retryAttempts": 3
+    }
+  },
+  "providerDefaults": {
+    "priority": 100,
+    "cacheTTL": 3600000,
+    "timeout": 30000,
+    "retryAttempts": 3
+  }
+}

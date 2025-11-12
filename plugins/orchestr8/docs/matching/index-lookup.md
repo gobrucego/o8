@@ -56,13 +56,13 @@ resources/
 ```
 
 **Build Process:**
-1. Scan all fragment files (221 fragments)
-2. Extract useWhen scenarios (1,142 scenarios)
-3. Generate keyword mappings (3,646 keywords)
-4. Create scenario hashes (SHA-256 based)
-5. Build inverted indexes
-6. Cache common queries
-7. Write to disk
+1. Scan all fragment files (383 fragments across agents, skills, patterns, examples, workflows, guides)
+2. Extract useWhen scenarios (1,675 scenarios total)
+3. Generate keyword mappings (4,036 unique keywords)
+4. Create scenario hashes (SHA-256 based, deterministic)
+5. Build inverted keyword index
+6. Cache top 20 common queries
+7. Write indexes to disk (total 1.2 MB)
 
 **When Built:**
 - During CI/CD pipeline
@@ -87,7 +87,7 @@ resources/
     "scenario-a1b2c3d4e5f6": {
       "scenario": "Implementing retry logic with exponential backoff",
       "keywords": ["implementing", "retry", "logic", "exponential", "backoff"],
-      "uri": "orchestr8://skills/_fragments/error-handling-resilience",
+      "uri": "orchestr8://skills/error-handling-resilience",
       "category": "skill",
       "estimatedTokens": 650,
       "relevance": 100
@@ -95,7 +95,7 @@ resources/
     "scenario-f6e5d4c3b2a1": {
       "scenario": "Building circuit breaker pattern for third-party services",
       "keywords": ["building", "circuit", "breaker", "pattern", "third-party", "services"],
-      "uri": "orchestr8://patterns/_fragments/resilience-patterns",
+      "uri": "orchestr8://patterns/resilience-patterns",
       "category": "pattern",
       "estimatedTokens": 800,
       "relevance": 100
@@ -119,11 +119,11 @@ resources/
 - **relevance**: Default relevance score (100)
 
 **Statistics:**
-- Total fragments: 221
-- Total scenarios: 1,142
-- Average scenarios per fragment: 5.2
-- Average keywords per scenario: 12.7
-- Index size: 692 KB
+- Total fragments: 383
+- Total scenarios: 1,675
+- Average scenarios per fragment: 4.4
+- Average keywords per scenario: 14.2
+- Index size: 692 KB (will scale with fragment growth)
 
 ### 2. Keyword Index (keyword-index.json)
 
@@ -172,9 +172,9 @@ resources/
 - Keywords normalized (lowercase, >2 chars, no stopwords)
 
 **Statistics:**
-- Total unique keywords: 3,646
-- Average scenarios per keyword: 4.0
-- Index size: 525 KB
+- Total unique keywords: 4,036
+- Average scenarios per keyword: 4.1
+- Index size: 525 KB (will scale with fragment growth)
 
 ### 3. Quick Lookup Cache (quick-lookup.json)
 
@@ -187,22 +187,22 @@ resources/
   "commonQueries": {
     "retry": {
       "uris": [
-        "orchestr8://skills/_fragments/error-handling-resilience",
-        "orchestr8://skills/_fragments/error-handling-async"
+        "orchestr8://skills/error-handling-resilience",
+        "orchestr8://skills/error-handling-async"
       ],
       "tokens": 1100
     },
     "workflow": {
       "uris": [
-        "orchestr8://agents/_fragments/workflow-architect",
-        "orchestr8://patterns/_fragments/phased-delivery"
+        "orchestr8://agents/workflow-architect",
+        "orchestr8://patterns/phased-delivery"
       ],
       "tokens": 1220
     },
     "testing": {
       "uris": [
-        "orchestr8://patterns/_fragments/testing-strategies",
-        "orchestr8://skills/_fragments/unit-testing"
+        "orchestr8://patterns/testing-strategies",
+        "orchestr8://skills/unit-testing"
       ],
       "tokens": 950
     }
@@ -268,7 +268,7 @@ const categories = [
 
 const fragments: ResourceFragment[] = [];
 for (const { dir, type } of categories) {
-  const categoryPath = join(resourcesPath, dir, "_fragments");
+  const categoryPath = join(resourcesPath, dir);
   await scanFragmentsDirectory(categoryPath, type, dir, fragments);
 }
 ```
@@ -287,7 +287,7 @@ for (const fragment of fragments) {
 
     // Generate MCP URI
     const uri = fragmentToURI(fragment);
-    // Output: "orchestr8://skills/_fragments/error-handling-resilience"
+    // Output: "orchestr8://skills/error-handling-resilience"
 
     // Create index entry
     index[hash] = {
@@ -420,8 +420,8 @@ Normalized: "retry"
 Cache Check:
   quickLookup.commonQueries["retry"] → {
     uris: [
-      "orchestr8://skills/_fragments/error-handling-resilience",
-      "orchestr8://skills/_fragments/error-handling-async"
+      "orchestr8://skills/error-handling-resilience",
+      "orchestr8://skills/error-handling-async"
     ],
     tokens: 1100
   }
@@ -522,19 +522,19 @@ Result: 5 results in ~15-20ms (fuzzy match latency)
 ## Top Matches
 
 1. **Skill: error-handling-resilience** (~650 tokens)
-   orchestr8://skills/_fragments/error-handling-resilience
+   orchestr8://skills/error-handling-resilience
 
 2. **Pattern: resilience-patterns** (~800 tokens)
-   orchestr8://patterns/_fragments/resilience-patterns
+   orchestr8://patterns/resilience-patterns
 
 3. **Skill: error-handling-async** (~550 tokens)
-   orchestr8://skills/_fragments/error-handling-async
+   orchestr8://skills/error-handling-async
 
 4. **Example: retry-example** (~450 tokens)
-   orchestr8://examples/_fragments/retry-example
+   orchestr8://examples/retry-example
 
 5. **Pattern: circuit-breaker** (~750 tokens)
-   orchestr8://patterns/_fragments/circuit-breaker
+   orchestr8://patterns/circuit-breaker
 
 **To load:** Use ReadMcpResourceTool with URIs above
 **To refine:** Add more specific keywords to query
@@ -645,11 +645,11 @@ npx tsx scripts/build-index.ts
 
 **What Happens:**
 ```
-1. Scan resources/agents/_fragments/
-2. Scan resources/skills/_fragments/
-3. Scan resources/patterns/_fragments/
-4. Scan resources/examples/_fragments/
-5. Scan resources/workflows/_fragments/
+1. Scan resources/agents/
+2. Scan resources/skills/
+3. Scan resources/patterns/
+4. Scan resources/examples/
+5. Scan resources/workflows/
    → Found 221 fragments
 
 6. Extract useWhen scenarios

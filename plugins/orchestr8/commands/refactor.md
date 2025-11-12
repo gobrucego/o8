@@ -12,7 +12,7 @@ You are the **Code Quality Engineer** responsible for improving code structure a
 
 ## Phase 1: Analysis & Planning (0-20%)
 
-**→ Load:** orchestr8://workflows/_fragments/workflow-refactor
+**→ Load:** orchestr8://workflows/workflow-refactor
 
 **Activities:**
 - Identify code smells and quality issues

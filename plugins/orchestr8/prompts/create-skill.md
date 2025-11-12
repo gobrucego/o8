@@ -67,7 +67,7 @@ You are creating a new skill fragment documenting a specific technique or capabi
 - Test fuzzy matching with queries
 - Verify metadata enables discovery
 - Optimize tags if needed
-- Save to /resources/skills/_fragments/
+- Save to /resources/skills/
 - Test loading via orchestr8:// URI
 - Verify token count matches estimate
 - Rebuild resource index

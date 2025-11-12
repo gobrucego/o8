@@ -23,11 +23,11 @@
 The **Fuzzy Matcher** is a semantic resource discovery system that matches natural language queries against a library of resource fragments. It uses keyword extraction and multi-signal scoring to rank resources by relevance, then assembles the most relevant content within a token budget.
 
 **Key Features:**
-- Semantic keyword matching across tags, capabilities, and use cases
+- Semantic keyword matching across tags, capabilities, and use cases (1,675 useWhen scenarios)
 - Multi-signal scoring algorithm with configurable weights
-- Token-aware fragment selection
-- Two output modes: full content or lightweight catalog
-- Sub-20ms query latency with caching
+- Token-aware fragment selection across 383 fragments
+- Four output modes: index (default), minimal, catalog, or full content
+- Sub-20ms query latency with caching (warm cache: 4ms)
 
 **Use Cases:**
 - Exploratory searches: "What TypeScript resources are available?"
@@ -468,7 +468,7 @@ const ordered = fragments.sort((a, b) =>
 
 **Load this resource:**
 ```
-orchestr8://agents/_fragments/typescript-developer
+orchestr8://agents/typescript-developer
 ```
 ```
 
@@ -522,8 +522,8 @@ const catalog = await readResource(
 // User sees: 10 resources with scores, tags, URIs
 
 // Step 3: Load selected resources
-const agent = await readResource('orchestr8://agents/_fragments/typescript-developer');
-const skill = await readResource('orchestr8://skills/_fragments/async-patterns');
+const agent = await readResource('orchestr8://agents/typescript-developer');
+const skill = await readResource('orchestr8://skills/async-patterns');
 ```
 
 ### When to Use Full Mode
