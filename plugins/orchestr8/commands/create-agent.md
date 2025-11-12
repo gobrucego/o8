@@ -39,7 +39,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 2: Content Structure Design (25-50%)
 
-**→ Load:** @orchestr8://match?query=agent+designer+fragment+structure+metadata&categories=agent,skill&maxTokens=1200
+**→ Load:** @orchestr8://match?query=agent+designer+fragment+structure+metadata&categories=agent,skill&mode=index&maxResults=5
 
 **Activities:**
 - Design content organization
@@ -58,7 +58,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 3: Content Creation (50-75%)
 
-**→ Load:** @orchestr8://match?query=$ARGUMENTS+domain+expertise&categories=agent,skill,example&maxTokens=2000
+**→ Load:** @orchestr8://match?query=$ARGUMENTS+domain+expertise&categories=agent,skill,example&mode=index&maxResults=8
 
 **Activities:**
 
@@ -120,7 +120,7 @@ How to apply knowledge
 
 ## Phase 4: Discovery Testing & Integration (75-100%)
 
-**→ Load:** @orchestr8://match?query=fragment+discovery+testing+optimization&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=fragment+discovery+testing+optimization&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 

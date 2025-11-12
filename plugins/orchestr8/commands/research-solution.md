@@ -52,7 +52,7 @@ The delegated research workflow will load these resources progressively:
 @orchestr8://skills/requirement-analysis-framework # Problem analysis (~600 tokens)
 
 # Phase 2: Parallel Testing (per approach)
-@orchestr8://match?query=<technology>+implementation&mode=index&maxTokens=1500
+@orchestr8://match?query=<technology>+implementation&mode=index&maxResults=8
 
 # Phase 3: Comparative Analysis
 @orchestr8://skills/competitive-analysis           # Comparison framework (~700 tokens)

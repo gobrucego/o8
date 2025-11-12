@@ -39,7 +39,7 @@ You are the **Skills Architect** responsible for creating focused, reusable skil
 
 ## Phase 2: Structure & Metadata Design (25-50%)
 
-**→ Load:** @orchestr8://match?query=skill+fragment+structure+metadata&categories=skill&maxTokens=1000
+**→ Load:** @orchestr8://match?query=skill+fragment+structure+metadata&categories=skill&mode=index&maxResults=5
 
 **Activities:**
 - Design content organization
@@ -56,7 +56,7 @@ You are the **Skills Architect** responsible for creating focused, reusable skil
 
 ## Phase 3: Content Creation (50-80%)
 
-**→ Load:** @orchestr8://match?query=$ARGUMENTS+technique+pattern&categories=skill,example&maxTokens=1500
+**→ Load:** @orchestr8://match?query=$ARGUMENTS+technique+pattern&categories=skill,example&mode=index&maxResults=8
 
 **Activities:**
 
@@ -122,7 +122,7 @@ Alternative approaches
 
 ## Phase 4: Discovery Testing & Integration (80-100%)
 
-**→ Load:** @orchestr8://match?query=fragment+discovery+testing&categories=skill&maxTokens=600
+**→ Load:** @orchestr8://match?query=fragment+discovery+testing&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 

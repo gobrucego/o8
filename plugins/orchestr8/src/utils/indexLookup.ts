@@ -368,10 +368,10 @@ export class IndexLookup {
       const resourceName = match.uri.split("/").pop() || "unknown";
 
       output += `${idx + 1}. **${categoryLabel}: ${resourceName}** (~${match.estimatedTokens} tokens)\n`;
-      output += `   ${match.uri}\n\n`;
+      output += `   @${match.uri}\n\n`;
     });
 
-    output += `**To load:** Use ReadMcpResourceTool with URIs above\n`;
+    output += `**To load:** Simply reference the @orchestr8:// URIs shown above\n`;
     output += `**To refine:** Add more specific keywords to query\n`;
 
     return output;

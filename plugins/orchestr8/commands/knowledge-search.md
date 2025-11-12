@@ -55,7 +55,7 @@ Returns knowledge base statistics and health metrics.
 
 ## Phase 2: Execute Search (10-40%)
 
-**→ Load:** @orchestr8://match?query=knowledge+search+retrieval&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=knowledge+search+retrieval&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Execute search based on query type

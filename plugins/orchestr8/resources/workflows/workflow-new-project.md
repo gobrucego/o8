@@ -27,7 +27,7 @@ estimatedTokens: 2800
 
 **→ Load Requirements & Architecture Expertise (JIT):**
 ```
-@orchestr8://match?query=requirements+analysis+architecture+design&categories=skill,pattern&maxTokens=1200
+@orchestr8://match?query=requirements+analysis+architecture+design&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/requirement-analysis-framework
 ```
 
@@ -43,7 +43,7 @@ estimatedTokens: 2800
 
 **→ Load Project Setup Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+project+initialization+tooling&categories=skill,example&maxTokens=1000
+@orchestr8://match?query=${tech-stack}+project+initialization+tooling&categories=skill,example&mode=index&maxResults=5
 @orchestr8://skills/git-workflow
 ```
 
@@ -58,7 +58,7 @@ estimatedTokens: 2800
 
 **→ Load Implementation Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+${architecture-pattern}+implementation&categories=agent,skill,example&maxTokens=3500
+@orchestr8://match?query=${tech-stack}+${architecture-pattern}+implementation&categories=agent,skill,example&mode=index&maxResults=15
 @orchestr8://patterns/autonomous-parallel
 ```
 
@@ -66,11 +66,11 @@ estimatedTokens: 2800
 
 **Parallel tracks:**
 - **Backend:** Schema/migrations, business logic (SOLID), API endpoints, auth
-  - Backend PM loads: `@orchestr8://match?query=${backend-tech}+api+database&categories=agent,example&maxTokens=1500`
+  - Backend PM loads: `@orchestr8://match?query=${backend-tech}+api+database&categories=agent,example&mode=index&maxResults=8`
 - **Frontend:** Routing, components, state, API integration, UX
-  - Frontend PM loads: `@orchestr8://match?query=${frontend-framework}+components+state&categories=agent,example&maxTokens=1500`
+  - Frontend PM loads: `@orchestr8://match?query=${frontend-framework}+components+state&categories=agent,example&mode=index&maxResults=8`
 - **Infrastructure:** Docker, configs, secrets management
-  - Infra PM loads: `@orchestr8://match?query=${infra-platform}+docker+deployment&categories=agent,skill&maxTokens=1200`
+  - Infra PM loads: `@orchestr8://match?query=${infra-platform}+docker+deployment&categories=agent,skill&mode=index&maxResults=5`
 
 **Checkpoint:** Features work end-to-end
 
@@ -78,7 +78,7 @@ estimatedTokens: 2800
 
 **→ Load Testing & Quality Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+testing+quality+security&categories=skill,agent&maxTokens=2000
+@orchestr8://match?query=${tech-stack}+testing+quality+security&categories=skill,agent&mode=index&maxResults=8
 @orchestr8://skills/testing-strategies
 @orchestr8://skills/security-owasp-top10
 ```
@@ -94,7 +94,7 @@ estimatedTokens: 2800
 **→ Load Deployment Expertise (JIT - CONDITIONAL):**
 ```
 # Only if deployment requested
-@orchestr8://match?query=${deployment-platform}+cicd+infrastructure&categories=skill,pattern&maxTokens=1800
+@orchestr8://match?query=${deployment-platform}+cicd+infrastructure&categories=skill,pattern&mode=index&maxResults=8
 @orchestr8://skills/deployment-zero-downtime
 @orchestr8://patterns/architecture-decision-records
 ```

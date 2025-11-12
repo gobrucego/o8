@@ -25,7 +25,7 @@ estimatedTokens: 2400
 
 **→ Load Analysis & Design Expertise (JIT):**
 ```
-@orchestr8://match?query=codebase+analysis+feature+design+${tech-stack}&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=codebase+analysis+feature+design+${tech-stack}&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/requirement-analysis-framework
 @orchestr8://patterns/architecture-decision-records
 ```
@@ -42,7 +42,7 @@ estimatedTokens: 2400
 
 **→ Load Implementation Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+${feature-type}+implementation&categories=agent,skill,example&maxTokens=2500
+@orchestr8://match?query=${tech-stack}+${feature-type}+implementation&categories=agent,skill,example&mode=index&maxResults=10
 ```
 
 **Note:** Single comprehensive load supports parallel backend, frontend, and testing tracks with tech-specific expertise.
@@ -61,7 +61,7 @@ estimatedTokens: 2400
 
 **→ Load QA & Security Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+testing+security+quality&categories=skill,agent&maxTokens=1500
+@orchestr8://match?query=${tech-stack}+testing+security+quality&categories=skill,agent&mode=index&maxResults=8
 @orchestr8://skills/testing-e2e-best-practices
 @orchestr8://skills/security-input-validation
 @orchestr8://skills/quality-code-review-checklist
@@ -78,7 +78,7 @@ estimatedTokens: 2400
 **→ Load Deployment Expertise (JIT - CONDITIONAL):**
 ```
 # Only if deployment to production requested
-@orchestr8://match?query=${platform}+deployment+feature+flags+monitoring&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=${platform}+deployment+feature+flags+monitoring&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/deployment-zero-downtime
 ```
 

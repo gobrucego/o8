@@ -27,7 +27,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 1: Comparison Setup (0-20%)
 
-**→ Load:** @orchestr8://match?query=benchmark+comparison+evaluation&categories=skill,pattern&maxTokens=1000
+**→ Load:** @orchestr8://match?query=benchmark+comparison+evaluation&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Parse the 2-3 approaches to compare
@@ -61,7 +61,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 3: Comparison Analysis (70-90%)
 
-**→ Load:** @orchestr8://match?query=comparison+matrix+scoring+trade-offs&categories=skill,pattern&maxTokens=1200
+**→ Load:** @orchestr8://match?query=comparison+matrix+scoring+trade-offs&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Generate weighted scoring matrix
@@ -76,7 +76,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 4: Recommendation (90-100%)
 
-**→ Load:** @orchestr8://match?query=recommendation+decision+documentation&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=recommendation+decision+documentation&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Recommend best approach with trade-off analysis

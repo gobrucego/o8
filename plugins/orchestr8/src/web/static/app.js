@@ -849,7 +849,7 @@ class Dashboard {
                     <div class="form-group">
                         <label>Resource URI</label>
                         <input type="text" id="resourceUri" class="form-control"
-                               placeholder="orchestr8://agents/typescript-developer">
+                               placeholder="@orchestr8://agents/typescript-developer">
                     </div>
                 `;
         break;
@@ -1091,7 +1091,7 @@ class Dashboard {
         typeSelect.value = "resources/read";
         this.updateTestingForm();
         setTimeout(() => {
-          document.getElementById("resourceUri").value = "orchestr8://registry";
+          document.getElementById("resourceUri").value = "@orchestr8://registry";
         }, 100);
         break;
 
@@ -1100,7 +1100,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://agents/typescript-developer";
+            "@orchestr8://agents/typescript-developer";
         }, 100);
         break;
 
@@ -1109,7 +1109,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=api+development&maxTokens=2000";
+            "@orchestr8://match?query=api+development&maxTokens=2000";
         }, 100);
         break;
 
@@ -1118,7 +1118,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=full+stack+development&categories=agent,skill,example&maxTokens=3000";
+            "@orchestr8://match?query=full+stack+development&categories=agent,skill,example&maxTokens=3000";
         }, 100);
         break;
 
@@ -1127,7 +1127,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=typescript+api&mode=minimal";
+            "@orchestr8://match?query=typescript+api&mode=minimal";
         }, 100);
         break;
     }
@@ -1797,9 +1797,211 @@ class Dashboard {
 
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i];
   }
+
+  // ============================================
+  // Token Efficiency Monitoring
+  // ============================================
+
+  async loadTokenMetrics(period = 'last_hour') {
+    try {
+      const response = await fetch(`/api/tokens/efficiency?period=${period}`);
+      if (!response.ok) {
+        console.warn('[Dashboard] Token tracking not available:', response.statusText);
+        return;
+      }
+
+      const data = await response.json();
+      this.updateTokenMetrics(data);
+    } catch (error) {
+      console.warn('[Dashboard] Token metrics error:', error.message);
+    }
+  }
+
+  updateTokenMetrics(data) {
+    // Update efficiency stat
+    const efficiency = data.overall.efficiencyPercentage || 0;
+    document.getElementById('tokenEfficiency').textContent = `${efficiency.toFixed(1)}%`;
+
+    // Update trend indicator
+    const trendEl = document.getElementById('tokenEfficiencyTrend');
+    const trend = data.trend?.direction || 'stable';
+    const trendChange = data.trend?.efficiencyChange || 0;
+
+    let trendIcon = '→';
+    if (trend === 'improving') trendIcon = '↗';
+    if (trend === 'declining') trendIcon = '↘';
+
+    trendEl.textContent = `${trendIcon} ${trendChange >= 0 ? '+' : ''}${trendChange.toFixed(1)}% ${trend}`;
+
+    // Update tokens saved
+    const tokensSaved = data.overall.tokensSaved || 0;
+    document.getElementById('tokensSaved').textContent = this.formatNumber(tokensSaved);
+    document.getElementById('tokenBaseline').textContent = this.formatNumber(data.overall.baselineTokens || 0);
+
+    // Update cost saved
+    const costSaved = data.overall.costSavingsUSD || 0;
+    document.getElementById('costSaved').textContent = `$${costSaved.toFixed(3)}`;
+    document.getElementById('actualCost').textContent = `$${(data.overall.costUSD || 0).toFixed(3)}`;
+
+    // Update cache hit rate
+    const cacheHitRate = data.cache?.cacheHitRate || 0;
+    document.getElementById('cacheHitRate').textContent = `${cacheHitRate.toFixed(1)}%`;
+    document.getElementById('cacheHits').textContent = `${data.cache?.totalCacheHits || 0}`;
+
+    // Update timestamp
+    document.getElementById('tokenMetricsTimestamp').textContent = new Date(data.timestamp).toLocaleTimeString();
+
+    // Update category efficiency chart
+    this.updateCategoryEfficiencyChart(data.byCategory || []);
+
+    // Update top performers list
+    this.updateTopPerformersList(data.topPerformers || []);
+  }
+
+  updateCategoryEfficiencyChart(categories) {
+    const canvas = document.getElementById('categoryEfficiencyChart');
+    const ctx = canvas.getContext('2d');
+
+    // Destroy existing chart if it exists
+    if (this.categoryEfficiencyChart) {
+      this.categoryEfficiencyChart.destroy();
+    }
+
+    // Prepare data
+    const labels = categories.map(c => c.category.charAt(0).toUpperCase() + c.category.slice(1));
+    const efficiencies = categories.map(c => c.efficiency);
+
+    // Create chart
+    this.categoryEfficiencyChart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Efficiency %',
+          data: efficiencies,
+          backgroundColor: [
+            'rgba(99, 102, 241, 0.8)',
+            'rgba(6, 182, 212, 0.8)',
+            'rgba(16, 185, 129, 0.8)',
+            'rgba(139, 92, 246, 0.8)',
+            'rgba(251, 146, 60, 0.8)',
+            'rgba(236, 72, 153, 0.8)',
+          ],
+          borderColor: [
+            'rgb(99, 102, 241)',
+            'rgb(6, 182, 212)',
+            'rgb(16, 185, 129)',
+            'rgb(139, 92, 246)',
+            'rgb(251, 146, 60)',
+            'rgb(236, 72, 153)',
+          ],
+          borderWidth: 2,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            display: false,
+          },
+          tooltip: {
+            callbacks: {
+              label: (context) => {
+                const category = categories[context.dataIndex];
+                return [
+                  `Efficiency: ${context.parsed.y.toFixed(1)}%`,
+                  `Loads: ${category.loadCount}`,
+                  `Saved: ${this.formatNumber(category.tokensSaved)} tokens`,
+                  `Cost Saved: $${category.costSavingsUSD.toFixed(3)}`,
+                ];
+              },
+            },
+          },
+        },
+        scales: {
+          y: {
+            beginAtZero: true,
+            max: 100,
+            ticks: {
+              callback: (value) => value + '%',
+            },
+          },
+        },
+      },
+    });
+  }
+
+  updateTopPerformersList(performers) {
+    const listEl = document.getElementById('topPerformersList');
+
+    if (!performers || performers.length === 0) {
+      listEl.innerHTML = '<div class="activity-empty" style="font-size: 0.875rem;">No data yet</div>';
+      return;
+    }
+
+    listEl.innerHTML = performers.map((performer, index) => `
+      <div style="display: flex; justify-content: space-between; align-items: center; padding: 0.5rem;
+                  border-bottom: 1px solid var(--bg-tertiary); font-size: 0.875rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; flex: 1; min-width: 0;">
+          <span style="font-weight: 600; color: var(--accent-primary);">#${index + 1}</span>
+          <span style="font-family: monospace; font-size: 0.75rem; color: var(--text-secondary);
+                       overflow: hidden; text-overflow: ellipsis; white-space: nowrap;"
+                title="${performer.uri}">
+            ${performer.uri.split('/').pop()}
+          </span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-shrink: 0;">
+          <span style="font-weight: 600; color: var(--accent-success);">${performer.efficiency.toFixed(1)}%</span>
+          <span style="font-size: 0.75rem; color: var(--text-tertiary);">
+            ${this.formatNumber(performer.tokensSaved)} saved
+          </span>
+        </div>
+      </div>
+    `).join('');
+  }
+
+  formatNumber(num) {
+    if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
+    if (num >= 1000) return (num / 1000).toFixed(1) + 'K';
+    return num.toString();
+  }
+
+  setupTokenMetricsHandlers() {
+    // Period selector
+    const periodSelect = document.getElementById('tokenPeriodSelect');
+    if (periodSelect) {
+      periodSelect.addEventListener('change', (e) => {
+        this.loadTokenMetrics(e.target.value);
+      });
+    }
+
+    // Refresh button
+    const refreshBtn = document.getElementById('refreshTokenMetrics');
+    if (refreshBtn) {
+      refreshBtn.addEventListener('click', () => {
+        const period = periodSelect?.value || 'last_hour';
+        this.loadTokenMetrics(period);
+        this.showToast('Token metrics refreshed', 'success');
+      });
+    }
+  }
 }
 
 // Initialize dashboard when page loads
 document.addEventListener("DOMContentLoaded", () => {
   window.dashboard = new Dashboard();
+
+  // Setup token metrics handlers
+  window.dashboard.setupTokenMetricsHandlers();
+
+  // Load initial token metrics
+  window.dashboard.loadTokenMetrics('last_hour');
+
+  // Auto-refresh token metrics every 30 seconds
+  setInterval(() => {
+    const periodSelect = document.getElementById('tokenPeriodSelect');
+    const period = periodSelect?.value || 'last_hour';
+    window.dashboard.loadTokenMetrics(period);
+  }, 30000);
 });

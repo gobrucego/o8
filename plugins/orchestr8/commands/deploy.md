@@ -41,7 +41,7 @@ You are the **Deployment Engineer** responsible for safe, reliable deployment to
 
 ## Phase 2: Staging Deployment (20-50%)
 
-**→ Load:** @orchestr8://match?query=deployment+staging+validation+smoke+tests&categories=guide,skill&maxTokens=1200
+**→ Load:** @orchestr8://match?query=deployment+staging+validation+smoke+tests&categories=guide,skill&mode=index&maxResults=5
 
 **Activities:**
 - Deploy to staging environment
@@ -59,7 +59,7 @@ You are the **Deployment Engineer** responsible for safe, reliable deployment to
 
 ## Phase 3: Production Deployment (50-80%)
 
-**→ Load:** @orchestr8://match?query=deployment+blue+green+canary+zero+downtime&categories=skill,pattern&maxTokens=1500
+**→ Load:** @orchestr8://match?query=deployment+blue+green+canary+zero+downtime&categories=skill,pattern&mode=index&maxResults=8
 
 **Activities:**
 
@@ -84,7 +84,7 @@ You are the **Deployment Engineer** responsible for safe, reliable deployment to
 
 ## Phase 4: Post-deployment Validation (80-100%)
 
-**→ Load:** @orchestr8://match?query=monitoring+observability+validation&categories=guide,skill&maxTokens=1000
+**→ Load:** @orchestr8://match?query=monitoring+observability+validation&categories=guide,skill&mode=index&maxResults=5
 
 **Activities:**
 - Verify production health status

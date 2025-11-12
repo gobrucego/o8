@@ -32,7 +32,7 @@ relatedResources:
 ```markdown
 ## Phase 1: Discovery (0-30%)
 
-**→ Load:** @orchestr8://match?query=requirement+analysis&maxTokens=1200
+**→ Load:** @orchestr8://match?query=requirement+analysis&mode=index&maxResults=5
 
 **Activities:**
 - Analyze requirements
@@ -42,7 +42,7 @@ relatedResources:
 
 ## Phase 2: Implementation (30-70%)
 
-**→ Load:** @orchestr8://match?query=typescript+api+implementation&maxTokens=1500
+**→ Load:** @orchestr8://match?query=typescript+api+implementation&mode=index&maxResults=8
 
 **Activities:**
 - Implement features
@@ -52,7 +52,7 @@ relatedResources:
 
 ## Phase 3: Testing (70-100%)
 
-**→ Load:** @orchestr8://match?query=testing+validation&maxTokens=800
+**→ Load:** @orchestr8://match?query=testing+validation&mode=index&maxResults=3
 
 **Activities:**
 - Write tests
@@ -177,24 +177,25 @@ typescript-expert-advanced-types.md (700 tokens) ✅
 **Solution:** Use catalog mode, then load specific resources
 
 ```typescript
-// Step 1: Explore options (catalog mode)
-const query = "@orchestr8://match?query=async+patterns&mode=catalog"
-// Returns: 5 fragments, metadata only, ~1,500 tokens
+// Step 1: Explore options (index mode - RECOMMENDED)
+const query = "@orchestr8://match?query=async+patterns&mode=index&maxResults=5"
+// Returns: 5 fragments, URIs + names only, ~80 tokens
 
 // Step 2: User reviews options:
-// - typescript-async-patterns.md (750 tokens)
-// - python-async-fundamentals.md (680 tokens)
-// - rust-async-tokio.md (800 tokens)
-// - error-handling-async.md (650 tokens)
-// - performance-async-optimization.md (720 tokens)
+// - typescript-async-patterns (~750 tokens)
+// - python-async-fundamentals (~680 tokens)
+// - rust-async-tokio (~800 tokens)
+// - error-handling-async (~650 tokens)
+// - performance-async-optimization (~720 tokens)
 
 // Step 3: Load specific choice
 const specific = "@orchestr8://skills/typescript-async-patterns"
 // Returns: Full content, 750 tokens
 
-// Token cost: 1,500 + 750 = 2,250 tokens
+// Token cost: 80 + 750 = 830 tokens
+// vs mode=catalog: 1,500 + 750 = 2,250 tokens
 // vs mode=full: 5,000+ tokens upfront
-// Savings: 55%
+// Savings: 83% with index mode
 ```
 
 ---
@@ -225,7 +226,7 @@ Large workflow (system design, migration):
 ```markdown
 ## Phase 1: Analysis (Budget: 1,200 tokens)
 
-**→ Load:** @orchestr8://match?query=system+analysis&maxTokens=1200
+**→ Load:** @orchestr8://match?query=system+analysis&mode=index&maxResults=5
 
 **If needed (conditional):**
 **→ Load:** @orchestr8://patterns/architecture-analysis (add 600 tokens)
@@ -289,7 +290,7 @@ argument-hint: [arguments]
 
 ## Phase 0: Planning (0-20%)
 
-**→ Load:** @orchestr8://match?query=project+planning&maxTokens=800
+**→ Load:** @orchestr8://match?query=project+planning&mode=index&maxResults=3
 
 **Activities:**
 - Create project plan
@@ -299,7 +300,7 @@ argument-hint: [arguments]
 
 ## Phase 1: Implementation (20-70%)
 
-**→ Load:** @orchestr8://match?query=typescript+backend+api&maxTokens=1500
+**→ Load:** @orchestr8://match?query=typescript+backend+api&mode=index&maxResults=8
 
 **Activities:**
 - Implement backend
@@ -309,7 +310,7 @@ argument-hint: [arguments]
 
 ## Phase 2: Testing (70-100%)
 
-**→ Load:** @orchestr8://match?query=e2e+testing+playwright&maxTokens=1000
+**→ Load:** @orchestr8://match?query=e2e+testing+playwright&mode=index&maxResults=5
 
 **Activities:**
 - Write tests
@@ -463,7 +464,7 @@ relatedResources: []
 - full: 5,000-15,000 tokens (all content)
 
 **Match Query Guidelines:**
-- Always specify: `maxTokens=1200`
+- Always specify: `mode=index&maxResults=5`
 - Typical range: 800-2000 tokens
 - Discovery: 500-1000 tokens
 - Implementation: 1,000-1,500 tokens
@@ -487,7 +488,7 @@ description: Build TypeScript REST API with testing
 
 ## Phase 1: Setup & Architecture (0-25%)
 
-**→ Load:** @orchestr8://match?query=typescript+api+architecture+setup&maxTokens=1200
+**→ Load:** @orchestr8://match?query=typescript+api+architecture+setup&mode=index&maxResults=5
 
 **Activities:**
 1. Initialize TypeScript project
@@ -503,7 +504,7 @@ description: Build TypeScript REST API with testing
 
 ## Phase 2: Implementation (25-70%)
 
-**→ Load:** @orchestr8://match?query=express+routes+validation+error+handling&maxTokens=1500
+**→ Load:** @orchestr8://match?query=express+routes+validation+error+handling&mode=index&maxResults=8
 
 **Activities:**
 1. Implement API endpoints
@@ -521,7 +522,7 @@ description: Build TypeScript REST API with testing
 
 ## Phase 3: Testing (70-90%)
 
-**→ Load:** @orchestr8://match?query=api+testing+jest+supertest&maxTokens=1000
+**→ Load:** @orchestr8://match?query=api+testing+jest+supertest&mode=index&maxResults=5
 
 **Activities:**
 1. Write integration tests
@@ -537,7 +538,7 @@ description: Build TypeScript REST API with testing
 
 ## Phase 4: Documentation (90-100%)
 
-**→ Load:** @orchestr8://match?query=api+documentation+openapi&maxTokens=500
+**→ Load:** @orchestr8://match?query=api+documentation+openapi&mode=index&maxResults=3
 
 **Activities:**
 1. Generate OpenAPI spec

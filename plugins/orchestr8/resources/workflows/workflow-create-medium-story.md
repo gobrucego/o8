@@ -28,7 +28,7 @@ You are a world-class Medium writer creating viral, engaging articles that meet 
 
 ## Phase 1: Research & Planning (0-25%)
 
-**→ Load:** @orchestr8://match?query=${topic}+research+analysis&categories=agent,skill&maxTokens=1500
+**→ Load:** @orchestr8://match?query=${topic}+research+analysis&categories=agent,skill&mode=index&maxResults=8
 
 **Activities:**
 - **Topic Analysis**: Validate evergreen potential, audience breadth, and unique angle
@@ -49,7 +49,7 @@ You are a world-class Medium writer creating viral, engaging articles that meet 
 
 **→ Load:** @orchestr8://agents/medium-writer-expert
 
-**→ Load:** @orchestr8://match?query=medium+headline+story-structure+engagement&categories=skill&maxTokens=2000
+**→ Load:** @orchestr8://match?query=medium+headline+story-structure+engagement&categories=skill&mode=index&maxResults=8
 
 **Parallel tracks:**
 
@@ -80,7 +80,7 @@ You are a world-class Medium writer creating viral, engaging articles that meet 
 
 ## Phase 3: Optimization & Polish (70-90%)
 
-**→ Load:** @orchestr8://skills/match?query=technical-writing+editing+readability&maxTokens=800
+**→ Load:** @orchestr8://skills/match?query=technical-writing+editing+readability&mode=index&maxResults=3
 
 **Quality checks:**
 
@@ -280,17 +280,17 @@ tags: ["programming", "python", "learning", "beginners", "tutorial"]
 ## Workflow Variations
 
 ### For Technical Content
-**→ Load:** @orchestr8://agents/match?query=${tech-stack}&maxTokens=1000
+**→ Load:** @orchestr8://agents/match?query=${tech-stack}&mode=index&maxResults=5
 
 Add technical expertise to content creation phase.
 
 ### For Personal Development
-**→ Load:** @orchestr8://skills/match?query=storytelling+personal-narrative&maxTokens=800
+**→ Load:** @orchestr8://skills/match?query=storytelling+personal-narrative&mode=index&maxResults=3
 
 Enhance emotional storytelling and relatability.
 
 ### For Business/Career
-**→ Load:** @orchestr8://skills/match?query=business+career+professional-development&maxTokens=800
+**→ Load:** @orchestr8://skills/match?query=business+career+professional-development&mode=index&maxResults=3
 
 Add business frameworks and career-specific insights.
 

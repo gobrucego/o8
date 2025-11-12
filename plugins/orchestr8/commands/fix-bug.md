@@ -36,7 +36,7 @@ You are the **Bug Hunter** responsible for systematically identifying root cause
 
 ## Phase 2: Fix Implementation (30-70%)
 
-**→ Load:** @orchestr8://match?query=error+handling+validation+debugging&categories=skill,pattern,example&maxTokens=1500
+**→ Load:** @orchestr8://match?query=error+handling+validation+debugging&categories=skill,pattern,example&mode=index&maxResults=8
 
 **Activities:**
 - Design fix strategy targeting root cause
@@ -51,7 +51,7 @@ You are the **Bug Hunter** responsible for systematically identifying root cause
 
 ## Phase 3: Testing & Validation (70-90%)
 
-**→ Load:** @orchestr8://match?query=testing+regression+validation&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=testing+regression+validation&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Write regression test that fails without fix
@@ -66,7 +66,7 @@ You are the **Bug Hunter** responsible for systematically identifying root cause
 
 ## Phase 4: Prevention & Deployment (90-100%)
 
-**→ Load:** @orchestr8://match?query=monitoring+observability+deployment&categories=guide,skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=monitoring+observability+deployment&categories=guide,skill&mode=index&maxResults=3
 
 **Activities:**
 - Add monitoring or alerting if applicable

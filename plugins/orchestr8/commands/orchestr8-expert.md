@@ -111,7 +111,7 @@ Based on your topic, I'll load targeted expertise:
 
 If examples would help, I'll load relevant ones:
 
-**→ Load (if applicable):** @orchestr8://match?query=$ARGUMENTS+example&maxTokens=1000&mode=catalog
+**→ Load (if applicable):** @orchestr8://match?query=$ARGUMENTS+example&mode=index&maxResults=5
 
 This will show you:
 - Related example code and patterns
@@ -132,7 +132,7 @@ Now I'll help you apply the optimization strategies:
 **1. JIT Loading (91-97% reduction)**
 - Load catalog upfront, fetch resources on-demand
 - Use `@orchestr8://match` queries with `maxTokens`
-- Example: `@orchestr8://match?query=typescript+async&maxTokens=1200`
+- Example: `@orchestr8://match?query=typescript+async&mode=index&maxResults=5`
 
 **2. Fragment-Based Organization (25-40% additional)**
 - Target size: 500-1000 tokens (sweet spot: 650-850)
@@ -319,7 +319,7 @@ The following resources were dynamically loaded during this command execution:
 - OR @orchestr8://skills/fragment-metadata-optimization (~700 tokens)
 
 **Phase 3 (conditional):**
-- @orchestr8://match?query=$ARGUMENTS+example&maxTokens=1000 (0-1,000 tokens)
+- @orchestr8://match?query=$ARGUMENTS+example&mode=index&maxResults=5 (0-1,000 tokens)
 
 **Total tokens loaded:** 2,750-4,350 tokens (vs 23,000 traditional)
 **Efficiency achieved:** 81-88% reduction through JIT loading

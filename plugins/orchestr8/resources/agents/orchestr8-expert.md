@@ -47,10 +47,10 @@ Savings: 91-97% vs loading everything
 ```yaml
 # Instead of embedding all content, use dynamic loading
 ## Phase 1: Core Setup (0-30%)
-**→ Load:** @orchestr8://match?query=typescript+setup&maxTokens=1200
+**→ Load:** @orchestr8://match?query=typescript+setup&mode=index&maxResults=5
 
 ## Phase 2: Implementation (30-70%)
-**→ Load:** @orchestr8://match?query=async+error+handling&maxTokens=1500
+**→ Load:** @orchestr8://match?query=async+error+handling&mode=index&maxResults=8
 ```
 
 ### Strategy 2: Fragment-Based Organization (ADR-003)
@@ -168,25 +168,26 @@ Savings: 49% through phased loading
 
 **Modes:**
 ```
-?mode=index     (50-120 tokens)  - Scenario IDs + URIs only
+?mode=index     (50-120 tokens)  - Scenario IDs + URIs only [DEFAULT - RECOMMENDED]
 ?mode=minimal   (300-500 tokens) - Ultra-compact JSON metadata
-?mode=catalog   (800-2000 tokens) - Full metadata, no content [DEFAULT]
+?mode=catalog   (800-2000 tokens) - Full metadata, no content
 ?mode=full      (5000-15000 tokens) - Complete fragment content
 ```
 
 **User Flow:**
 ```
-1. Query: @orchestr8://match?query=typescript+async&mode=catalog
-   Returns: 5 fragments, 1,500 tokens, metadata only
-   
-2. User reviews titles, descriptions, capabilities
-   
+1. Query: @orchestr8://match?query=typescript+async&mode=index&maxResults=5
+   Returns: 5 fragments, ~80 tokens, URIs only
+
+2. User reviews resource names and quick descriptions
+
 3. Load specific: @orchestr8://skills/typescript-async-patterns
    Returns: Full content, 800 tokens
 
-Token Cost: 1,500 + 800 = 2,300 tokens
+Token Cost: 80 + 800 = 880 tokens
+vs. mode=catalog: 1,500 + 800 = 2,300 tokens
 vs. mode=full: 5,000+ tokens upfront
-Savings: 54% through exploration
+Savings: 82% through index mode + JIT loading
 ```
 
 ### Strategy 6: Hierarchical Fragment Families (ADR-011)
@@ -312,7 +313,7 @@ useWhen:
 
 ## Phase 1: Discovery (0-30%)
 
-**→ Load:** @orchestr8://match?query=specific+keywords&maxTokens=1200
+**→ Load:** @orchestr8://match?query=specific+keywords&mode=index&maxResults=5
 
 **Activities:**
 - Do discovery work
@@ -322,7 +323,7 @@ useWhen:
 
 ## Phase 2: Implementation (30-70%)
 
-**→ Load:** @orchestr8://match?query=different+keywords&maxTokens=1500
+**→ Load:** @orchestr8://match?query=different+keywords&mode=index&maxResults=8
 
 **Activities:**
 - Implementation work
@@ -332,7 +333,7 @@ useWhen:
 
 ## Phase 3: Validation (70-100%)
 
-**→ Load:** @orchestr8://match?query=testing+keywords&maxTokens=800
+**→ Load:** @orchestr8://match?query=testing+keywords&mode=index&maxResults=3
 
 **Activities:**
 - Testing and validation
@@ -374,10 +375,10 @@ argument-hint: [type] [details]
 
 ​```
 # Phase 0: Discovery (if needed)
-@orchestr8://match?query=discovery+keywords&mode=index&maxTokens=500
+@orchestr8://match?query=discovery+keywords&mode=index&maxResults=3
 
 # Phase 1: Core Work
-@orchestr8://match?query=core+keywords&maxTokens=1200
+@orchestr8://match?query=core+keywords&mode=index&maxResults=5
 
 # Phase 2: Advanced (if needed)
 @orchestr8://agents/specific-expert-advanced
@@ -390,7 +391,7 @@ argument-hint: [type] [details]
 
 ## Phase 1: Work (0-40%)
 
-**→ Load:** @orchestr8://match?query=phase1+keywords&maxTokens=1200
+**→ Load:** @orchestr8://match?query=phase1+keywords&mode=index&maxResults=5
 
 **Activities:**
 - Use loaded expertise
@@ -411,7 +412,7 @@ argument-hint: [type] [details]
 
 1. **Use JIT Loading in Workflows**
    ```markdown
-   **→ Load:** @orchestr8://match?query=keywords&maxTokens=1200
+   **→ Load:** @orchestr8://match?query=keywords&mode=index&maxResults=5
    ```
 
 2. **Fragment Large Resources**

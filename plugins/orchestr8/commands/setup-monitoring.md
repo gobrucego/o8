@@ -25,7 +25,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 1: Requirements & Architecture (0-15%)
 
-**→ Load:** @orchestr8://match?query=observability+monitoring+architecture+slo&categories=pattern,guide&maxTokens=1200
+**→ Load:** @orchestr8://match?query=observability+monitoring+architecture+slo&categories=pattern,guide&mode=index&maxResults=5
 
 **Activities:**
 - Analyze system architecture and components
@@ -37,7 +37,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 2: Metrics Infrastructure (15-30%)
 
-**→ Load:** @orchestr8://match?query=prometheus+grafana+metrics&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=prometheus+grafana+metrics&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Deploy Prometheus server with persistent storage
@@ -49,7 +49,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 3: Application Instrumentation (30-45%)
 
-**→ Load:** @orchestr8://match?query=application+instrumentation+metrics+logging&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=application+instrumentation+metrics+logging&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Add Prometheus client libraries to applications
@@ -61,7 +61,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 4: Logging Infrastructure (45-60%)
 
-**→ Load:** @orchestr8://match?query=logging+loki+elasticsearch&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=logging+loki+elasticsearch&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Deploy log aggregation platform (Loki/ELK/Fluentd)
@@ -73,7 +73,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 5: Distributed Tracing (60-75%)
 
-**→ Load:** @orchestr8://match?query=distributed+tracing+jaeger+tempo&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=distributed+tracing+jaeger+tempo&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Deploy tracing backend (Tempo/Jaeger/Zipkin)
@@ -85,7 +85,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 6: Dashboards & Visualization (75-85%)
 
-**→ Load:** @orchestr8://match?query=grafana+dashboards+visualization&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=grafana+dashboards+visualization&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Create infrastructure dashboards (cluster, nodes, resources)
@@ -97,7 +97,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 7: Alerting & Incident Response (85-95%)
 
-**→ Load:** @orchestr8://match?query=alerting+prometheus+pagerduty&categories=guide,example&maxTokens=1000
+**→ Load:** @orchestr8://match?query=alerting+prometheus+pagerduty&categories=guide,example&mode=index&maxResults=5
 
 **Activities:**
 - Configure Prometheus alert rules (SLO burn rate, errors, latency)
@@ -109,7 +109,7 @@ You are the **Observability Architect** responsible for deploying a production-g
 
 ## Phase 8: Performance & Optimization (95-100%)
 
-**→ Load:** @orchestr8://match?query=monitoring+optimization+high+availability&categories=guide&maxTokens=800
+**→ Load:** @orchestr8://match?query=monitoring+optimization+high+availability&categories=guide&mode=index&maxResults=3
 
 **Activities:**
 - Optimize Prometheus performance (scrape intervals, recording rules)

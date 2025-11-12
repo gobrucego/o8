@@ -52,7 +52,7 @@ The delegated validation workflow will load these resources progressively:
 @orchestr8://skills/requirement-analysis-framework      # Assumption extraction (~600 tokens)
 
 # Phase 2: Test Design (per assumption type)
-@orchestr8://match?query=<architecture>+validation&mode=index&maxTokens=1500
+@orchestr8://match?query=<architecture>+validation&mode=index&maxResults=8
 
 # Examples based on assumption type:
 @orchestr8://skills/performance-profiling-techniques    # For performance assumptions (~700 tokens)
@@ -60,7 +60,7 @@ The delegated validation workflow will load these resources progressively:
 @orchestr8://patterns/architecture-decision-records     # For design decisions (~800 tokens)
 
 # Phase 3: Validation Execution
-@orchestr8://match?query=testing+benchmark+validation&mode=index&maxTokens=1200
+@orchestr8://match?query=testing+benchmark+validation&mode=index&maxResults=5
 
 # Phase 4: Risk Assessment
 @orchestr8://patterns/trade-off-analysis-framework      # Risk evaluation (~500 tokens)

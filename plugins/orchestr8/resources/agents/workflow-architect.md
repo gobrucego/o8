@@ -143,11 +143,11 @@ Execution instructions for this phase...
 - Extract key terms from `${task-description}` or `${ARGUMENTS}`
 - Include technology stack, domain, architecture style
 - Filter by category when phase is specific: `&categories=agent` or `&categories=skill,pattern`
-- Set appropriate token budgets: `&maxTokens=2000`
+- Set appropriate token budgets: `&mode=index&maxResults=8`
 
 **Examples:**
 ```
-@orchestr8://agents/match?query=${project-description}&maxTokens=2500
+@orchestr8://agents/match?query=${project-description}&mode=index&maxResults=10
 @orchestr8://skills/match?query=testing+${language}&tags=${framework}
 @orchestr8://match?query=${domain}+${technology}&categories=agent,skill,example
 @orchestr8://patterns/match?query=${architecture-pattern}+security

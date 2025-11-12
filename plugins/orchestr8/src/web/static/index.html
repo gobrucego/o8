@@ -168,6 +168,99 @@
                     </div>
                 </div>
 
+                <!-- Token Efficiency Section -->
+                <div class="token-efficiency-section" style="margin-top: 2rem;">
+                    <div class="chart-card">
+                        <div class="chart-header">
+                            <h3>💰 Token Efficiency Monitoring</h3>
+                            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                                <select id="tokenPeriodSelect" class="form-control" style="width: auto; padding: 0.25rem 0.5rem; font-size: 0.875rem;">
+                                    <option value="last_hour">Last Hour</option>
+                                    <option value="last_day">Last Day</option>
+                                    <option value="last_week">Last Week</option>
+                                    <option value="all_time">All Time</option>
+                                </select>
+                                <button class="btn btn-sm" id="refreshTokenMetrics" title="Refresh Token Metrics">
+                                    ↻
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="stats-grid" style="grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); margin-bottom: 1.5rem;">
+                            <div class="stat-card" style="background: linear-gradient(135deg, var(--accent-primary) 0%, #667eea 100%); color: white;">
+                                <div class="stat-header">
+                                    <span class="stat-icon">📈</span>
+                                    <span class="stat-label">Efficiency</span>
+                                </div>
+                                <div class="stat-value" id="tokenEfficiency">--</div>
+                                <div class="stat-footer" style="color: rgba(255,255,255,0.9);">
+                                    <span id="tokenEfficiencyTrend">--</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card" style="background: linear-gradient(135deg, var(--accent-success) 0%, #06b6d4 100%); color: white;">
+                                <div class="stat-header">
+                                    <span class="stat-icon">🎯</span>
+                                    <span class="stat-label">Tokens Saved</span>
+                                </div>
+                                <div class="stat-value" id="tokensSaved">--</div>
+                                <div class="stat-footer" style="color: rgba(255,255,255,0.9);">
+                                    vs <span id="tokenBaseline">--</span> baseline
+                                </div>
+                            </div>
+
+                            <div class="stat-card" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white;">
+                                <div class="stat-header">
+                                    <span class="stat-icon">💵</span>
+                                    <span class="stat-label">Cost Saved</span>
+                                </div>
+                                <div class="stat-value" id="costSaved">--</div>
+                                <div class="stat-footer" style="color: rgba(255,255,255,0.9);">
+                                    Actual: <span id="actualCost">--</span>
+                                </div>
+                            </div>
+
+                            <div class="stat-card" style="background: linear-gradient(135deg, #8b5cf6 0%, #6d28d9 100%); color: white;">
+                                <div class="stat-header">
+                                    <span class="stat-icon">📊</span>
+                                    <span class="stat-label">Cache Hit Rate</span>
+                                </div>
+                                <div class="stat-value" id="cacheHitRate">--</div>
+                                <div class="stat-footer" style="color: rgba(255,255,255,0.9);">
+                                    <span id="cacheHits">--</span> hits
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="charts-grid">
+                            <div class="chart-container" style="height: 250px;">
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.75rem; color: var(--text-secondary);">Category Efficiency</h4>
+                                <canvas id="categoryEfficiencyChart"></canvas>
+                            </div>
+
+                            <div style="padding: 1rem; background: var(--bg-secondary); border-radius: var(--radius-md);">
+                                <h4 style="font-size: 0.875rem; margin-bottom: 0.75rem; color: var(--text-secondary);">Top Performers</h4>
+                                <div id="topPerformersList" style="max-height: 200px; overflow-y: auto;">
+                                    <div class="activity-empty" style="font-size: 0.875rem;">Loading...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="margin-top: 1rem; padding: 0.75rem; background: var(--bg-secondary); border-radius: var(--radius-md); border-left: 3px solid var(--accent-primary);">
+                            <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 0.5rem;">
+                                <div style="font-size: 0.875rem; color: var(--text-secondary);">
+                                    📚 <strong>Learn more:</strong>
+                                    <a href="/plugins/orchestr8/docs/token-efficiency-monitoring.md" target="_blank" style="color: var(--accent-primary); text-decoration: none;">Feature Guide</a> •
+                                    <a href="/plugins/orchestr8/docs/api/token-endpoints.md" target="_blank" style="color: var(--accent-primary); text-decoration: none;">API Reference</a>
+                                </div>
+                                <div style="font-size: 0.75rem; color: var(--text-tertiary);">
+                                    Last updated: <span id="tokenMetricsTimestamp">--</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <!-- Recent Activity -->
                 <div class="activity-card">
                     <div class="activity-header">

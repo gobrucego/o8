@@ -23,7 +23,7 @@ You are the **Research Orchestrator** responsible for systematic hypothesis test
 
 ## Phase 1: Hypothesis Formulation (0-15%)
 
-**→ Load:** @orchestr8://match?query=research+hypothesis+testing+requirements&categories=pattern,skill&maxTokens=1200
+**→ Load:** @orchestr8://match?query=research+hypothesis+testing+requirements&categories=pattern,skill&mode=index&maxResults=5
 
 **Activities:**
 - Parse research question deeply
@@ -59,7 +59,7 @@ You are the **Research Orchestrator** responsible for systematic hypothesis test
 
 ## Phase 3: Comparative Analysis (70-85%)
 
-**→ Load:** @orchestr8://match?query=analysis+comparison+trade-offs+decision&categories=skill,pattern&maxTokens=1200
+**→ Load:** @orchestr8://match?query=analysis+comparison+trade-offs+decision&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Aggregate results from all hypothesis tests
@@ -74,7 +74,7 @@ You are the **Research Orchestrator** responsible for systematic hypothesis test
 
 ## Phase 4: Recommendation & Knowledge Capture (85-100%)
 
-**→ Load:** @orchestr8://match?query=recommendation+decision+records+documentation&categories=skill,guide&maxTokens=1000
+**→ Load:** @orchestr8://match?query=recommendation+decision+records+documentation&categories=skill,guide&mode=index&maxResults=5
 
 **Activities:**
 - Formulate evidence-based recommendation

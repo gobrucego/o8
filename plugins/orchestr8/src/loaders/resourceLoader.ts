@@ -25,6 +25,11 @@ import type {
   ProviderHealth,
   ProviderStats,
 } from "../providers/types.js";
+// ============================================================================
+// NEW IMPORTS: Token tracking system
+// ============================================================================
+import { TokenTracker } from "../token/tracker.js";
+import { TokenStore } from "../token/store.js";
 
 export class ResourceLoader {
   private logger: Logger;
@@ -46,7 +51,13 @@ export class ResourceLoader {
   private registry: ProviderRegistry;
   private providerConfigManager: ProviderConfigManager | null = null;
 
-  constructor(logger: Logger) {
+  // ============================================================================
+  // NEW: Token tracking system components
+  // ============================================================================
+  private tokenTracker: TokenTracker | null = null;
+  private tokenStore: TokenStore | null = null;
+
+  constructor(logger: Logger, tokenTracker?: TokenTracker, tokenStore?: TokenStore) {
     this.logger = logger;
     this.resourcesPath =
       process.env.RESOURCES_PATH || join(process.cwd(), "resources");
@@ -75,6 +86,12 @@ export class ResourceLoader {
       maxConsecutiveFailures: 3,
       enableEvents: true,
     });
+
+    // ============================================================================
+    // NEW: Initialize token tracking components
+    // ============================================================================
+    this.tokenTracker = tokenTracker || null;
+    this.tokenStore = tokenStore || null;
 
     this.logger.debug(
       `Resource loader initialized with path: ${this.resourcesPath}`,
@@ -614,9 +631,9 @@ export class ResourceLoader {
               .length,
           },
           searchUri:
-            "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+            "@orchestr8://match?query=<keywords>&mode=index&maxResults=5",
           usage:
-            "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
+            "Use @orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
         };
 
         const content = JSON.stringify(catalog, null, 2);
@@ -801,6 +818,39 @@ export class ResourceLoader {
       maxResults: parsed.matchParams.maxResults, // Max results for catalog mode
       minScore: parsed.matchParams.minScore, // Minimum relevance score threshold
     });
+
+    // ============================================================================
+    // NEW: Track token usage for dynamic resource loads
+    // ============================================================================
+    if (this.tokenTracker && this.tokenStore) {
+      // Generate unique message ID for deduplication
+      const messageId = `resource-${Date.now()}-${Math.random().toString(36).slice(2, 11)}`;
+
+      // Check if content was cached (cache read = efficient)
+      const wasCached = this.cache.has(uri);
+
+      // Track token usage
+      const tokenUsage = this.tokenTracker.track(
+        messageId,
+        {
+          input_tokens: matchResult.totalTokens,
+          output_tokens: 0, // MCP protocol returns content, not LLM generation
+          cache_creation_input_tokens: wasCached ? 0 : matchResult.totalTokens,
+          cache_read_input_tokens: wasCached ? matchResult.totalTokens : 0,
+        },
+        {
+          category: parsed.category,
+          resourceUri: uri,
+          resourceCount: matchResult.fragments.length,
+        }
+      );
+
+      // Store usage record
+      if (tokenUsage) {
+        this.tokenStore.saveUsage(tokenUsage);
+        this.logger.debug(`Token usage tracked: ${tokenUsage.totalTokens} tokens, ${tokenUsage.efficiencyPercentage.toFixed(1)}% efficient`);
+      }
+    }
 
     // Cache the assembled content
     this.cache.set(uri, matchResult.assembledContent);

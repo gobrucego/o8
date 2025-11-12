@@ -41,7 +41,7 @@ This command uses **Just-In-Time (JIT) resource loading** for maximum token effi
 
 ```
 # Phase 0: Discovery (if knowledge type needs expertise)
-@orchestr8://match?query=knowledge+management+capture&mode=index&categories=agent,skill&maxTokens=500
+@orchestr8://match?query=knowledge+management+capture&mode=index&maxResults=3&categories=agent,skill
 
 # Phase 2: Load specific expertise based on knowledge type
 @orchestr8://agents/knowledge-base-agent              # Knowledge capture methodology (~800 tokens)
@@ -124,7 +124,7 @@ Identified improvements ranked by ROI.
 
 ## Phase 1: Parse Input (0-10%)
 
-**→ Load (if needed):** @orchestr8://match?query=input+validation+parsing&mode=index&categories=skill&maxTokens=500
+**→ Load (if needed):** @orchestr8://match?query=input+validation+parsing&mode=index&maxResults=3&categories=skill
 
 **Activities:**
 - Extract knowledge type
@@ -136,7 +136,7 @@ Identified improvements ranked by ROI.
 
 ## Phase 2: Knowledge Capture (10-80%)
 
-**→ Load:** @orchestr8://match?query=knowledge+management+documentation+metadata&mode=index&categories=agent,skill&maxTokens=1200
+**→ Load:** @orchestr8://match?query=knowledge+management+documentation+metadata&mode=index&maxResults=5
 
 **Recommended resources based on knowledge type:**
 ```
@@ -164,7 +164,7 @@ Identified improvements ranked by ROI.
 
 ## Phase 3: Verification (80-95%)
 
-**→ Load (if quality issues):** @orchestr8://match?query=metadata+validation+discoverability&mode=index&categories=skill&maxTokens=800
+**→ Load (if quality issues):** @orchestr8://match?query=metadata+validation+discoverability&mode=index&maxResults=3
 
 **Validation resources (load if needed):**
 ```

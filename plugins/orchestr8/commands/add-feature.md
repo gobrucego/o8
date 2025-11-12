@@ -22,7 +22,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 1: Analysis & Design (0-20%)
 
-**→ Load:** @orchestr8://match?query=requirement+analysis+api+design+integration&categories=skill,pattern&maxTokens=1000
+**→ Load:** @orchestr8://match?query=requirement+analysis+api+design+integration&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Parse feature requirements and define acceptance criteria
@@ -57,7 +57,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 3: Quality Assurance (70-90%)
 
-**→ Load:** @orchestr8://match?query=testing+code+review+security+validation&categories=skill,agent&maxTokens=1200
+**→ Load:** @orchestr8://match?query=testing+code+review+security+validation&categories=skill,agent&mode=index&maxResults=5
 
 **Parallel tracks:**
 - **Testing Track:** E2E tests, edge cases, coverage verification
@@ -76,7 +76,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 4: Integration & Deployment (90-100%)
 
-**→ Load:** @orchestr8://match?query=deployment+feature+flags+documentation&categories=guide,skill&maxTokens=1000
+**→ Load:** @orchestr8://match?query=deployment+feature+flags+documentation&categories=guide,skill&mode=index&maxResults=5
 
 **Parallel tracks:**
 - **Documentation Track:** API docs, inline comments, changelog, migration notes

@@ -133,7 +133,7 @@ Based on task analysis, fetch specific resources:
 **Dynamic Discovery:**
 If you're unsure what resources exist, use fuzzy matching:
 ```
-@orchestr8://match?query=authentication+jwt+security&categories=agent,skill&maxTokens=2000&minScore=20
+@orchestr8://match?query=authentication+jwt+security&categories=agent,skill&mode=index&maxResults=8&minScore=20
 ```
 
 ### Phase 3: Build Execution (30-90%)
@@ -167,13 +167,13 @@ As you encounter new requirements, fetch resources on-demand:
 
 ```
 # Discovered need for caching
-@orchestr8://match?query=caching+strategies+redis&maxTokens=1500
+@orchestr8://match?query=caching+strategies+redis&mode=index&maxResults=8
 
 # Need database optimization
-@orchestr8://match?query=database+query+optimization+postgres&maxTokens=1500
+@orchestr8://match?query=database+query+optimization+postgres&mode=index&maxResults=8
 
 # Security vulnerability found
-@orchestr8://match?query=security+input+validation+sql+injection&maxTokens=2000
+@orchestr8://match?query=security+input+validation+sql+injection&mode=index&maxResults=8
 ```
 
 ### Phase 4: Validation (90-100%)
@@ -409,7 +409,7 @@ if api_development:
 @orchestr8://match?query=keywords&mode=catalog&maxResults=20&minScore=15
 
 # Full mode (loads complete content)
-@orchestr8://match?query=keywords&mode=full&maxTokens=3000&categories=agent,skill
+@orchestr8://match?query=keywords&mode=index&maxResults=12&categories=agent,skill
 
 # With filters
 @orchestr8://match?query=rust+async&categories=agent,pattern&minScore=20

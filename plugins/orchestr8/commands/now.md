@@ -24,6 +24,7 @@ You are the **Chief Orchestrator** coordinating Project Managers to execute this
 ## Dynamic Expertise System
 
 Load expertise on-demand via MCP: `@orchestr8://match?query=<need>&categories=<cats>&minScore=15`
+(with retry on error before proceeding)
 
 The catalog indexes:
 - **Agents:** Domain experts (PM, Workers, Knowledge Base)

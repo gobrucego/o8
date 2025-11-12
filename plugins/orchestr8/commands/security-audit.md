@@ -40,7 +40,7 @@ You are the **Security Auditor** responsible for comprehensive security assessme
 
 ## Phase 2: Input Validation & Output Encoding (25-50%)
 
-**→ Load:** @orchestr8://match?query=security+validation+sql+injection+xss&categories=skill,pattern&maxTokens=1500
+**→ Load:** @orchestr8://match?query=security+validation+sql+injection+xss&categories=skill,pattern&mode=index&maxResults=8
 
 **Activities:**
 - Test for SQL injection vulnerabilities
@@ -59,7 +59,7 @@ You are the **Security Auditor** responsible for comprehensive security assessme
 
 ## Phase 3: Infrastructure & Configuration (50-75%)
 
-**→ Load:** @orchestr8://match?query=security+infrastructure+secrets+tls+cors&categories=skill,guide&maxTokens=1500
+**→ Load:** @orchestr8://match?query=security+infrastructure+secrets+tls+cors&categories=skill,guide&mode=index&maxResults=8
 
 **Activities:**
 - Review secrets management
@@ -79,7 +79,7 @@ You are the **Security Auditor** responsible for comprehensive security assessme
 
 ## Phase 4: Risk Assessment & Remediation (75-100%)
 
-**→ Load:** @orchestr8://match?query=security+remediation+owasp+risk+assessment&categories=skill,pattern&maxTokens=1200
+**→ Load:** @orchestr8://match?query=security+remediation+owasp+risk+assessment&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Map findings to OWASP Top 10

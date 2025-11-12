@@ -10,6 +10,11 @@ import { ResourceLoader } from "./loaders/resourceLoader.js";
 import { Logger } from "./utils/logger.js";
 import { StatsCollector } from "./stats/collector.js";
 import { HTTPTransport } from "./transports/http.js";
+import { createTokenSystem } from "./token/index.js";
+import type { TokenTracker } from "./token/tracker.js";
+import type { TokenStore } from "./token/store.js";
+import type { TokenMetrics } from "./token/metrics.js";
+import type { EfficiencyEngine } from "./token/efficiency.js";
 import { z } from "zod";
 import dotenv from "dotenv";
 import path from "path";
@@ -37,18 +42,58 @@ class Orchestr8Server {
   private stats: StatsCollector;
   private httpTransport: HTTPTransport | null = null;
 
+  // Token tracking system
+  private tokenTracker!: TokenTracker;
+  private tokenStore!: TokenStore;
+  private tokenMetrics!: TokenMetrics;
+  private efficiencyEngine!: EfficiencyEngine;
+
   constructor() {
     this.server = new McpServer({
       name: "orchestr8",
       version: "1.0.0",
     });
     this.promptLoader = new PromptLoader(logger);
-    this.resourceLoader = new ResourceLoader(logger);
-    this.stats = new StatsCollector();
+    // ResourceLoader and StatsCollector will be initialized in initialize() with token system
+    this.resourceLoader = null as any; // Temporary
+    this.stats = null as any; // Temporary - will be initialized with token metrics
   }
 
   async initialize(): Promise<void> {
     logger.info("Starting orchestr8 MCP server v1.0.0");
+
+    // ============================================================================
+    // NEW: Initialize token tracking system
+    // ============================================================================
+    logger.info("Initializing token efficiency monitoring...");
+    const tokenSystem = createTokenSystem({
+      tracking: {
+        enabled: true,
+        baselineStrategy: 'no_jit',
+        deduplication: true,
+        retentionDays: 7,
+        enableTrends: true,
+      },
+      storage: {
+        maxRecords: 10000,
+        retentionDays: 7,
+        autoCleanup: true,
+        cleanupIntervalMs: 60 * 60 * 1000, // 1 hour
+      },
+    });
+
+    this.tokenTracker = tokenSystem.tracker;
+    this.tokenStore = tokenSystem.store;
+    this.tokenMetrics = tokenSystem.metrics;
+    this.efficiencyEngine = tokenSystem.efficiency;
+
+    logger.info("Token efficiency monitoring initialized");
+
+    // Initialize StatsCollector with token metrics
+    this.stats = new StatsCollector(this.tokenMetrics);
+
+    // Initialize ResourceLoader with token system
+    this.resourceLoader = new ResourceLoader(logger, this.tokenTracker, this.tokenStore);
 
     // Load all prompts and resources
     const prompts = await this.promptLoader.loadAllPrompts();
@@ -197,8 +242,8 @@ class Orchestr8Server {
             guides: resources.filter(r => r.category === 'guides').length,
             workflows: resources.filter(r => r.category === 'workflows').length,
           },
-          searchUri: "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
-          usage: "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
+          searchUri: "@orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+          usage: "Use @orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
         };
 
         return {
@@ -562,6 +607,15 @@ class Orchestr8Server {
       },
       disableProvider: async (name: string) => {
         return this.resourceLoader.disableProvider(name);
+      },
+      // ============================================================================
+      // NEW: Token system interface
+      // ============================================================================
+      tokenSystem: {
+        tracker: this.tokenTracker,
+        store: this.tokenStore,
+        metrics: this.tokenMetrics,
+        efficiency: this.efficiencyEngine,
       },
     };
 

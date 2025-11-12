@@ -24,7 +24,7 @@ Generate a world-class Medium article optimized for viral potential, engagement,
 
 ## Phase 1: Research & Planning (0-25%)
 
-**→ Load:** @orchestr8://match?query=$ARGUMENTS+research+analysis&categories=agent,skill&maxTokens=1500
+**→ Load:** @orchestr8://match?query=$ARGUMENTS+research+analysis&categories=agent,skill&mode=index&maxResults=8
 
 **Activities:**
 - **Topic Analysis**: Validate evergreen potential, audience breadth, and unique angle
@@ -45,7 +45,7 @@ Generate a world-class Medium article optimized for viral potential, engagement,
 
 **→ Load:** @orchestr8://agents/medium-writer-expert
 
-**→ Load:** @orchestr8://match?query=medium+headline+story-structure+engagement&categories=skill&maxTokens=2000
+**→ Load:** @orchestr8://match?query=medium+headline+story-structure+engagement&categories=skill&mode=index&maxResults=8
 
 **Parallel tracks:**
 
@@ -76,7 +76,7 @@ Generate a world-class Medium article optimized for viral potential, engagement,
 
 ## Phase 3: Optimization & Polish (70-90%)
 
-**→ Load:** @orchestr8://skills/match?query=technical-writing+editing+readability&maxTokens=800
+**→ Load:** @orchestr8://skills/match?query=technical-writing+editing+readability&mode=index&maxResults=3
 
 **Quality checks:**
 

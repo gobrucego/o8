@@ -33,7 +33,7 @@ estimatedTokens: 3200
 
 **→ Load Profiling & Analysis Expertise (JIT):**
 ```
-@orchestr8://match?query=performance+profiling+bottleneck+analysis+${tech-stack}&categories=skill,agent&maxTokens=1500
+@orchestr8://match?query=performance+profiling+bottleneck+analysis+${tech-stack}&categories=skill,agent&mode=index&maxResults=8
 @orchestr8://skills/performance-profiling-techniques
 ```
 
@@ -63,7 +63,7 @@ estimatedTokens: 3200
 **→ Load Optimization Expertise by Layer (JIT):**
 ```
 # Load based on identified bottlenecks from Phase 1
-@orchestr8://match?query=${bottleneck-type}+optimization+${tech-stack}&categories=skill,pattern&maxTokens=3000
+@orchestr8://match?query=${bottleneck-type}+optimization+${tech-stack}&categories=skill,pattern&mode=index&maxResults=12
 ```
 
 **Layer-Specific JIT Loading:**
@@ -76,7 +76,7 @@ estimatedTokens: 3200
 
 **→ Load Database Optimization (JIT - if database bottleneck found):**
 ```
-@orchestr8://match?query=${database-type}+query+optimization+indexing&categories=skill,agent&maxTokens=1200
+@orchestr8://match?query=${database-type}+query+optimization+indexing&categories=skill,agent&mode=index&maxResults=5
 @orchestr8://skills/performance-database-optimization
 ```
 - **Indexing:** Add missing indexes for slow queries (use EXPLAIN to verify)
@@ -90,7 +90,7 @@ estimatedTokens: 3200
 
 **→ Load Backend Optimization (JIT - if backend bottleneck found):**
 ```
-@orchestr8://match?query=${backend-tech}+performance+caching+async&categories=skill,agent&maxTokens=1200
+@orchestr8://match?query=${backend-tech}+performance+caching+async&categories=skill,agent&mode=index&maxResults=5
 @orchestr8://skills/performance-api-optimization
 ```
 - **Algorithm Complexity:** Optimize O(n²) → O(n log n) or O(n)
@@ -104,7 +104,7 @@ estimatedTokens: 3200
 
 **→ Load Frontend Optimization (JIT - if frontend bottleneck found):**
 ```
-@orchestr8://match?query=${frontend-framework}+performance+rendering+bundle&categories=skill,agent&maxTokens=1200
+@orchestr8://match?query=${frontend-framework}+performance+rendering+bundle&categories=skill,agent&mode=index&maxResults=5
 @orchestr8://skills/performance-frontend-optimization
 ```
 - **Code Splitting:** Lazy load routes and heavy components
@@ -118,7 +118,7 @@ estimatedTokens: 3200
 
 **→ Load Infrastructure Optimization (JIT - if infrastructure bottleneck found):**
 ```
-@orchestr8://match?query=${platform}+infrastructure+scaling+cdn&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=${platform}+infrastructure+scaling+cdn&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/performance-caching
 ```
 - **HTTP/2:** Enable for multiplexing and header compression
@@ -134,7 +134,7 @@ estimatedTokens: 3200
 
 **→ Load Testing & Monitoring Expertise (JIT):**
 ```
-@orchestr8://match?query=performance+testing+monitoring+benchmarking+${tech-stack}&categories=skill,pattern&maxTokens=1500
+@orchestr8://match?query=performance+testing+monitoring+benchmarking+${tech-stack}&categories=skill,pattern&mode=index&maxResults=8
 @orchestr8://skills/observability-sli-slo-monitoring
 ```
 

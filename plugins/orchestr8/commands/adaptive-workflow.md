@@ -107,7 +107,7 @@ For each discovered workflow, evaluate:
 Based on the selected workflow(s), identify required resources:
 
 ```
-@orchestr8://match?query=<workflow-specific-needs>&categories=agent,skill,pattern,example&minScore=15&maxTokens=3000
+@orchestr8://match?query=<workflow-specific-needs>&categories=agent,skill,pattern,example&minScore=15&mode=index&maxResults=12
 ```
 
 **Resource Types:**
@@ -275,7 +275,7 @@ Then: Integration testing
 @orchestr8://agents/<agent-name>
 
 # Technique lookup
-@orchestr8://match?query=<technique>&categories=skill&maxTokens=1500
+@orchestr8://match?query=<technique>&categories=skill&mode=index&maxResults=8
 
 # Pattern research
 @orchestr8://match?query=<pattern>&categories=pattern,example&minScore=20

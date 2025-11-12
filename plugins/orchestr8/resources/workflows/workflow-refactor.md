@@ -29,7 +29,7 @@ estimatedTokens: 2200
 
 **→ Load Code Analysis Expertise (JIT):**
 ```
-@orchestr8://match?query=code+analysis+smells+complexity+${tech-stack}&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=code+analysis+smells+complexity+${tech-stack}&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/quality-code-review-checklist
 @orchestr8://patterns/architecture-decision-records
 ```
@@ -45,7 +45,7 @@ estimatedTokens: 2200
 
 **→ Load Testing & Legacy Code Expertise (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+testing+coverage+characterization&categories=skill,agent&maxTokens=1200
+@orchestr8://match?query=${tech-stack}+testing+coverage+characterization&categories=skill,agent&mode=index&maxResults=5
 @orchestr8://skills/testing-strategies
 @orchestr8://skills/testing-unit
 ```
@@ -63,7 +63,7 @@ estimatedTokens: 2200
 
 **→ Load Refactoring Techniques (JIT):**
 ```
-@orchestr8://match?query=${tech-stack}+refactoring+patterns+SOLID&categories=skill,pattern&maxTokens=1500
+@orchestr8://match?query=${tech-stack}+refactoring+patterns+SOLID&categories=skill,pattern&mode=index&maxResults=8
 @orchestr8://skills/quality-refactoring-techniques
 @orchestr8://patterns/architecture-layered
 ```
@@ -80,7 +80,7 @@ estimatedTokens: 2200
 **→ Load Validation Expertise (JIT - CONDITIONAL):**
 ```
 # Only if comprehensive validation needed beyond basic testing
-@orchestr8://match?query=${tech-stack}+integration+testing+metrics&categories=skill&maxTokens=800
+@orchestr8://match?query=${tech-stack}+integration+testing+metrics&categories=skill&mode=index&maxResults=3
 ```
 
 **Activities:**

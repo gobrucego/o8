@@ -33,7 +33,7 @@ estimatedTokens: 3000
 
 **→ Load Reconnaissance & Threat Modeling Expertise (JIT):**
 ```
-@orchestr8://match?query=security+threat+modeling+attack+surface+${tech-stack}&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=security+threat+modeling+attack+surface+${tech-stack}&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/requirement-analysis-framework
 ```
 
@@ -53,7 +53,7 @@ estimatedTokens: 3000
 
 **→ Load Core Security Assessment Expertise (JIT):**
 ```
-@orchestr8://match?query=owasp+security+vulnerabilities+${tech-stack}&categories=skill,agent&maxTokens=2500
+@orchestr8://match?query=owasp+security+vulnerabilities+${tech-stack}&categories=skill,agent&mode=index&maxResults=10
 @orchestr8://skills/security-owasp-top10
 @orchestr8://agents/security-owasp-vulnerabilities
 ```
@@ -84,7 +84,7 @@ Systematically evaluate each category:
 **→ Dependency Security (JIT - CONDITIONAL):**
 ```
 # Only if application has external dependencies
-@orchestr8://match?query=${package-manager}+dependency+audit+cve&categories=skill&maxTokens=800
+@orchestr8://match?query=${package-manager}+dependency+audit+cve&categories=skill&mode=index&maxResults=3
 ```
 - Run security scanners: `npm audit`, `pip-audit`, `cargo audit`, Snyk
 - Check for known vulnerabilities (CVEs) with severity ratings
@@ -97,7 +97,7 @@ Systematically evaluate each category:
 **→ Infrastructure Security (JIT - CONDITIONAL):**
 ```
 # Only if infrastructure/cloud components in scope
-@orchestr8://match?query=${cloud-provider}+infrastructure+security+hardening&categories=skill,pattern&maxTokens=1000
+@orchestr8://match?query=${cloud-provider}+infrastructure+security+hardening&categories=skill,pattern&mode=index&maxResults=5
 @orchestr8://skills/security-secrets-management
 ```
 - Network configuration review (firewalls, security groups, network policies)
@@ -126,7 +126,7 @@ Systematically evaluate each category:
 **→ Data Protection & Compliance (JIT - CONDITIONAL):**
 ```
 # Only if handling sensitive data or compliance requirements
-@orchestr8://match?query=${compliance-standard}+data+protection+encryption&categories=skill,agent&maxTokens=1200
+@orchestr8://match?query=${compliance-standard}+data+protection+encryption&categories=skill,agent&mode=index&maxResults=5
 ```
 - Encryption at rest (AES-256, database encryption)
 - Encryption in transit (TLS 1.2+, certificate validation)
@@ -141,7 +141,7 @@ Systematically evaluate each category:
 
 **→ Load Remediation & Reporting Expertise (JIT):**
 ```
-@orchestr8://match?query=security+remediation+reporting+cvss&categories=skill&maxTokens=800
+@orchestr8://match?query=security+remediation+reporting+cvss&categories=skill&mode=index&maxResults=3
 @orchestr8://skills/technical-writing-principles
 ```
 

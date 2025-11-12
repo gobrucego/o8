@@ -56,7 +56,7 @@ Metrics showing how knowledge is improving outcomes.
 
 ## Phase 2: Data Collection (10-40%)
 
-**→ Load:** @orchestr8://match?query=data+analysis+metrics+statistics&categories=skill&maxTokens=1000
+**→ Load:** @orchestr8://match?query=data+analysis+metrics+statistics&categories=skill&mode=index&maxResults=5
 
 **Activities:**
 - Collect knowledge statistics

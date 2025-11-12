@@ -44,17 +44,17 @@ estimatedTokens: 580
 **Phase-based token budgeting:**
 ```markdown
 Phase 1 (Research): 1200-1500 tokens
-- @orchestr8://agents/match?query=research+${domain}&maxTokens=1000
-- @orchestr8://skills/match?query=requirements+analysis&maxTokens=500
+- @orchestr8://agents/match?query=research+${domain}&mode=index&maxResults=5
+- @orchestr8://skills/match?query=requirements+analysis&mode=index&maxResults=3
 
 Phase 2 (Design): 1500-2000 tokens
-- @orchestr8://match?query=${tech}+architecture&categories=agent,pattern&maxTokens=1800
+- @orchestr8://match?query=${tech}+architecture&categories=agent,pattern&mode=index&maxResults=8
 
 Phase 3 (Implementation): 2500-3000 tokens
-- @orchestr8://match?query=${tech}+${features}&categories=agent,skill,example&maxTokens=2500
+- @orchestr8://match?query=${tech}+${features}&categories=agent,skill,example&mode=index&maxResults=10
 
 Phase 4 (Validation): 800-1200 tokens
-- @orchestr8://skills/match?query=testing+${tech}&maxTokens=800
+- @orchestr8://skills/match?query=testing+${tech}&mode=index&maxResults=3
 ```
 
 **Argument substitution:**
@@ -151,12 +151,12 @@ arguments:
 # Quick Fix: ${bug-description}
 
 ## Phase 1: Analysis (0-30%)
-**→ Load:** @orchestr8://skills/match?query=debugging+${bug-description}&maxTokens=800
+**→ Load:** @orchestr8://skills/match?query=debugging+${bug-description}&mode=index&maxResults=3
 - Reproduce issue, analyze root cause
 - **Checkpoint:** Cause identified
 
 ## Phase 2: Fix (30-80%)
-**→ Load:** @orchestr8://match?query=${bug-description}+solution&maxTokens=1200
+**→ Load:** @orchestr8://match?query=${bug-description}+solution&mode=index&maxResults=5
 - Implement fix, add test
 - **Checkpoint:** Test passes
 

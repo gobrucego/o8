@@ -38,7 +38,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 2: Build Pipeline (20-50%)
 
-**→ Load:** @orchestr8://match?query=cicd+build+automation+testing&categories=guide,skill&maxTokens=1500
+**→ Load:** @orchestr8://match?query=cicd+build+automation+testing&categories=guide,skill&mode=index&maxResults=8
 
 **Activities:**
 
@@ -68,7 +68,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 3: Security & Quality Gates (50-80%)
 
-**→ Load:** @orchestr8://match?query=security+scanning+code+quality+cicd&categories=skill,guide&maxTokens=1500
+**→ Load:** @orchestr8://match?query=security+scanning+code+quality+cicd&categories=skill,guide&mode=index&maxResults=8
 
 **Activities:**
 
@@ -96,7 +96,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 4: Deployment Pipeline (80-100%)
 
-**→ Load:** @orchestr8://match?query=deployment+automation+infrastructure+monitoring&categories=guide,pattern&maxTokens=1500
+**→ Load:** @orchestr8://match?query=deployment+automation+infrastructure+monitoring&categories=guide,pattern&mode=index&maxResults=8
 
 **Activities:**
 

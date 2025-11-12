@@ -23,7 +23,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 1: Codebase Analysis (0-30%)
 
-**→ Load:** @orchestr8://match?query=architecture+analysis+diagram&categories=skill,pattern&maxTokens=1000
+**→ Load:** @orchestr8://match?query=architecture+analysis+diagram&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Analyze codebase structure and architecture
@@ -36,7 +36,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 2: Architecture Diagrams (30-50%)
 
-**→ Load:** @orchestr8://match?query=c4+architecture+diagrams+mermaid&categories=skill,example&maxTokens=1200
+**→ Load:** @orchestr8://match?query=c4+architecture+diagrams+mermaid&categories=skill,example&mode=index&maxResults=5
 
 **Activities:**
 - Generate C4 Level 0: System Context (external systems, users)
@@ -62,7 +62,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 4: Sequence Diagrams (65-80%)
 
-**→ Load:** @orchestr8://match?query=sequence+diagrams+interactions&categories=skill,example&maxTokens=800
+**→ Load:** @orchestr8://match?query=sequence+diagrams+interactions&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Create sequence diagrams for key user flows
@@ -75,7 +75,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 5: User Journey & ERD Diagrams (80-100%)
 
-**→ Load:** @orchestr8://match?query=user+journey+erd+visualization&categories=skill,example&maxTokens=800
+**→ Load:** @orchestr8://match?query=user+journey+erd+visualization&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Create user journey maps

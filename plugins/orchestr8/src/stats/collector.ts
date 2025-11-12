@@ -5,6 +5,8 @@
  * Used by both stdio and HTTP transports to track server metrics.
  */
 
+import type { TokenMetrics } from '../token/metrics.js';
+
 export interface ActivityEvent {
   type: string;
   timestamp: number;
@@ -36,6 +38,14 @@ export interface StatsSnapshot {
     rss: number;
   };
   lastActivity: number;
+  tokens?: {
+    efficiency: number;
+    tokensSaved: number;
+    totalCost: number;
+    recentSavings: number;
+    totalActualTokens: number;
+    totalBaselineTokens: number;
+  };
 }
 
 export type StatsSubscriber = (snapshot: StatsSnapshot) => void;
@@ -63,8 +73,12 @@ export class StatsCollector {
   private readonly maxLatencies = 100;
   private readonly maxActivityLog = 1000;
 
-  constructor() {
+  // Token metrics integration
+  private tokenMetrics: TokenMetrics | null = null;
+
+  constructor(tokenMetrics?: TokenMetrics) {
     this.startTime = Date.now();
+    this.tokenMetrics = tokenMetrics || null;
   }
 
   /**
@@ -155,11 +169,11 @@ export class StatsCollector {
   /**
    * Get current statistics snapshot
    */
-  getSnapshot(): StatsSnapshot {
+  async getSnapshot(): Promise<StatsSnapshot> {
     const latencies = [...this.stats.latencies].sort((a, b) => a - b);
     const memUsage = process.memoryUsage();
 
-    return {
+    const snapshot: StatsSnapshot = {
       uptime: Math.floor((Date.now() - this.startTime) / 1000),
       requests: {
         total: this.stats.requests.total,
@@ -185,6 +199,25 @@ export class StatsCollector {
       },
       lastActivity: this.stats.lastActivity
     };
+
+    // Add token metrics if available
+    if (this.tokenMetrics) {
+      try {
+        const tokenSummary = this.tokenMetrics.getSummary({ period: 'last_hour' });
+        snapshot.tokens = {
+          efficiency: tokenSummary.efficiency,
+          tokensSaved: tokenSummary.tokensSaved,
+          totalCost: tokenSummary.costUSD,
+          recentSavings: tokenSummary.tokensSaved,
+          totalActualTokens: tokenSummary.totalTokens,
+          totalBaselineTokens: tokenSummary.totalTokens + tokenSummary.tokensSaved,
+        };
+      } catch (error) {
+        // Token metrics not available yet, skip
+      }
+    }
+
+    return snapshot;
   }
 
   /**
@@ -248,12 +281,12 @@ export class StatsCollector {
   /**
    * Notify all subscribers of stats update
    */
-  private notifySubscribers(): void {
+  private async notifySubscribers(): Promise<void> {
     if (this.subscribers.size === 0) {
       return;
     }
 
-    const snapshot = this.getSnapshot();
+    const snapshot = await this.getSnapshot();
     this.subscribers.forEach(callback => {
       try {
         callback(snapshot);

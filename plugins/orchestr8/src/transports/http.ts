@@ -3,6 +3,10 @@ import { Server as HTTPServer } from "http";
 import { WebSocketServer, WebSocket } from "ws";
 import path from "path";
 import { StatsCollector } from "../stats/collector.js";
+import type { TokenTracker } from "../token/tracker.js";
+import type { TokenStore } from "../token/store.js";
+import type { TokenMetrics } from "../token/metrics.js";
+import type { EfficiencyEngine } from "../token/efficiency.js";
 
 export interface HTTPTransportConfig {
   port: number;
@@ -28,6 +32,14 @@ export interface MCPServerInterface {
   getProviderStats(name: string): any;
   enableProvider(name: string): Promise<void>;
   disableProvider(name: string): Promise<void>;
+
+  // Token tracking system
+  tokenSystem?: {
+    tracker: TokenTracker;
+    store: TokenStore;
+    metrics: TokenMetrics;
+    efficiency: EfficiencyEngine;
+  };
 }
 
 export class HTTPTransport {
@@ -193,9 +205,14 @@ export class HTTPTransport {
       }
     });
 
-    this.app.get("/api/stats", (req: Request, res: Response) => {
-      const snapshot = this.stats.getSnapshot();
-      res.json(snapshot);
+    this.app.get("/api/stats", async (req: Request, res: Response) => {
+      try {
+        const snapshot = await this.stats.getSnapshot();
+        res.json(snapshot);
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
     });
 
     // ============================================================================
@@ -397,6 +414,157 @@ export class HTTPTransport {
       },
     );
 
+    // ============================================================================
+    // Token Efficiency API Endpoints
+    // ============================================================================
+
+    // GET /api/tokens/efficiency - Get efficiency snapshot
+    this.app.get("/api/tokens/efficiency", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const period = (req.query.period as string) || "last_hour";
+        const snapshot = await this.mcpServer.tokenSystem.metrics.getEfficiencySnapshot({
+          period: period as any,
+        });
+
+        res.json(snapshot);
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // GET /api/tokens/summary - Get summary with recent stats
+    this.app.get("/api/tokens/summary", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const period = (req.query.period as string) || "last_hour";
+        const summary = await this.mcpServer.tokenSystem.metrics.getSummary({
+          period: period as any,
+        });
+
+        res.json(summary);
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // GET /api/tokens/sessions/:id - Get session details
+    this.app.get("/api/tokens/sessions/:id", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const { id } = req.params;
+        const session = this.mcpServer.tokenSystem.store.getSessionData(id);
+
+        if (!session) {
+          res.status(404).json({ error: `Session ${id} not found` });
+          return;
+        }
+
+        // Convert Set to Array for JSON serialization
+        const sessionData = {
+          ...session,
+          trackedMessageIds: Array.from(session.trackedMessageIds),
+        };
+
+        res.json(sessionData);
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // GET /api/tokens/by-category - Get metrics by category
+    this.app.get("/api/tokens/by-category", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const period = (req.query.period as string) || "last_hour";
+        const snapshot = await this.mcpServer.tokenSystem.metrics.getEfficiencySnapshot({
+          period: period as any,
+        });
+
+        res.json({
+          categories: snapshot.byCategory,
+          timestamp: snapshot.timestamp,
+        });
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // GET /api/tokens/cost-savings - Get cost savings report
+    this.app.get("/api/tokens/cost-savings", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const period = (req.query.period as string) || "last_hour";
+        const summary = await this.mcpServer.tokenSystem.metrics.getSummary({
+          period: period as any,
+        });
+
+        const costReport = {
+          period,
+          totalCostUsd: summary.costUSD,
+          totalCostSavingsUsd: summary.costSavingsUSD,
+          baselineCostUsd: summary.costUSD + summary.costSavingsUSD,
+          efficiency: summary.efficiency,
+          tokensSaved: summary.tokensSaved,
+          timestamp: new Date(),
+        };
+
+        res.json(costReport);
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
+    // GET /api/tokens/trends - Get trend data
+    this.app.get("/api/tokens/trends", async (req: Request, res: Response) => {
+      try {
+        if (!this.mcpServer.tokenSystem) {
+          res.status(503).json({ error: "Token tracking system not initialized" });
+          return;
+        }
+
+        const period = (req.query.period as string) || "last_hour";
+        const snapshot = await this.mcpServer.tokenSystem.metrics.getEfficiencySnapshot({
+          period: period as any,
+          includeTrend: true,
+        });
+
+        res.json({
+          trend: snapshot.trend,
+          overall: snapshot.overall,
+          timestamp: snapshot.timestamp,
+        });
+      } catch (error: any) {
+        this.stats.trackError();
+        res.status(500).json({ error: error.message });
+      }
+    });
+
     // Fallback to index.html for SPA routing
     this.app.get("*", (req: Request, res: Response) => {
       res.sendFile(path.join(this.config.staticPath, "index.html"));
@@ -406,17 +574,22 @@ export class HTTPTransport {
   private setupWebSocket(server: HTTPServer): void {
     this.wsServer = new WebSocketServer({ server });
 
-    this.wsServer.on("connection", (ws: WebSocket) => {
+    this.wsServer.on("connection", async (ws: WebSocket) => {
       console.log("[HTTP Transport] WebSocket client connected");
       this.wsClients.add(ws);
 
       // Send initial stats snapshot
-      ws.send(
-        JSON.stringify({
-          type: "stats",
-          data: this.stats.getSnapshot(),
-        }),
-      );
+      try {
+        const snapshot = await this.stats.getSnapshot();
+        ws.send(
+          JSON.stringify({
+            type: "stats",
+            data: snapshot,
+          }),
+        );
+      } catch (error) {
+        console.error("[HTTP Transport] Error sending initial stats:", error);
+      }
 
       // Send activity history
       const activityHistory = this.stats.getActivityLog(100);

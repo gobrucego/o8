@@ -40,7 +40,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 2: Architecture & Design (30-60%)
 
-**→ Load:** @orchestr8://match?query=architecture+design+patterns+best+practices&categories=pattern,skill&maxTokens=1500
+**→ Load:** @orchestr8://match?query=architecture+design+patterns+best+practices&categories=pattern,skill&mode=index&maxResults=8
 
 **Activities:**
 - Evaluate design patterns usage
@@ -58,7 +58,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 3: Security & Performance (60-90%)
 
-**→ Load:** @orchestr8://match?query=security+vulnerabilities+performance+optimization&categories=skill,pattern&maxTokens=1500
+**→ Load:** @orchestr8://match?query=security+vulnerabilities+performance+optimization&categories=skill,pattern&mode=index&maxResults=8
 
 **Activities:**
 - Scan for security vulnerabilities
@@ -78,7 +78,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 4: Recommendations & Report (90-100%)
 
-**→ Load:** @orchestr8://match?query=code+review+best+practices&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=code+review+best+practices&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Prioritize findings by severity

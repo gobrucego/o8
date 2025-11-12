@@ -24,7 +24,7 @@ You are the **Assumption Validator** responsible for testing technical assumptio
 
 ## Phase 1: Assumption Identification & Classification (0-15%)
 
-**→ Load:** @orchestr8://match?query=assumption+validation+risk+assessment&categories=skill,pattern&maxTokens=1200
+**→ Load:** @orchestr8://match?query=assumption+validation+risk+assessment&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Extract all stated and implicit assumptions
@@ -60,7 +60,7 @@ You are the **Assumption Validator** responsible for testing technical assumptio
 
 ## Phase 3: Evidence Synthesis & Risk Assessment (70-85%)
 
-**→ Load:** @orchestr8://match?query=risk+assessment+mitigation+evidence&categories=skill,pattern&maxTokens=1000
+**→ Load:** @orchestr8://match?query=risk+assessment+mitigation+evidence&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Aggregate all validation results
@@ -74,7 +74,7 @@ You are the **Assumption Validator** responsible for testing technical assumptio
 
 ## Phase 4: Action Plan & Knowledge Capture (85-100%)
 
-**→ Load:** @orchestr8://match?query=action+plan+decision+records+monitoring&categories=skill&maxTokens=800
+**→ Load:** @orchestr8://match?query=action+plan+decision+records+monitoring&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Create actionable recommendations for each assumption

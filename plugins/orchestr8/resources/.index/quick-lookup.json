@@ -31,16 +31,6 @@
       ],
       "tokens": 1513
     },
-    "creating": {
-      "uris": [
-        "orchestr8://agents/agent-designer-fragment-structure",
-        "orchestr8://agents/agent-designer-metadata-optimization",
-        "orchestr8://agents/agent-designer-workflow",
-        "orchestr8://agents/api-designer-rest",
-        "orchestr8://agents/data-engineer-modern-stack"
-      ],
-      "tokens": 3080
-    },
     "patterns": {
       "uris": [
         "orchestr8://agents/agent-designer-fragment-structure",
@@ -51,15 +41,15 @@
       ],
       "tokens": 2450
     },
-    "designing": {
+    "creating": {
       "uris": [
-        "orchestr8://agents/agent-architect",
         "orchestr8://agents/agent-designer-fragment-structure",
         "orchestr8://agents/agent-designer-metadata-optimization",
-        "orchestr8://agents/agent-designer-principles",
-        "orchestr8://agents/ai-ml-engineer-core"
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/api-designer-rest",
+        "orchestr8://agents/data-engineer-modern-stack"
       ],
-      "tokens": 2863
+      "tokens": 3080
     },
     "using": {
       "uris": [
@@ -70,6 +60,16 @@
         "orchestr8://agents/ai-ml-engineer-nlp"
       ],
       "tokens": 3260
+    },
+    "designing": {
+      "uris": [
+        "orchestr8://agents/agent-architect",
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/ai-ml-engineer-core"
+      ],
+      "tokens": 2863
     },
     "production": {
       "uris": [
@@ -91,16 +91,6 @@
       ],
       "tokens": 3280
     },
-    "performance": {
-      "uris": [
-        "orchestr8://agents/agent-designer-metadata-optimization",
-        "orchestr8://agents/ai-ml-engineer-computer-vision",
-        "orchestr8://agents/ai-ml-engineer-core",
-        "orchestr8://agents/ai-ml-mlops",
-        "orchestr8://agents/api-integration-specialist"
-      ],
-      "tokens": 3360
-    },
     "optimization": {
       "uris": [
         "orchestr8://agents/ai-ml-engineer-computer-vision",
@@ -110,6 +100,26 @@
         "orchestr8://agents/angular-specialist"
       ],
       "tokens": 2610
+    },
+    "testing": {
+      "uris": [
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/agent-designer-workflow",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/api-integration-specialist"
+      ],
+      "tokens": 3200
+    },
+    "performance": {
+      "uris": [
+        "orchestr8://agents/agent-designer-metadata-optimization",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-mlops",
+        "orchestr8://agents/api-integration-specialist"
+      ],
+      "tokens": 3360
     },
     "features": {
       "uris": [
@@ -125,9 +135,9 @@
       "uris": [
         "orchestr8://agents/legacy-system-analyst",
         "orchestr8://skills/medium-engagement-hooks",
-        "orchestr8://skills/security-authentication-jwt",
         "orchestr8://skills/service-dependency-mapping",
-        "orchestr8://examples/docker-multistage-nodejs"
+        "orchestr8://examples/docker-multistage-nodejs",
+        "orchestr8://examples/express-error-handling"
       ],
       "tokens": 3040
     },
@@ -141,35 +151,15 @@
       ],
       "tokens": 1513
     },
-    "testing": {
+    "best": {
       "uris": [
-        "orchestr8://agents/agent-designer-metadata-optimization",
-        "orchestr8://agents/agent-designer-principles",
-        "orchestr8://agents/agent-designer-workflow",
-        "orchestr8://agents/ai-ml-mlops",
-        "orchestr8://agents/api-integration-specialist"
+        "orchestr8://agents/agent-designer-fragment-structure",
+        "orchestr8://agents/algolia-specialist",
+        "orchestr8://agents/angular-specialist",
+        "orchestr8://agents/aws-specialist",
+        "orchestr8://agents/azure-specialist"
       ],
-      "tokens": 3200
-    },
-    "management": {
-      "uris": [
-        "orchestr8://agents/cassandra-specialist",
-        "orchestr8://agents/code-reviewer",
-        "orchestr8://agents/devops-expert-cicd",
-        "orchestr8://agents/dynamodb-specialist",
-        "orchestr8://agents/frontend-accessibility"
-      ],
-      "tokens": 2569
-    },
-    "validation": {
-      "uris": [
-        "orchestr8://agents/ai-ml-engineer-core",
-        "orchestr8://agents/api-designer-graphql",
-        "orchestr8://agents/assumption-validator",
-        "orchestr8://agents/blockchain-solidity-expert",
-        "orchestr8://agents/data-engineer-modern-stack"
-      ],
-      "tokens": 2960
+      "tokens": 1850
     },
     "practices": {
       "uris": [
@@ -181,6 +171,16 @@
       ],
       "tokens": 1850
     },
+    "validation": {
+      "uris": [
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/api-designer-graphql",
+        "orchestr8://agents/assumption-validator",
+        "orchestr8://agents/blockchain-solidity-expert",
+        "orchestr8://agents/data-engineer-modern-stack"
+      ],
+      "tokens": 2960
+    },
     "deployment": {
       "uris": [
         "orchestr8://agents/agent-architect",
@@ -191,15 +191,15 @@
       ],
       "tokens": 2673
     },
-    "best": {
+    "handling": {
       "uris": [
-        "orchestr8://agents/agent-designer-fragment-structure",
-        "orchestr8://agents/algolia-specialist",
-        "orchestr8://agents/angular-specialist",
-        "orchestr8://agents/aws-specialist",
-        "orchestr8://agents/azure-specialist"
+        "orchestr8://agents/agent-designer-principles",
+        "orchestr8://agents/ai-ml-engineer-computer-vision",
+        "orchestr8://agents/ai-ml-engineer-core",
+        "orchestr8://agents/ai-ml-engineer-nlp",
+        "orchestr8://agents/api-designer-graphql"
       ],
-      "tokens": 1850
+      "tokens": 3310
     }
   }
 }
