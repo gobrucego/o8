@@ -220,9 +220,9 @@ jobs:
         run: |
           VERSION=$(cat VERSION | tr -d '\n')
 
-          # Check if version follows semantic versioning (X.Y.Z)
-          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+$'; then
-            echo "ERROR: Version '$VERSION' does not follow semantic versioning (MAJOR.MINOR.PATCH)"
+          # Check if version follows semantic versioning (X.Y.Z or X.Y.Z-prerelease)
+          if ! echo "$VERSION" | grep -qE '^[0-9]+\.[0-9]+\.[0-9]+(-[a-zA-Z0-9]+(\.[a-zA-Z0-9]+)*)?$'; then
+            echo "ERROR: Version '$VERSION' does not follow semantic versioning (MAJOR.MINOR.PATCH[-PRERELEASE])"
             exit 1
           fi
 
