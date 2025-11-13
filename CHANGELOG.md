@@ -7,6 +7,28 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.3] - 2025-01-13
+
+### Added
+- GPG code signing for plugin releases
+- `sign-plugin.sh` script for generating checksums and GPG signatures
+- `verify-plugin.sh` script for verifying plugin signatures
+- GitHub Actions workflow for automated signing and release
+
+### Fixed
+- Removed `.mcp.json` file that was causing MCP server startup failures
+- Environment variable expansion now works correctly with inline `mcpServers` in plugin.json
+
+### Security
+- All releases now include cryptographic signatures (CHECKSUMS.txt.asc)
+- Public key distributed with releases for verification (ORCHESTR8_PUBLIC_KEY.asc)
+- SHA256 checksums for all plugin files (CHECKSUMS.txt)
+
+## [8.0.2] - 2025-01-13
+
+### Fixed
+- Removed `.mcp.json` file completely from repository
+
 ## [8.0.1] - 2025-01-12
 
 ### Changed
