@@ -139,19 +139,16 @@ jobs:
           VERSION_FILE=$(cat VERSION | tr -d '\n')
           PACKAGE_VERSION=$(jq -r '.version' plugins/orchestr8/package.json)
           PLUGIN_VERSION=$(jq -r '.version' plugins/orchestr8/.claude-plugin/plugin.json)
-          MARKETPLACE_META=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
-          MARKETPLACE_PLUGIN=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
+          MARKETPLACE_VERSION=$(jq -r '.version' .claude-plugin/marketplace.json)
 
           if [ "$VERSION_FILE" != "$PACKAGE_VERSION" ] || \
              [ "$VERSION_FILE" != "$PLUGIN_VERSION" ] || \
-             [ "$VERSION_FILE" != "$MARKETPLACE_META" ] || \
-             [ "$VERSION_FILE" != "$MARKETPLACE_PLUGIN" ]; then
+             [ "$VERSION_FILE" != "$MARKETPLACE_VERSION" ]; then
             echo "❌ Version mismatch detected"
             echo "  VERSION: $VERSION_FILE"
             echo "  package.json: $PACKAGE_VERSION"
             echo "  plugin.json: $PLUGIN_VERSION"
-            echo "  marketplace.json (metadata): $MARKETPLACE_META"
-            echo "  marketplace.json (plugins[0]): $MARKETPLACE_PLUGIN"
+            echo "  marketplace.json: $MARKETPLACE_VERSION"
             exit 1
           fi
 

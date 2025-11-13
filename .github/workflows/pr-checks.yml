@@ -251,14 +251,12 @@ jobs:
           VERSION_FILE=$(cat VERSION | tr -d '\n')
           PACKAGE_VERSION=$(jq -r '.version' plugins/orchestr8/package.json)
           PLUGIN_VERSION=$(jq -r '.version' plugins/orchestr8/.claude-plugin/plugin.json)
-          MARKETPLACE_META=$(jq -r '.metadata.version' .claude-plugin/marketplace.json)
-          MARKETPLACE_PLUGIN=$(jq -r '.plugins[0].version' .claude-plugin/marketplace.json)
+          MARKETPLACE_VERSION=$(jq -r '.version' .claude-plugin/marketplace.json)
 
           echo "VERSION file: $VERSION_FILE"
           echo "package.json: $PACKAGE_VERSION"
           echo "plugin.json: $PLUGIN_VERSION"
-          echo "marketplace.json (metadata): $MARKETPLACE_META"
-          echo "marketplace.json (plugins[0]): $MARKETPLACE_PLUGIN"
+          echo "marketplace.json: $MARKETPLACE_VERSION"
 
           errors=0
 
@@ -272,13 +270,8 @@ jobs:
             errors=$((errors + 1))
           fi
 
-          if [ "$VERSION_FILE" != "$MARKETPLACE_META" ]; then
-            echo "ERROR: Version mismatch between VERSION and marketplace.json metadata"
-            errors=$((errors + 1))
-          fi
-
-          if [ "$VERSION_FILE" != "$MARKETPLACE_PLUGIN" ]; then
-            echo "ERROR: Version mismatch between VERSION and marketplace.json plugins[0]"
+          if [ "$VERSION_FILE" != "$MARKETPLACE_VERSION" ]; then
+            echo "ERROR: Version mismatch between VERSION and marketplace.json"
             errors=$((errors + 1))
           fi
 
@@ -289,8 +282,7 @@ jobs:
             echo "  - VERSION"
             echo "  - plugins/orchestr8/package.json (version field)"
             echo "  - plugins/orchestr8/.claude-plugin/plugin.json (version field)"
-            echo "  - .claude-plugin/marketplace.json (metadata.version)"
-            echo "  - .claude-plugin/marketplace.json (plugins[0].version)"
+            echo "  - .claude-plugin/marketplace.json (version field)"
             exit 1
           fi
 
