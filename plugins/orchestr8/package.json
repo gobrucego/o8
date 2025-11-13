@@ -1,11 +1,12 @@
 {
   "name": "orchestr8-mcp-server",
-  "version": "8.0.3",
+  "version": "8.0.4",
   "description": "MCP server for orchestr8 - Autonomous software development workflows, agents, and skills for Claude Code",
   "main": "dist/index.js",
   "scripts": {
-    "build": "tsc && npm run copy-static",
+    "build": "npm run bundle && npm run copy-static",
     "build:dev": "tsc --project tsconfig.dev.json && npm run copy-static",
+    "bundle": "node scripts/bundle.js",
     "copy-static": "mkdir -p dist/web && cp -r src/web/static dist/web/",
     "build-index": "tsx scripts/build-index.ts",
     "watch": "tsc --project tsconfig.dev.json --watch",
@@ -57,6 +58,7 @@
   "devDependencies": {
     "@playwright/test": "^1.56.1",
     "@types/express": "^4.17.21",
-    "@types/ws": "^8.5.10"
+    "@types/ws": "^8.5.10",
+    "esbuild": "^0.27.0"
   }
 }

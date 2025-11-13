@@ -20,8 +20,16 @@ import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url";
 
-// Load environment variables
-dotenv.config();
+// Load environment variables (suppress output in test mode to avoid stdout pollution)
+if (process.env.NODE_ENV !== "test") {
+  dotenv.config();
+} else {
+  // In test mode, load silently by capturing stdout
+  const originalWrite = process.stdout.write;
+  process.stdout.write = () => true;
+  dotenv.config();
+  process.stdout.write = originalWrite;
+}
 
 // Get current file directory for static files
 const __filename = fileURLToPath(import.meta.url);
@@ -69,7 +77,7 @@ class Orchestr8Server {
     const tokenSystem = createTokenSystem({
       tracking: {
         enabled: true,
-        baselineStrategy: 'no_jit',
+        baselineStrategy: "no_jit",
         deduplication: true,
         retentionDays: 7,
         enableTrends: true,
@@ -93,7 +101,11 @@ class Orchestr8Server {
     this.stats = new StatsCollector(this.tokenMetrics);
 
     // Initialize ResourceLoader with token system
-    this.resourceLoader = new ResourceLoader(logger, this.tokenTracker, this.tokenStore);
+    this.resourceLoader = new ResourceLoader(
+      logger,
+      this.tokenTracker,
+      this.tokenStore,
+    );
 
     // Load all prompts and resources
     const prompts = await this.promptLoader.loadAllPrompts();
@@ -166,9 +178,9 @@ class Orchestr8Server {
           logger.debug(`Loading prompt: ${prompt.name}`);
 
           // Track MCP prompt request
-          this.stats.logActivity('prompt_get', {
+          this.stats.logActivity("prompt_get", {
             name: prompt.name,
-            args: args
+            args: args,
           });
 
           try {
@@ -211,9 +223,8 @@ class Orchestr8Server {
     // Register aggregate list resources for each category
     this.registerAggregateListResources(resources);
 
-    // Note: Individual resources are NOT registered upfront
-    // They are accessed dynamically via orchestr8://match URI templates
-    // This achieves 70-85% token reduction at startup
+    // Register individual resources so they appear in resources/list
+    this.registerIndividualResources(resources);
   }
 
   private registerResourceRegistry(resources: any[]): void {
@@ -222,62 +233,81 @@ class Orchestr8Server {
       "orchestr8://registry",
       {
         mimeType: "application/json",
-        description: "Lightweight resource catalog for discovery"
+        description: "Lightweight resource catalog for discovery",
       },
       async () => {
         // Track MCP registry request
-        this.stats.logActivity('resource_read', {
-          uri: 'orchestr8://registry',
-          category: 'registry'
+        this.stats.logActivity("resource_read", {
+          uri: "orchestr8://registry",
+          category: "registry",
         });
 
         const catalog = {
           version: "1.0.0",
           totalResources: resources.length,
           categories: {
-            agents: resources.filter(r => r.category === 'agents').length,
-            skills: resources.filter(r => r.category === 'skills').length,
-            patterns: resources.filter(r => r.category === 'patterns').length,
-            examples: resources.filter(r => r.category === 'examples').length,
-            guides: resources.filter(r => r.category === 'guides').length,
-            workflows: resources.filter(r => r.category === 'workflows').length,
+            agents: resources.filter((r) => r.category === "agents").length,
+            skills: resources.filter((r) => r.category === "skills").length,
+            patterns: resources.filter((r) => r.category === "patterns").length,
+            examples: resources.filter((r) => r.category === "examples").length,
+            guides: resources.filter((r) => r.category === "guides").length,
+            workflows: resources.filter((r) => r.category === "workflows")
+              .length,
           },
-          searchUri: "@orchestr8://match?query=<keywords>&mode=index&maxResults=5",
-          usage: "Use @orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
+          searchUri:
+            "@orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+          usage:
+            "Use @orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
         };
 
         return {
-          contents: [{
-            uri: "orchestr8://registry",
-            mimeType: "application/json",
-            text: JSON.stringify(catalog, null, 2)
-          }]
+          contents: [
+            {
+              uri: "orchestr8://registry",
+              mimeType: "application/json",
+              text: JSON.stringify(catalog, null, 2),
+            },
+          ],
         };
-      }
+      },
     );
 
-    logger.debug(`Registered resource registry with ${resources.length} total resources`);
+    logger.debug(
+      `Registered resource registry with ${resources.length} total resources`,
+    );
   }
 
   private registerAggregateListResources(resources: any[]): void {
     // Group resources by category
-    const byCategory = resources.reduce((acc, resource) => {
-      const category = resource.category || 'other';
-      if (!acc[category]) {
-        acc[category] = [];
-      }
-      acc[category].push(resource);
-      return acc;
-    }, {} as Record<string, any[]>);
+    const byCategory = resources.reduce(
+      (acc, resource) => {
+        const category = resource.category || "other";
+        if (!acc[category]) {
+          acc[category] = [];
+        }
+        acc[category].push(resource);
+        return acc;
+      },
+      {} as Record<string, any[]>,
+    );
 
     // Register aggregate list resource for each category
     const categories = [
-      { name: 'workflows', description: 'Complete list of all available workflows' },
-      { name: 'agents', description: 'Complete list of all available agents' },
-      { name: 'skills', description: 'Complete list of all available skills' },
-      { name: 'patterns', description: 'Complete list of all available patterns' },
-      { name: 'examples', description: 'Complete list of all available examples' },
-      { name: 'guides', description: 'Complete list of all available guides' },
+      {
+        name: "workflows",
+        description: "Complete list of all available workflows",
+      },
+      { name: "agents", description: "Complete list of all available agents" },
+      { name: "skills", description: "Complete list of all available skills" },
+      {
+        name: "patterns",
+        description: "Complete list of all available patterns",
+      },
+      {
+        name: "examples",
+        description: "Complete list of all available examples",
+      },
+      { name: "guides", description: "Complete list of all available guides" },
     ];
 
     for (const { name, description } of categories) {
@@ -288,7 +318,7 @@ class Orchestr8Server {
         `${name}-list`,
         aggregateUri,
         {
-          mimeType: 'application/json',
+          mimeType: "application/json",
           description: description,
         },
         async (uri) => {
@@ -296,9 +326,9 @@ class Orchestr8Server {
           logger.debug(`Loading aggregate list: ${aggregateUri}`);
 
           // Track MCP resource list request
-          this.stats.logActivity('resources_list', {
+          this.stats.logActivity("resources_list", {
             category: name,
-            count: categoryResources.length
+            count: categoryResources.length,
           });
 
           try {
@@ -310,11 +340,15 @@ class Orchestr8Server {
               mimeType: r.mimeType,
             }));
 
-            const jsonContent = JSON.stringify({
-              category: name,
-              count: resourceList.length,
-              resources: resourceList,
-            }, null, 2);
+            const jsonContent = JSON.stringify(
+              {
+                category: name,
+                count: resourceList.length,
+                resources: resourceList,
+              },
+              null,
+              2,
+            );
 
             const latency = Date.now() - startTime;
             this.stats.trackRequest(`aggregate:${name}`, latency);
@@ -323,7 +357,7 @@ class Orchestr8Server {
               contents: [
                 {
                   uri: uri.toString(),
-                  mimeType: 'application/json',
+                  mimeType: "application/json",
                   text: jsonContent,
                 },
               ],
@@ -337,6 +371,59 @@ class Orchestr8Server {
 
       logger.debug(`Registered aggregate list resource: ${aggregateUri}`);
     }
+  }
+
+  private registerIndividualResources(resources: any[]): void {
+    logger.info(
+      `Registering ${resources.length} individual resources for discovery`,
+    );
+
+    for (const resource of resources) {
+      this.server.registerResource(
+        resource.uri,
+        resource.uri,
+        {
+          mimeType: resource.mimeType,
+          description: resource.description,
+        },
+        async (uri) => {
+          const startTime = Date.now();
+          logger.debug(`Loading individual resource: ${uri.toString()}`);
+
+          // Track MCP resource request
+          this.stats.logActivity("resource_read", {
+            uri: uri.toString(),
+            category: resource.category,
+          });
+
+          try {
+            const content = await this.resourceLoader.loadResourceContent(
+              uri.toString(),
+            );
+
+            const latency = Date.now() - startTime;
+            this.stats.trackRequest(`individual:${resource.category}`, latency);
+
+            return {
+              contents: [
+                {
+                  uri: uri.toString(),
+                  mimeType: resource.mimeType,
+                  text: content,
+                },
+              ],
+            };
+          } catch (error) {
+            this.stats.trackError(error);
+            throw error;
+          }
+        },
+      );
+    }
+
+    logger.info(
+      `Successfully registered ${resources.length} individual resources`,
+    );
   }
 
   private registerDynamicTemplates(): void {
@@ -395,9 +482,9 @@ class Orchestr8Server {
           logger.debug(`Loading dynamic resource: ${fullUri}`);
 
           // Track MCP resource request
-          this.stats.logActivity('resource_read', {
+          this.stats.logActivity("resource_read", {
             uri: fullUri,
-            category: category
+            category: category,
           });
 
           try {
@@ -423,7 +510,9 @@ class Orchestr8Server {
         },
       );
 
-      logger.debug(`Registered dynamic resource template: ${dynamicTemplateUri}`);
+      logger.debug(
+        `Registered dynamic resource template: ${dynamicTemplateUri}`,
+      );
 
       // Register static resource template (e.g., orchestr8://agents/medium-writer-expert)
       const staticTemplateUri = `orchestr8://${category}/{+resourceId}`;
@@ -440,16 +529,18 @@ class Orchestr8Server {
           const fullUri = uri.toString();
 
           // Skip if this is a /match URI (handled by dynamic template)
-          if (fullUri.includes('/match')) {
-            throw new Error(`URI ${fullUri} should be handled by dynamic template`);
+          if (fullUri.includes("/match")) {
+            throw new Error(
+              `URI ${fullUri} should be handled by dynamic template`,
+            );
           }
 
           logger.debug(`Loading static resource: ${fullUri}`);
 
           // Track MCP resource request
-          this.stats.logActivity('resource_read', {
+          this.stats.logActivity("resource_read", {
             uri: fullUri,
-            category: category
+            category: category,
           });
 
           try {
@@ -493,9 +584,9 @@ class Orchestr8Server {
         logger.debug(`Loading global dynamic resource: ${fullUri}`);
 
         // Track MCP resource request
-        this.stats.logActivity('resource_read', {
+        this.stats.logActivity("resource_read", {
           uri: fullUri,
-          category: 'global'
+          category: "global",
         });
 
         try {
@@ -632,10 +723,10 @@ class Orchestr8Server {
     await this.httpTransport.start();
 
     // Log server startup activity
-    this.stats.logActivity('server_start', {
-      mode: 'HTTP',
+    this.stats.logActivity("server_start", {
+      mode: "HTTP",
       port: HTTP_PORT,
-      timestamp: Date.now()
+      timestamp: Date.now(),
     });
 
     logger.info(`orchestr8 MCP server started successfully in HTTP mode`);
@@ -676,6 +767,9 @@ async function main() {
     if (HTTP_MODE) {
       // HTTP only mode (for development/testing)
       await orchestr8.startHttp();
+    } else if (process.env.NODE_ENV === "test") {
+      // Test mode: stdio only (no HTTP to avoid stdout pollution)
+      await orchestr8.startStdio();
     } else {
       // Default: Dual mode (stdio for Claude + HTTP for web UI)
       await orchestr8.startDual();

@@ -575,7 +575,7 @@ export class HTTPTransport {
     this.wsServer = new WebSocketServer({ server });
 
     this.wsServer.on("connection", async (ws: WebSocket) => {
-      console.log("[HTTP Transport] WebSocket client connected");
+      console.error("[HTTP Transport] WebSocket client connected");
       this.wsClients.add(ws);
 
       // Send initial stats snapshot
@@ -601,7 +601,7 @@ export class HTTPTransport {
       );
 
       ws.on("close", () => {
-        console.log("[HTTP Transport] WebSocket client disconnected");
+        console.error("[HTTP Transport] WebSocket client disconnected");
         this.wsClients.delete(ws);
       });
 
@@ -668,10 +668,10 @@ export class HTTPTransport {
     return new Promise((resolve, reject) => {
       try {
         this.httpServer = this.app.listen(this.config.port, () => {
-          console.log(
+          console.error(
             `[HTTP Transport] Server listening on port ${this.config.port}`,
           );
-          console.log(
+          console.error(
             `[HTTP Transport] Web UI: http://localhost:${this.config.port}`,
           );
 
@@ -693,7 +693,7 @@ export class HTTPTransport {
   }
 
   async stop(): Promise<void> {
-    console.log("[HTTP Transport] Shutting down...");
+    console.error("[HTTP Transport] Shutting down...");
 
     // Clear stats interval
     if (this.statsInterval) {
@@ -711,7 +711,7 @@ export class HTTPTransport {
     if (this.wsServer) {
       await new Promise<void>((resolve) => {
         this.wsServer!.close(() => {
-          console.log("[HTTP Transport] WebSocket server closed");
+          console.error("[HTTP Transport] WebSocket server closed");
           resolve();
         });
       });
@@ -721,7 +721,7 @@ export class HTTPTransport {
     if (this.httpServer) {
       await new Promise<void>((resolve) => {
         this.httpServer!.close(() => {
-          console.log("[HTTP Transport] HTTP server closed");
+          console.error("[HTTP Transport] HTTP server closed");
           resolve();
         });
       });

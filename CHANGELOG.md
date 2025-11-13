@@ -7,6 +7,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [8.0.4] - 2025-01-13
+
+### Changed
+- **MCP Server Bundling**: Implemented esbuild-based bundling to create a single self-contained dist/index.js file
+  - Eliminates dependency installation issues when plugin is installed from marketplace
+  - All dependencies are now bundled into the output file
+  - Includes CommonJS require polyfill for gray-matter and other CJS dependencies
+  - Build script (`scripts/bundle.js`) handles bundling and executable permissions
+
+### Fixed
+- MCP server failing to start due to missing node_modules in marketplace installation
+- `ERR_MODULE_NOT_FOUND` errors for `@modelcontextprotocol/sdk` and other dependencies
+
 ## [8.0.3] - 2025-01-13
 
 ### Added
