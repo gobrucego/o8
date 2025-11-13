@@ -135,19 +135,19 @@ jobs:
               exit 1
             fi
 
-            # Validate required fields exist
-            if ! grep -q "^name:" "$file"; then
-              echo "ERROR: $file missing 'name' field in frontmatter"
+            # Validate required fields exist (v8 format: id, category, tags)
+            if ! grep -q "^id:" "$file"; then
+              echo "ERROR: $file missing 'id' field in frontmatter"
               exit 1
             fi
 
-            if ! grep -q "^description:" "$file"; then
-              echo "ERROR: $file missing 'description' field in frontmatter"
+            if ! grep -q "^category:" "$file"; then
+              echo "ERROR: $file missing 'category' field in frontmatter"
               exit 1
             fi
 
-            if ! grep -q "^model:" "$file"; then
-              echo "ERROR: $file missing 'model' field in frontmatter"
+            if ! grep -q "^tags:" "$file"; then
+              echo "ERROR: $file missing 'tags' field in frontmatter"
               exit 1
             fi
 
