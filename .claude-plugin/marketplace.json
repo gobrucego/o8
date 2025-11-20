@@ -1,15 +1,15 @@
 {
-  "name": "orchestr8",
-  "displayName": "orchestr8 - Autonomous Development",
+  "name": "o8",
+  "displayName": "o8 - Autonomous Development",
   "version": "8.0.6",
   "description": "Complete autonomous software development.",
   "owner": {
-    "name": "orchestr8"
+    "name": "o8"
   },
   "plugins": [
     {
-      "name": "orchestr8",
-      "source": "./plugins/orchestr8"
+      "name": "o8",
+      "source": "./plugins/o8"
     }
   ]
 }
