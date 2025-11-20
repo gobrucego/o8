@@ -58,7 +58,7 @@ class Orchestr8Server {
 
   constructor() {
     this.server = new McpServer({
-      name: "orchestr8",
+      name: "o8",
       version: "1.0.0",
     });
     this.promptLoader = new PromptLoader(logger);

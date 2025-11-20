@@ -8255,6 +8255,18 @@ var require_loader = __commonJS({
         (c - 65536 & 1023) + 56320
       );
     }
+    function setProperty(object, key, value) {
+      if (key === "__proto__") {
+        Object.defineProperty(object, key, {
+          configurable: true,
+          enumerable: true,
+          writable: true,
+          value
+        });
+      } else {
+        object[key] = value;
+      }
+    }
     var simpleEscapeCheck = new Array(256);
     var simpleEscapeMap = new Array(256);
     for (i = 0; i < 256; i++) {
@@ -8362,7 +8374,7 @@ var require_loader = __commonJS({
       for (index = 0, quantity = sourceKeys.length; index < quantity; index += 1) {
         key = sourceKeys[index];
         if (!_hasOwnProperty.call(destination, key)) {
-          destination[key] = source[key];
+          setProperty(destination, key, source[key]);
           overridableKeys[key] = true;
         }
       }
@@ -8401,7 +8413,7 @@ var require_loader = __commonJS({
           state.position = startPos || state.position;
           throwError(state, "duplicated mapping key");
         }
-        _result[keyNode] = valueNode;
+        setProperty(_result, keyNode, valueNode);
         delete overridableKeys[keyNode];
       }
       return _result;
@@ -24960,10 +24972,10 @@ var require_object_inspect = __commonJS({
       }
       if (!isDate(obj) && !isRegExp(obj)) {
         var ys = arrObjKeys(obj, inspect);
-        var isPlainObject = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
+        var isPlainObject2 = gPO ? gPO(obj) === Object.prototype : obj instanceof Object || obj.constructor === Object;
         var protoTag = obj instanceof Object ? "" : "null prototype";
-        var stringTag = !isPlainObject && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
-        var constructorTag = isPlainObject || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
+        var stringTag = !isPlainObject2 && toStringTag && Object(obj) === obj && toStringTag in obj ? $slice.call(toStr(obj), 8, -1) : protoTag ? "Object" : "";
+        var constructorTag = isPlainObject2 || typeof obj.constructor !== "function" ? "" : obj.constructor.name ? obj.constructor.name + " " : "";
         var tag = constructorTag + (stringTag || protoTag ? "[" + $join.call($concat.call([], stringTag || [], protoTag || []), ": ") + "] " : "");
         if (ys.length === 0) {
           return tag + "{}";
@@ -40753,38 +40765,42 @@ var NEVER = INVALID;
 var LATEST_PROTOCOL_VERSION = "2025-06-18";
 var SUPPORTED_PROTOCOL_VERSIONS = [LATEST_PROTOCOL_VERSION, "2025-03-26", "2024-11-05", "2024-10-07"];
 var JSONRPC_VERSION = "2.0";
+var AssertObjectSchema = external_exports.custom((v) => v !== null && (typeof v === "object" || typeof v === "function"));
 var ProgressTokenSchema = external_exports.union([external_exports.string(), external_exports.number().int()]);
 var CursorSchema = external_exports.string();
 var RequestMetaSchema = external_exports.object({
   /**
    * If specified, the caller is requesting out-of-band progress notifications for this request (as represented by notifications/progress). The value of this parameter is an opaque token that will be attached to any subsequent notifications. The receiver is not obligated to provide these notifications.
    */
-  progressToken: external_exports.optional(ProgressTokenSchema)
+  progressToken: ProgressTokenSchema.optional()
 }).passthrough();
 var BaseRequestParamsSchema = external_exports.object({
-  _meta: external_exports.optional(RequestMetaSchema)
-}).passthrough();
+  /**
+   * See [General fields: `_meta`](/specification/draft/basic/index#meta) for notes on `_meta` usage.
+   */
+  _meta: RequestMetaSchema.optional()
+});
 var RequestSchema = external_exports.object({
   method: external_exports.string(),
-  params: external_exports.optional(BaseRequestParamsSchema)
+  params: BaseRequestParamsSchema.passthrough().optional()
 });
-var BaseNotificationParamsSchema = external_exports.object({
+var NotificationsParamsSchema = external_exports.object({
   /**
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var NotificationSchema = external_exports.object({
   method: external_exports.string(),
-  params: external_exports.optional(BaseNotificationParamsSchema)
+  params: NotificationsParamsSchema.passthrough().optional()
 });
 var ResultSchema = external_exports.object({
   /**
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
 }).passthrough();
 var RequestIdSchema = external_exports.union([external_exports.string(), external_exports.number().int()]);
 var JSONRPCRequestSchema = external_exports.object({
@@ -40833,20 +40849,21 @@ var JSONRPCErrorSchema = external_exports.object({
 var isJSONRPCError = (value) => JSONRPCErrorSchema.safeParse(value).success;
 var JSONRPCMessageSchema = external_exports.union([JSONRPCRequestSchema, JSONRPCNotificationSchema, JSONRPCResponseSchema, JSONRPCErrorSchema]);
 var EmptyResultSchema = ResultSchema.strict();
+var CancelledNotificationParamsSchema = NotificationsParamsSchema.extend({
+  /**
+   * The ID of the request to cancel.
+   *
+   * This MUST correspond to the ID of a request previously issued in the same direction.
+   */
+  requestId: RequestIdSchema,
+  /**
+   * An optional string describing the reason for the cancellation. This MAY be logged or presented to the user.
+   */
+  reason: external_exports.string().optional()
+});
 var CancelledNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/cancelled"),
-  params: BaseNotificationParamsSchema.extend({
-    /**
-     * The ID of the request to cancel.
-     *
-     * This MUST correspond to the ID of a request previously issued in the same direction.
-     */
-    requestId: RequestIdSchema,
-    /**
-     * An optional string describing the reason for the cancellation. This MAY be logged or presented to the user.
-     */
-    reason: external_exports.string().optional()
-  })
+  params: CancelledNotificationParamsSchema
 });
 var IconSchema = external_exports.object({
   /**
@@ -40856,15 +40873,15 @@ var IconSchema = external_exports.object({
   /**
    * Optional MIME type for the icon.
    */
-  mimeType: external_exports.optional(external_exports.string()),
+  mimeType: external_exports.string().optional(),
   /**
    * Optional array of strings that specify sizes at which the icon can be used.
    * Each string should be in WxH format (e.g., `"48x48"`, `"96x96"`) or `"any"` for scalable formats like SVG.
    *
    * If not provided, the client should assume that the icon can be used at any size.
    */
-  sizes: external_exports.optional(external_exports.array(external_exports.string()))
-}).passthrough();
+  sizes: external_exports.array(external_exports.string()).optional()
+});
 var IconsSchema = external_exports.object({
   /**
    * Optional set of sized icons that the client can display in a user interface.
@@ -40878,7 +40895,7 @@ var IconsSchema = external_exports.object({
    * - `image/webp` - WebP images (modern, efficient format)
    */
   icons: external_exports.array(IconSchema).optional()
-}).passthrough();
+});
 var BaseMetadataSchema = external_exports.object({
   /** Intended for programmatic or logical use, but used as a display name in past specs or fallback */
   name: external_exports.string(),
@@ -40890,62 +40907,68 @@ var BaseMetadataSchema = external_exports.object({
    * where `annotations.title` should be given precedence over using `name`,
    * if present).
    */
-  title: external_exports.optional(external_exports.string())
-}).passthrough();
+  title: external_exports.string().optional()
+});
 var ImplementationSchema = BaseMetadataSchema.extend({
   version: external_exports.string(),
   /**
    * An optional URL of the website for this implementation.
    */
-  websiteUrl: external_exports.optional(external_exports.string())
+  websiteUrl: external_exports.string().optional()
 }).merge(IconsSchema);
 var ClientCapabilitiesSchema = external_exports.object({
   /**
    * Experimental, non-standard capabilities that the client supports.
    */
-  experimental: external_exports.optional(external_exports.object({}).passthrough()),
+  experimental: external_exports.record(external_exports.string(), AssertObjectSchema).optional(),
   /**
    * Present if the client supports sampling from an LLM.
    */
-  sampling: external_exports.optional(external_exports.object({}).passthrough()),
+  sampling: AssertObjectSchema.optional(),
   /**
    * Present if the client supports eliciting user input.
    */
-  elicitation: external_exports.optional(external_exports.object({}).passthrough()),
+  elicitation: external_exports.intersection(external_exports.object({
+    /**
+     * Whether the client should apply defaults to the user input.
+     */
+    applyDefaults: external_exports.boolean().optional()
+  }).optional(), external_exports.record(external_exports.string(), external_exports.unknown()).optional()),
   /**
    * Present if the client supports listing roots.
    */
-  roots: external_exports.optional(external_exports.object({
+  roots: external_exports.object({
     /**
      * Whether the client supports issuing notifications for changes to the roots list.
      */
-    listChanged: external_exports.optional(external_exports.boolean())
-  }).passthrough())
-}).passthrough();
+    listChanged: external_exports.boolean().optional()
+  }).optional()
+});
+var InitializeRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The latest version of the Model Context Protocol that the client supports. The client MAY decide to support older versions as well.
+   */
+  protocolVersion: external_exports.string(),
+  capabilities: ClientCapabilitiesSchema,
+  clientInfo: ImplementationSchema
+});
 var InitializeRequestSchema = RequestSchema.extend({
   method: external_exports.literal("initialize"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The latest version of the Model Context Protocol that the client supports. The client MAY decide to support older versions as well.
-     */
-    protocolVersion: external_exports.string(),
-    capabilities: ClientCapabilitiesSchema,
-    clientInfo: ImplementationSchema
-  })
+  params: InitializeRequestParamsSchema
 });
 var ServerCapabilitiesSchema = external_exports.object({
   /**
    * Experimental, non-standard capabilities that the server supports.
    */
-  experimental: external_exports.optional(external_exports.object({}).passthrough()),
+  experimental: external_exports.record(external_exports.string(), AssertObjectSchema).optional(),
   /**
    * Present if the server supports sending log messages to the client.
    */
-  logging: external_exports.optional(external_exports.object({}).passthrough()),
+  logging: AssertObjectSchema.optional(),
   /**
    * Present if the server supports sending completions to the client.
    */
-  completions: external_exports.optional(external_exports.object({}).passthrough()),
+  completions: AssertObjectSchema.optional(),
   /**
    * Present if the server offers any prompt templates.
    */
@@ -40954,30 +40977,30 @@ var ServerCapabilitiesSchema = external_exports.object({
      * Whether this server supports issuing notifications for changes to the prompt list.
      */
     listChanged: external_exports.optional(external_exports.boolean())
-  }).passthrough()),
+  })),
   /**
    * Present if the server offers any resources to read.
    */
-  resources: external_exports.optional(external_exports.object({
+  resources: external_exports.object({
     /**
      * Whether this server supports clients subscribing to resource updates.
      */
-    subscribe: external_exports.optional(external_exports.boolean()),
+    subscribe: external_exports.boolean().optional(),
     /**
      * Whether this server supports issuing notifications for changes to the resource list.
      */
-    listChanged: external_exports.optional(external_exports.boolean())
-  }).passthrough()),
+    listChanged: external_exports.boolean().optional()
+  }).optional(),
   /**
    * Present if the server offers any tools to call.
    */
-  tools: external_exports.optional(external_exports.object({
+  tools: external_exports.object({
     /**
      * Whether this server supports issuing notifications for changes to the tool list.
      */
-    listChanged: external_exports.optional(external_exports.boolean())
-  }).passthrough())
-}).passthrough();
+    listChanged: external_exports.boolean().optional()
+  }).optional()
+});
 var InitializeResultSchema = ResultSchema.extend({
   /**
    * The version of the Model Context Protocol that the server wants to use. This may not match the version that the client requested. If the client cannot support this version, it MUST disconnect.
@@ -40990,7 +41013,7 @@ var InitializeResultSchema = ResultSchema.extend({
    *
    * This can be used by clients to improve the LLM's understanding of available tools, resources, etc. It can be thought of like a "hint" to the model. For example, this information MAY be added to the system prompt.
    */
-  instructions: external_exports.optional(external_exports.string())
+  instructions: external_exports.string().optional()
 });
 var InitializedNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/initialized")
@@ -41011,24 +41034,26 @@ var ProgressSchema = external_exports.object({
    * An optional message describing the current progress.
    */
   message: external_exports.optional(external_exports.string())
-}).passthrough();
+});
+var ProgressNotificationParamsSchema = NotificationsParamsSchema.merge(ProgressSchema).extend({
+  /**
+   * The progress token which was given in the initial request, used to associate this notification with the request that is proceeding.
+   */
+  progressToken: ProgressTokenSchema
+});
 var ProgressNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/progress"),
-  params: BaseNotificationParamsSchema.merge(ProgressSchema).extend({
-    /**
-     * The progress token which was given in the initial request, used to associate this notification with the request that is proceeding.
-     */
-    progressToken: ProgressTokenSchema
-  })
+  params: ProgressNotificationParamsSchema
+});
+var PaginatedRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * An opaque token representing the current pagination position.
+   * If provided, the server should return results starting after this cursor.
+   */
+  cursor: CursorSchema.optional()
 });
 var PaginatedRequestSchema = RequestSchema.extend({
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * An opaque token representing the current pagination position.
-     * If provided, the server should return results starting after this cursor.
-     */
-    cursor: external_exports.optional(CursorSchema)
-  }).optional()
+  params: PaginatedRequestParamsSchema.optional()
 });
 var PaginatedResultSchema = ResultSchema.extend({
   /**
@@ -41050,8 +41075,8 @@ var ResourceContentsSchema = external_exports.object({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var TextResourceContentsSchema = ResourceContentsSchema.extend({
   /**
    * The text of the item. This must only be set if the item can actually be represented as text (not binary data).
@@ -41126,14 +41151,18 @@ var ListResourceTemplatesRequestSchema = PaginatedRequestSchema.extend({
 var ListResourceTemplatesResultSchema = PaginatedResultSchema.extend({
   resourceTemplates: external_exports.array(ResourceTemplateSchema)
 });
+var ResourceRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The URI of the resource to read. The URI can use any protocol; it is up to the server how to interpret it.
+   *
+   * @format uri
+   */
+  uri: external_exports.string()
+});
+var ReadResourceRequestParamsSchema = ResourceRequestParamsSchema;
 var ReadResourceRequestSchema = RequestSchema.extend({
   method: external_exports.literal("resources/read"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The URI of the resource to read. The URI can use any protocol; it is up to the server how to interpret it.
-     */
-    uri: external_exports.string()
-  })
+  params: ReadResourceRequestParamsSchema
 });
 var ReadResourceResultSchema = ResultSchema.extend({
   contents: external_exports.array(external_exports.union([TextResourceContentsSchema, BlobResourceContentsSchema]))
@@ -41141,32 +41170,25 @@ var ReadResourceResultSchema = ResultSchema.extend({
 var ResourceListChangedNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/resources/list_changed")
 });
+var SubscribeRequestParamsSchema = ResourceRequestParamsSchema;
 var SubscribeRequestSchema = RequestSchema.extend({
   method: external_exports.literal("resources/subscribe"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The URI of the resource to subscribe to. The URI can use any protocol; it is up to the server how to interpret it.
-     */
-    uri: external_exports.string()
-  })
+  params: SubscribeRequestParamsSchema
 });
+var UnsubscribeRequestParamsSchema = ResourceRequestParamsSchema;
 var UnsubscribeRequestSchema = RequestSchema.extend({
   method: external_exports.literal("resources/unsubscribe"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The URI of the resource to unsubscribe from.
-     */
-    uri: external_exports.string()
-  })
+  params: UnsubscribeRequestParamsSchema
+});
+var ResourceUpdatedNotificationParamsSchema = NotificationsParamsSchema.extend({
+  /**
+   * The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually subscribed to.
+   */
+  uri: external_exports.string()
 });
 var ResourceUpdatedNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/resources/updated"),
-  params: BaseNotificationParamsSchema.extend({
-    /**
-     * The URI of the resource that has been updated. This might be a sub-resource of the one that the client actually subscribed to.
-     */
-    uri: external_exports.string()
-  })
+  params: ResourceUpdatedNotificationParamsSchema
 });
 var PromptArgumentSchema = external_exports.object({
   /**
@@ -41181,7 +41203,7 @@ var PromptArgumentSchema = external_exports.object({
    * Whether this argument must be provided.
    */
   required: external_exports.optional(external_exports.boolean())
-}).passthrough();
+});
 var PromptSchema = BaseMetadataSchema.extend({
   /**
    * An optional description of what this prompt provides
@@ -41203,18 +41225,19 @@ var ListPromptsRequestSchema = PaginatedRequestSchema.extend({
 var ListPromptsResultSchema = PaginatedResultSchema.extend({
   prompts: external_exports.array(PromptSchema)
 });
+var GetPromptRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The name of the prompt or prompt template.
+   */
+  name: external_exports.string(),
+  /**
+   * Arguments to use for templating the prompt.
+   */
+  arguments: external_exports.record(external_exports.string(), external_exports.string()).optional()
+});
 var GetPromptRequestSchema = RequestSchema.extend({
   method: external_exports.literal("prompts/get"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The name of the prompt or prompt template.
-     */
-    name: external_exports.string(),
-    /**
-     * Arguments to use for templating the prompt.
-     */
-    arguments: external_exports.optional(external_exports.record(external_exports.string()))
-  })
+  params: GetPromptRequestParamsSchema
 });
 var TextContentSchema = external_exports.object({
   type: external_exports.literal("text"),
@@ -41226,8 +41249,8 @@ var TextContentSchema = external_exports.object({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var ImageContentSchema = external_exports.object({
   type: external_exports.literal("image"),
   /**
@@ -41242,8 +41265,8 @@ var ImageContentSchema = external_exports.object({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var AudioContentSchema = external_exports.object({
   type: external_exports.literal("audio"),
   /**
@@ -41258,8 +41281,8 @@ var AudioContentSchema = external_exports.object({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var EmbeddedResourceSchema = external_exports.object({
   type: external_exports.literal("resource"),
   resource: external_exports.union([TextResourceContentsSchema, BlobResourceContentsSchema]),
@@ -41267,8 +41290,8 @@ var EmbeddedResourceSchema = external_exports.object({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var ResourceLinkSchema = ResourceSchema.extend({
   type: external_exports.literal("resource_link")
 });
@@ -41282,7 +41305,7 @@ var ContentBlockSchema = external_exports.union([
 var PromptMessageSchema = external_exports.object({
   role: external_exports.enum(["user", "assistant"]),
   content: ContentBlockSchema
-}).passthrough();
+});
 var GetPromptResultSchema = ResultSchema.extend({
   /**
    * An optional description for the prompt.
@@ -41297,13 +41320,13 @@ var ToolAnnotationsSchema = external_exports.object({
   /**
    * A human-readable title for the tool.
    */
-  title: external_exports.optional(external_exports.string()),
+  title: external_exports.string().optional(),
   /**
    * If true, the tool does not modify its environment.
    *
    * Default: false
    */
-  readOnlyHint: external_exports.optional(external_exports.boolean()),
+  readOnlyHint: external_exports.boolean().optional(),
   /**
    * If true, the tool may perform destructive updates to its environment.
    * If false, the tool performs only additive updates.
@@ -41312,7 +41335,7 @@ var ToolAnnotationsSchema = external_exports.object({
    *
    * Default: true
    */
-  destructiveHint: external_exports.optional(external_exports.boolean()),
+  destructiveHint: external_exports.boolean().optional(),
   /**
    * If true, calling the tool repeatedly with the same arguments
    * will have no additional effect on the its environment.
@@ -41321,7 +41344,7 @@ var ToolAnnotationsSchema = external_exports.object({
    *
    * Default: false
    */
-  idempotentHint: external_exports.optional(external_exports.boolean()),
+  idempotentHint: external_exports.boolean().optional(),
   /**
    * If true, this tool may interact with an "open world" of external
    * entities. If false, the tool's domain of interaction is closed.
@@ -41330,30 +41353,34 @@ var ToolAnnotationsSchema = external_exports.object({
    *
    * Default: true
    */
-  openWorldHint: external_exports.optional(external_exports.boolean())
-}).passthrough();
+  openWorldHint: external_exports.boolean().optional()
+});
 var ToolSchema = BaseMetadataSchema.extend({
   /**
    * A human-readable description of the tool.
    */
-  description: external_exports.optional(external_exports.string()),
+  description: external_exports.string().optional(),
   /**
    * A JSON Schema object defining the expected parameters for the tool.
    */
   inputSchema: external_exports.object({
     type: external_exports.literal("object"),
-    properties: external_exports.optional(external_exports.object({}).passthrough()),
+    properties: external_exports.record(external_exports.string(), AssertObjectSchema).optional(),
     required: external_exports.optional(external_exports.array(external_exports.string()))
-  }).passthrough(),
+  }),
   /**
    * An optional JSON Schema object defining the structure of the tool's output returned in
    * the structuredContent field of a CallToolResult.
    */
-  outputSchema: external_exports.optional(external_exports.object({
+  outputSchema: external_exports.object({
     type: external_exports.literal("object"),
-    properties: external_exports.optional(external_exports.object({}).passthrough()),
-    required: external_exports.optional(external_exports.array(external_exports.string()))
-  }).passthrough()),
+    properties: external_exports.record(external_exports.string(), AssertObjectSchema).optional(),
+    required: external_exports.optional(external_exports.array(external_exports.string())),
+    /**
+     * Not in the MCP specification, but added to support the Ajv validator while removing .passthrough() which previously allowed additionalProperties to be passed through.
+     */
+    additionalProperties: external_exports.optional(external_exports.boolean())
+  }).optional(),
   /**
    * Optional additional tool information.
    */
@@ -41362,7 +41389,7 @@ var ToolSchema = BaseMetadataSchema.extend({
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
 }).merge(IconsSchema);
 var ListToolsRequestSchema = PaginatedRequestSchema.extend({
   method: external_exports.literal("tools/list")
@@ -41383,7 +41410,7 @@ var CallToolResultSchema = ResultSchema.extend({
    *
    * If the Tool defines an outputSchema, this field MUST be present in the result, and contain a JSON object that matches the schema.
    */
-  structuredContent: external_exports.object({}).passthrough().optional(),
+  structuredContent: external_exports.record(external_exports.string(), external_exports.unknown()).optional(),
   /**
    * Whether the tool call ended in an error.
    *
@@ -41403,49 +41430,58 @@ var CallToolResultSchema = ResultSchema.extend({
 var CompatibilityCallToolResultSchema = CallToolResultSchema.or(ResultSchema.extend({
   toolResult: external_exports.unknown()
 }));
+var CallToolRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The name of the tool to call.
+   */
+  name: external_exports.string(),
+  /**
+   * Arguments to pass to the tool.
+   */
+  arguments: external_exports.optional(external_exports.record(external_exports.string(), external_exports.unknown()))
+});
 var CallToolRequestSchema = RequestSchema.extend({
   method: external_exports.literal("tools/call"),
-  params: BaseRequestParamsSchema.extend({
-    name: external_exports.string(),
-    arguments: external_exports.optional(external_exports.record(external_exports.unknown()))
-  })
+  params: CallToolRequestParamsSchema
 });
 var ToolListChangedNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/tools/list_changed")
 });
 var LoggingLevelSchema = external_exports.enum(["debug", "info", "notice", "warning", "error", "critical", "alert", "emergency"]);
+var SetLevelRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/logging/message.
+   */
+  level: LoggingLevelSchema
+});
 var SetLevelRequestSchema = RequestSchema.extend({
   method: external_exports.literal("logging/setLevel"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The level of logging that the client wants to receive from the server. The server should send all logs at this level and higher (i.e., more severe) to the client as notifications/logging/message.
-     */
-    level: LoggingLevelSchema
-  })
+  params: SetLevelRequestParamsSchema
+});
+var LoggingMessageNotificationParamsSchema = NotificationsParamsSchema.extend({
+  /**
+   * The severity of this log message.
+   */
+  level: LoggingLevelSchema,
+  /**
+   * An optional name of the logger issuing this message.
+   */
+  logger: external_exports.string().optional(),
+  /**
+   * The data to be logged, such as a string message or an object. Any JSON serializable type is allowed here.
+   */
+  data: external_exports.unknown()
 });
 var LoggingMessageNotificationSchema = NotificationSchema.extend({
   method: external_exports.literal("notifications/message"),
-  params: BaseNotificationParamsSchema.extend({
-    /**
-     * The severity of this log message.
-     */
-    level: LoggingLevelSchema,
-    /**
-     * An optional name of the logger issuing this message.
-     */
-    logger: external_exports.optional(external_exports.string()),
-    /**
-     * The data to be logged, such as a string message or an object. Any JSON serializable type is allowed here.
-     */
-    data: external_exports.unknown()
-  })
+  params: LoggingMessageNotificationParamsSchema
 });
 var ModelHintSchema = external_exports.object({
   /**
    * A hint for a model name.
    */
   name: external_exports.string().optional()
-}).passthrough();
+});
 var ModelPreferencesSchema = external_exports.object({
   /**
    * Optional hints to use for model selection.
@@ -41463,38 +41499,41 @@ var ModelPreferencesSchema = external_exports.object({
    * How much to prioritize intelligence and capabilities when selecting a model.
    */
   intelligencePriority: external_exports.optional(external_exports.number().min(0).max(1))
-}).passthrough();
+});
 var SamplingMessageSchema = external_exports.object({
   role: external_exports.enum(["user", "assistant"]),
   content: external_exports.union([TextContentSchema, ImageContentSchema, AudioContentSchema])
-}).passthrough();
+});
+var CreateMessageRequestParamsSchema = BaseRequestParamsSchema.extend({
+  messages: external_exports.array(SamplingMessageSchema),
+  /**
+   * The server's preferences for which model to select. The client MAY modify or omit this request.
+   */
+  modelPreferences: ModelPreferencesSchema.optional(),
+  /**
+   * An optional system prompt the server wants to use for sampling. The client MAY modify or omit this prompt.
+   */
+  systemPrompt: external_exports.string().optional(),
+  /**
+   * A request to include context from one or more MCP servers (including the caller), to be attached to the prompt. The client MAY ignore this request.
+   */
+  includeContext: external_exports.enum(["none", "thisServer", "allServers"]).optional(),
+  temperature: external_exports.number().optional(),
+  /**
+   * The requested maximum number of tokens to sample (to prevent runaway completions).
+   *
+   * The client MAY choose to sample fewer tokens than the requested maximum.
+   */
+  maxTokens: external_exports.number().int(),
+  stopSequences: external_exports.array(external_exports.string()).optional(),
+  /**
+   * Optional metadata to pass through to the LLM provider. The format of this metadata is provider-specific.
+   */
+  metadata: AssertObjectSchema.optional()
+});
 var CreateMessageRequestSchema = RequestSchema.extend({
   method: external_exports.literal("sampling/createMessage"),
-  params: BaseRequestParamsSchema.extend({
-    messages: external_exports.array(SamplingMessageSchema),
-    /**
-     * An optional system prompt the server wants to use for sampling. The client MAY modify or omit this prompt.
-     */
-    systemPrompt: external_exports.optional(external_exports.string()),
-    /**
-     * A request to include context from one or more MCP servers (including the caller), to be attached to the prompt. The client MAY ignore this request.
-     */
-    includeContext: external_exports.optional(external_exports.enum(["none", "thisServer", "allServers"])),
-    temperature: external_exports.optional(external_exports.number()),
-    /**
-     * The maximum number of tokens to sample, as requested by the server. The client MAY choose to sample fewer tokens than requested.
-     */
-    maxTokens: external_exports.number().int(),
-    stopSequences: external_exports.optional(external_exports.array(external_exports.string())),
-    /**
-     * Optional metadata to pass through to the LLM provider. The format of this metadata is provider-specific.
-     */
-    metadata: external_exports.optional(external_exports.object({}).passthrough()),
-    /**
-     * The server's preferences for which model to select.
-     */
-    modelPreferences: external_exports.optional(ModelPreferencesSchema)
-  })
+  params: CreateMessageRequestParamsSchema
 });
 var CreateMessageResultSchema = ResultSchema.extend({
   /**
@@ -41510,59 +41549,114 @@ var CreateMessageResultSchema = ResultSchema.extend({
 });
 var BooleanSchemaSchema = external_exports.object({
   type: external_exports.literal("boolean"),
-  title: external_exports.optional(external_exports.string()),
-  description: external_exports.optional(external_exports.string()),
-  default: external_exports.optional(external_exports.boolean())
-}).passthrough();
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  default: external_exports.boolean().optional()
+});
 var StringSchemaSchema = external_exports.object({
   type: external_exports.literal("string"),
-  title: external_exports.optional(external_exports.string()),
-  description: external_exports.optional(external_exports.string()),
-  minLength: external_exports.optional(external_exports.number()),
-  maxLength: external_exports.optional(external_exports.number()),
-  format: external_exports.optional(external_exports.enum(["email", "uri", "date", "date-time"]))
-}).passthrough();
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  minLength: external_exports.number().optional(),
+  maxLength: external_exports.number().optional(),
+  format: external_exports.enum(["email", "uri", "date", "date-time"]).optional(),
+  default: external_exports.string().optional()
+});
 var NumberSchemaSchema = external_exports.object({
   type: external_exports.enum(["number", "integer"]),
-  title: external_exports.optional(external_exports.string()),
-  description: external_exports.optional(external_exports.string()),
-  minimum: external_exports.optional(external_exports.number()),
-  maximum: external_exports.optional(external_exports.number())
-}).passthrough();
-var EnumSchemaSchema = external_exports.object({
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  minimum: external_exports.number().optional(),
+  maximum: external_exports.number().optional(),
+  default: external_exports.number().optional()
+});
+var UntitledSingleSelectEnumSchemaSchema = external_exports.object({
   type: external_exports.literal("string"),
-  title: external_exports.optional(external_exports.string()),
-  description: external_exports.optional(external_exports.string()),
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
   enum: external_exports.array(external_exports.string()),
-  enumNames: external_exports.optional(external_exports.array(external_exports.string()))
-}).passthrough();
-var PrimitiveSchemaDefinitionSchema = external_exports.union([BooleanSchemaSchema, StringSchemaSchema, NumberSchemaSchema, EnumSchemaSchema]);
+  default: external_exports.string().optional()
+});
+var TitledSingleSelectEnumSchemaSchema = external_exports.object({
+  type: external_exports.literal("string"),
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  oneOf: external_exports.array(external_exports.object({
+    const: external_exports.string(),
+    title: external_exports.string()
+  })),
+  default: external_exports.string().optional()
+});
+var LegacyTitledEnumSchemaSchema = external_exports.object({
+  type: external_exports.literal("string"),
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  enum: external_exports.array(external_exports.string()),
+  enumNames: external_exports.array(external_exports.string()).optional(),
+  default: external_exports.string().optional()
+});
+var SingleSelectEnumSchemaSchema = external_exports.union([UntitledSingleSelectEnumSchemaSchema, TitledSingleSelectEnumSchemaSchema]);
+var UntitledMultiSelectEnumSchemaSchema = external_exports.object({
+  type: external_exports.literal("array"),
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  minItems: external_exports.number().optional(),
+  maxItems: external_exports.number().optional(),
+  items: external_exports.object({
+    type: external_exports.literal("string"),
+    enum: external_exports.array(external_exports.string())
+  }),
+  default: external_exports.array(external_exports.string()).optional()
+});
+var TitledMultiSelectEnumSchemaSchema = external_exports.object({
+  type: external_exports.literal("array"),
+  title: external_exports.string().optional(),
+  description: external_exports.string().optional(),
+  minItems: external_exports.number().optional(),
+  maxItems: external_exports.number().optional(),
+  items: external_exports.object({
+    anyOf: external_exports.array(external_exports.object({
+      const: external_exports.string(),
+      title: external_exports.string()
+    }))
+  }),
+  default: external_exports.array(external_exports.string()).optional()
+});
+var MultiSelectEnumSchemaSchema = external_exports.union([UntitledMultiSelectEnumSchemaSchema, TitledMultiSelectEnumSchemaSchema]);
+var EnumSchemaSchema = external_exports.union([LegacyTitledEnumSchemaSchema, SingleSelectEnumSchemaSchema, MultiSelectEnumSchemaSchema]);
+var PrimitiveSchemaDefinitionSchema = external_exports.union([EnumSchemaSchema, BooleanSchemaSchema, StringSchemaSchema, NumberSchemaSchema]);
+var ElicitRequestParamsSchema = BaseRequestParamsSchema.extend({
+  /**
+   * The message to present to the user.
+   */
+  message: external_exports.string(),
+  /**
+   * A restricted subset of JSON Schema.
+   * Only top-level properties are allowed, without nesting.
+   */
+  requestedSchema: external_exports.object({
+    type: external_exports.literal("object"),
+    properties: external_exports.record(external_exports.string(), PrimitiveSchemaDefinitionSchema),
+    required: external_exports.array(external_exports.string()).optional()
+  })
+});
 var ElicitRequestSchema = RequestSchema.extend({
   method: external_exports.literal("elicitation/create"),
-  params: BaseRequestParamsSchema.extend({
-    /**
-     * The message to present to the user.
-     */
-    message: external_exports.string(),
-    /**
-     * The schema for the requested user input.
-     */
-    requestedSchema: external_exports.object({
-      type: external_exports.literal("object"),
-      properties: external_exports.record(external_exports.string(), PrimitiveSchemaDefinitionSchema),
-      required: external_exports.optional(external_exports.array(external_exports.string()))
-    }).passthrough()
-  })
+  params: ElicitRequestParamsSchema
 });
 var ElicitResultSchema = ResultSchema.extend({
   /**
-   * The user's response action.
+   * The user action in response to the elicitation.
+   * - "accept": User submitted the form/confirmed the action
+   * - "decline": User explicitly decline the action
+   * - "cancel": User dismissed without making an explicit choice
    */
   action: external_exports.enum(["accept", "decline", "cancel"]),
   /**
-   * The collected user input content (only present if action is "accept").
+   * The submitted form data, only present when action is "accept".
+   * Contains values matching the requested schema.
    */
-  content: external_exports.optional(external_exports.record(external_exports.string(), external_exports.unknown()))
+  content: external_exports.record(external_exports.union([external_exports.string(), external_exports.number(), external_exports.boolean(), external_exports.array(external_exports.string())])).optional()
 });
 var ResourceTemplateReferenceSchema = external_exports.object({
   type: external_exports.literal("ref/resource"),
@@ -41570,39 +41664,50 @@ var ResourceTemplateReferenceSchema = external_exports.object({
    * The URI or URI template of the resource.
    */
   uri: external_exports.string()
-}).passthrough();
+});
 var PromptReferenceSchema = external_exports.object({
   type: external_exports.literal("ref/prompt"),
   /**
    * The name of the prompt or prompt template
    */
   name: external_exports.string()
-}).passthrough();
+});
+var CompleteRequestParamsSchema = BaseRequestParamsSchema.extend({
+  ref: external_exports.union([PromptReferenceSchema, ResourceTemplateReferenceSchema]),
+  /**
+   * The argument's information
+   */
+  argument: external_exports.object({
+    /**
+     * The name of the argument
+     */
+    name: external_exports.string(),
+    /**
+     * The value of the argument to use for completion matching.
+     */
+    value: external_exports.string()
+  }),
+  context: external_exports.object({
+    /**
+     * Previously-resolved variables in a URI template or prompt.
+     */
+    arguments: external_exports.record(external_exports.string(), external_exports.string()).optional()
+  }).optional()
+});
 var CompleteRequestSchema = RequestSchema.extend({
   method: external_exports.literal("completion/complete"),
-  params: BaseRequestParamsSchema.extend({
-    ref: external_exports.union([PromptReferenceSchema, ResourceTemplateReferenceSchema]),
-    /**
-     * The argument's information
-     */
-    argument: external_exports.object({
-      /**
-       * The name of the argument
-       */
-      name: external_exports.string(),
-      /**
-       * The value of the argument to use for completion matching.
-       */
-      value: external_exports.string()
-    }).passthrough(),
-    context: external_exports.optional(external_exports.object({
-      /**
-       * Previously-resolved variables in a URI template or prompt.
-       */
-      arguments: external_exports.optional(external_exports.record(external_exports.string(), external_exports.string()))
-    }))
-  })
+  params: CompleteRequestParamsSchema
 });
+function assertCompleteRequestPrompt(request) {
+  if (request.params.ref.type !== "ref/prompt") {
+    throw new TypeError(`Expected CompleteRequestPrompt, but got ${request.params.ref.type}`);
+  }
+}
+function assertCompleteRequestResourceTemplate(request) {
+  if (request.params.ref.type !== "ref/resource") {
+    throw new TypeError(`Expected CompleteRequestResourceTemplate, but got ${request.params.ref.type}`);
+  }
+}
 var CompleteResultSchema = ResultSchema.extend({
   completion: external_exports.object({
     /**
@@ -41627,13 +41732,13 @@ var RootSchema = external_exports.object({
   /**
    * An optional name for the root.
    */
-  name: external_exports.optional(external_exports.string()),
+  name: external_exports.string().optional(),
   /**
    * See [MCP specification](https://github.com/modelcontextprotocol/modelcontextprotocol/blob/47339c03c143bb4ec01a26e721a1b8fe66634ebe/docs/specification/draft/basic/index.mdx#general-fields)
    * for notes on _meta usage.
    */
-  _meta: external_exports.optional(external_exports.object({}).passthrough())
-}).passthrough();
+  _meta: external_exports.record(external_exports.string(), external_exports.unknown()).optional()
+});
 var ListRootsRequestSchema = RequestSchema.extend({
   method: external_exports.literal("roots/list")
 });
@@ -42066,15 +42171,24 @@ var Protocol = class {
     this._notificationHandlers.delete(method);
   }
 };
+function isPlainObject(value) {
+  return value !== null && typeof value === "object" && !Array.isArray(value);
+}
 function mergeCapabilities(base, additional) {
-  return Object.entries(additional).reduce((acc, [key, value]) => {
-    if (value && typeof value === "object") {
-      acc[key] = acc[key] ? { ...acc[key], ...value } : value;
+  const result = { ...base };
+  for (const key in additional) {
+    const k = key;
+    const addValue = additional[k];
+    if (addValue === void 0)
+      continue;
+    const baseValue = result[k];
+    if (isPlainObject(baseValue) && isPlainObject(addValue)) {
+      result[k] = { ...baseValue, ...addValue };
     } else {
-      acc[key] = value;
+      result[k] = addValue;
     }
-    return acc;
-  }, { ...base });
+  }
+  return result;
 }
 
 // node_modules/@modelcontextprotocol/sdk/dist/esm/validation/ajv-provider.js
@@ -42246,9 +42360,9 @@ var Server = class extends Protocol {
   }
   assertRequestHandlerCapability(method) {
     switch (method) {
-      case "sampling/createMessage":
-        if (!this._capabilities.sampling) {
-          throw new Error(`Server does not support sampling (required for ${method})`);
+      case "completion/complete":
+        if (!this._capabilities.completions) {
+          throw new Error(`Server does not support completions (required for ${method})`);
         }
         break;
       case "logging/setLevel":
@@ -43925,6 +44039,64 @@ var UriTemplate = class _UriTemplate {
   }
 };
 
+// node_modules/@modelcontextprotocol/sdk/dist/esm/shared/toolNameValidation.js
+var TOOL_NAME_REGEX = /^[A-Za-z0-9._-]{1,128}$/;
+function validateToolName(name) {
+  const warnings = [];
+  if (name.length === 0) {
+    return {
+      isValid: false,
+      warnings: ["Tool name cannot be empty"]
+    };
+  }
+  if (name.length > 128) {
+    return {
+      isValid: false,
+      warnings: [`Tool name exceeds maximum length of 128 characters (current: ${name.length})`]
+    };
+  }
+  if (name.includes(" ")) {
+    warnings.push("Tool name contains spaces, which may cause parsing issues");
+  }
+  if (name.includes(",")) {
+    warnings.push("Tool name contains commas, which may cause parsing issues");
+  }
+  if (name.startsWith("-") || name.endsWith("-")) {
+    warnings.push("Tool name starts or ends with a dash, which may cause parsing issues in some contexts");
+  }
+  if (name.startsWith(".") || name.endsWith(".")) {
+    warnings.push("Tool name starts or ends with a dot, which may cause parsing issues in some contexts");
+  }
+  if (!TOOL_NAME_REGEX.test(name)) {
+    const invalidChars = name.split("").filter((char) => !/[A-Za-z0-9._-]/.test(char)).filter((char, index, arr) => arr.indexOf(char) === index);
+    warnings.push(`Tool name contains invalid characters: ${invalidChars.map((c) => `"${c}"`).join(", ")}`, "Allowed characters are: A-Z, a-z, 0-9, underscore (_), dash (-), and dot (.)");
+    return {
+      isValid: false,
+      warnings
+    };
+  }
+  return {
+    isValid: true,
+    warnings
+  };
+}
+function issueToolNameWarning(name, warnings) {
+  if (warnings.length > 0) {
+    console.warn(`Tool name validation warning for "${name}":`);
+    for (const warning of warnings) {
+      console.warn(`  - ${warning}`);
+    }
+    console.warn("Tool registration will proceed, but this may cause compatibility issues.");
+    console.warn("Consider updating the tool name to conform to the MCP tool naming standard.");
+    console.warn("See SEP: Specify Format for Tool Names (https://github.com/modelcontextprotocol/modelcontextprotocol/issues/986) for more details.");
+  }
+}
+function validateAndWarnToolName(name) {
+  const result = validateToolName(name);
+  issueToolNameWarning(name, result.warnings);
+  return result.isValid;
+}
+
 // node_modules/@modelcontextprotocol/sdk/dist/esm/server/mcp.js
 var McpServer = class {
   constructor(serverInfo, options2) {
@@ -44051,8 +44223,10 @@ var McpServer = class {
     this.server.setRequestHandler(CompleteRequestSchema, async (request) => {
       switch (request.params.ref.type) {
         case "ref/prompt":
+          assertCompleteRequestPrompt(request);
           return this.handlePromptCompletion(request, request.params.ref);
         case "ref/resource":
+          assertCompleteRequestResourceTemplate(request);
           return this.handleResourceCompletion(request, request.params.ref);
         default:
           throw new McpError(ErrorCode.InvalidParams, `Invalid completion reference: ${request.params.ref}`);
@@ -44341,11 +44515,12 @@ var McpServer = class {
     return registeredPrompt;
   }
   _createRegisteredTool(name, title, description, inputSchema, outputSchema, annotations, _meta, callback) {
+    validateAndWarnToolName(name);
     const registeredTool = {
       title,
       description,
-      inputSchema: inputSchema === void 0 ? void 0 : external_exports.object(inputSchema),
-      outputSchema: outputSchema === void 0 ? void 0 : external_exports.object(outputSchema),
+      inputSchema: getZodSchemaObject(inputSchema),
+      outputSchema: getZodSchemaObject(outputSchema),
       annotations,
       _meta,
       callback,
@@ -44355,6 +44530,9 @@ var McpServer = class {
       remove: () => registeredTool.update({ name: null }),
       update: (updates) => {
         if (typeof updates.name !== "undefined" && updates.name !== name) {
+          if (typeof updates.name === "string") {
+            validateAndWarnToolName(updates.name);
+          }
           delete this._registeredTools[name];
           if (updates.name)
             this._registeredTools[updates.name] = registeredTool;
@@ -44529,6 +44707,15 @@ function isZodRawShape(obj) {
 }
 function isZodTypeLike(value) {
   return value !== null && typeof value === "object" && "parse" in value && typeof value.parse === "function" && "safeParse" in value && typeof value.safeParse === "function";
+}
+function getZodSchemaObject(schema) {
+  if (!schema) {
+    return void 0;
+  }
+  if (isZodRawShape(schema)) {
+    return external_exports.object(schema);
+  }
+  return schema;
 }
 function promptArgumentsFromSchema(schema) {
   return Object.entries(schema.shape).map(([name, field]) => ({
@@ -55816,7 +56003,7 @@ var Orchestr8Server = class {
   efficiencyEngine;
   constructor() {
     this.server = new McpServer({
-      name: "orchestr8",
+      name: "o8",
       version: "1.0.0"
     });
     this.promptLoader = new PromptLoader(logger3);
