@@ -1,6 +1,6 @@
 #!/bin/bash
 # add-mcp-instructions.sh - Add MCP resource loading instructions to all commands
-# This ensures all commands that use orchestr8:// URIs have proper instructions
+# This ensures all commands that use o8:// URIs have proper instructions
 
 set -e
 
@@ -8,9 +8,9 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 COMMANDS_DIR="$SCRIPT_DIR/../commands"
 HEADER_SECTION="## How to Load MCP Resources
 
-**CRITICAL:** All \`orchestr8://\` URIs in this workflow must be loaded using \`ReadMcpResourceTool\` with \`server: \"orchestr8\"\` and the \`uri\` parameter set to the resource URI shown.
+**CRITICAL:** All \`o8://\` URIs in this workflow must be loaded using \`ReadMcpResourceTool\` with \`server: \"plugin:o8:o8-resources\"\` and the \`uri\` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: \`orchestr8://guides/mcp-resource-loading\`
+For detailed instructions and examples, load: \`o8://guides/mcp-resource-loading\`
 "
 
 # Colors
@@ -27,9 +27,9 @@ skipped=0
 for file in "$COMMANDS_DIR"/*.md; do
     filename=$(basename "$file")
 
-    # Check if file uses orchestr8:// URIs
-    if ! grep -q "orchestr8://" "$file"; then
-        echo "⊘ Skipping $filename (no orchestr8:// URIs)"
+    # Check if file uses o8:// URIs
+    if ! grep -q "o8://" "$file"; then
+        echo "⊘ Skipping $filename (no o8:// URIs)"
         skipped=$((skipped + 1))
         continue
     fi

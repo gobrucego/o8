@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Sign the Orchestr8 plugin with GPG
+# Sign the o8 plugin with GPG
 # This script generates checksums and signs them cryptographically
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -24,7 +24,7 @@ find . -type f \
   -not -path "./test-resources-token/*" \
   -not -path "./.claude-plugin/*" \
   -not -name "CHECKSUMS.txt*" \
-  -not -name "ORCHESTR8_PUBLIC_KEY.asc" \
+  -not -name "O8_PUBLIC_KEY.asc" \
   -not -name "*.log" \
   -not -name ".DS_Store" \
   | sort \
@@ -39,9 +39,9 @@ gpg --armor --detach-sign --default-key security@orchestr8.builders "$CHECKSUMS_
 
 # Export public key for distribution
 echo "Exporting public key..."
-gpg --armor --export security@orchestr8.builders > ORCHESTR8_PUBLIC_KEY.asc
+gpg --armor --export security@orchestr8.builders > O8_PUBLIC_KEY.asc
 
 echo "✓ Plugin signing complete"
 echo "  - Checksums: $CHECKSUMS_FILE"
 echo "  - Signature: ${CHECKSUMS_FILE}.asc"
-echo "  - Public Key: ORCHESTR8_PUBLIC_KEY.asc"
+echo "  - Public Key: O8_PUBLIC_KEY.asc"

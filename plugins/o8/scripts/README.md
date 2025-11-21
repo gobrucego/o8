@@ -1,6 +1,6 @@
-# Orchestr8 Scripts
+# o8 Scripts
 
-Utility scripts for enhancing Orchestr8 workflows.
+Utility scripts for enhancing o8 workflows.
 
 ## Version Bump Script
 
@@ -26,8 +26,8 @@ npm run version:bump 8.0.5
 
 The script automatically updates version numbers in:
 1. `VERSION` (root file)
-2. `plugins/orchestr8/package.json` (`.version` field)
-3. `plugins/orchestr8/.claude-plugin/plugin.json` (`.version` field)
+2. `plugins/o8/package.json` (`.version` field)
+3. `plugins/o8/.claude-plugin/plugin.json` (`.version` field)
 4. `.claude-plugin/marketplace.json` (`.version` field)
 
 ### CI Validation
@@ -196,7 +196,7 @@ All generated images meet Medium's requirements:
 
 ### Integration with Workflows
 
-The `/orchestr8:create-medium-story` workflow automatically suggests hero image generation in Phase 4.
+The `/o8:create-medium-story` workflow automatically suggests hero image generation in Phase 4.
 
 To enable automatic generation, ensure API keys are set before running the workflow.
 

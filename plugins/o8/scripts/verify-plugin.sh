@@ -1,7 +1,7 @@
 #!/bin/bash
 set -euo pipefail
 
-# Verify the Orchestr8 plugin signature
+# Verify the o8 plugin signature
 # This script verifies GPG signatures and checksums
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -11,7 +11,7 @@ cd "$PLUGIN_DIR"
 
 CHECKSUMS_FILE="CHECKSUMS.txt"
 SIGNATURE_FILE="${CHECKSUMS_FILE}.asc"
-PUBLIC_KEY_FILE="ORCHESTR8_PUBLIC_KEY.asc"
+PUBLIC_KEY_FILE="O8_PUBLIC_KEY.asc"
 
 # Check required files exist
 if [[ ! -f "$CHECKSUMS_FILE" ]]; then

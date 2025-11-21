@@ -16,8 +16,8 @@ NC='\033[0m' # No Color
 
 # File paths
 VERSION_FILE="$PROJECT_ROOT/VERSION"
-PACKAGE_JSON="$PROJECT_ROOT/plugins/orchestr8/package.json"
-PLUGIN_JSON="$PROJECT_ROOT/plugins/orchestr8/.claude-plugin/plugin.json"
+PACKAGE_JSON="$PROJECT_ROOT/plugins/o8/package.json"
+PLUGIN_JSON="$PROJECT_ROOT/plugins/o8/.claude-plugin/plugin.json"
 MARKETPLACE_JSON="$PROJECT_ROOT/.claude-plugin/marketplace.json"
 
 # Check if jq is installed
