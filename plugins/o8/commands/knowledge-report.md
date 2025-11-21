@@ -20,9 +20,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -64,7 +64,7 @@ Metrics showing how knowledge is improving outcomes.
 
 ## Phase 2: Data Collection (10-40%)
 
-**→ Load:** orchestr8://match?query=data+analysis+metrics+statistics&categories=skill&mode=index&maxResults=5
+**→ Load:** o8://match?query=data+analysis+metrics+statistics&categories=skill&mode=index&maxResults=5
 
 **Activities:**
 - Collect knowledge statistics
@@ -77,7 +77,7 @@ Metrics showing how knowledge is improving outcomes.
 
 ## Phase 3: Analysis and Visualization (40-80%)
 
-**→ Load:** orchestr8://agents/knowledge-base-agent
+**→ Load:** o8://agents/knowledge-base-agent
 
 **Activities:**
 - Analyze collected data

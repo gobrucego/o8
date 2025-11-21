@@ -67,9 +67,9 @@ describe('ResourceLoader', () => {
     const loader = new ResourceLoader(logger);
     const resources = await loader.loadAllResources();
 
-    const agent = resources.find(r => r.uri.includes('orchestr8://agents/'));
+    const agent = resources.find(r => r.uri.includes('o8://agents/'));
     assert.ok(agent);
-    assert.strictEqual(agent.uri, 'orchestr8://agents/test-agent');
+    assert.strictEqual(agent.uri, 'o8://agents/test-agent');
     assert.strictEqual(agent.name, 'test-agent');
     assert.strictEqual(agent.mimeType, 'text/markdown');
     assert.strictEqual(agent.category, 'agents');
@@ -79,9 +79,9 @@ describe('ResourceLoader', () => {
     const loader = new ResourceLoader(logger);
     const resources = await loader.loadAllResources();
 
-    const skill = resources.find(r => r.uri.includes('orchestr8://skills/'));
+    const skill = resources.find(r => r.uri.includes('o8://skills/'));
     assert.ok(skill);
-    assert.strictEqual(skill.uri, 'orchestr8://skills/test-skill');
+    assert.strictEqual(skill.uri, 'o8://skills/test-skill');
     assert.strictEqual(skill.category, 'skills');
   });
 
@@ -89,15 +89,15 @@ describe('ResourceLoader', () => {
     const loader = new ResourceLoader(logger);
     const resources = await loader.loadAllResources();
 
-    const example = resources.find(r => r.uri.includes('orchestr8://examples/'));
+    const example = resources.find(r => r.uri.includes('o8://examples/'));
     assert.ok(example);
-    assert.strictEqual(example.uri, 'orchestr8://examples/test-example');
+    assert.strictEqual(example.uri, 'o8://examples/test-example');
     assert.strictEqual(example.category, 'examples');
   });
 
   it('should load resource content correctly', async () => {
     const loader = new ResourceLoader(logger);
-    const content = await loader.loadResourceContent('orchestr8://agents/test-agent');
+    const content = await loader.loadResourceContent('o8://agents/test-agent');
 
     assert.ok(typeof content === 'string');
     assert.ok(content.includes('# Test Agent'));
@@ -109,8 +109,8 @@ describe('ResourceLoader', () => {
     const loader = new ResourceLoader(logger);
 
     // Load twice - second should hit cache
-    const content1 = await loader.loadResourceContent('orchestr8://agents/test-agent');
-    const content2 = await loader.loadResourceContent('orchestr8://agents/test-agent');
+    const content1 = await loader.loadResourceContent('o8://agents/test-agent');
+    const content2 = await loader.loadResourceContent('o8://agents/test-agent');
 
     assert.strictEqual(content1, content2);
   });
@@ -119,7 +119,7 @@ describe('ResourceLoader', () => {
     const loader = new ResourceLoader(logger);
 
     await assert.rejects(
-      async () => await loader.loadResourceContent('orchestr8://agents/non-existent'),
+      async () => await loader.loadResourceContent('o8://agents/non-existent'),
       /ENOENT|no such file/
     );
   });

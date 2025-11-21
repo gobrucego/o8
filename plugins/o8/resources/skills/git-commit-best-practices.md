@@ -17,10 +17,10 @@ useWhen:
   - Generating changelogs from commits
   - Creating atomic, reviewable commits
 relatedResources:
-  - orchestr8://agents/git-expert
-  - orchestr8://skills/git-workflow
-  - orchestr8://examples/git-commit-examples
-  - orchestr8://patterns/git-collaboration-workflow
+  - o8://agents/git-expert
+  - o8://skills/git-workflow
+  - o8://examples/git-commit-examples
+  - o8://patterns/git-collaboration-workflow
 estimatedTokens: 750
 ---
 

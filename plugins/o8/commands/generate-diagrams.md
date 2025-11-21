@@ -20,9 +20,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -31,7 +31,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 1: Codebase Analysis (0-30%)
 
-**→ Load:** orchestr8://match?query=architecture+analysis+diagram&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=architecture+analysis+diagram&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Analyze codebase structure and architecture
@@ -44,7 +44,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 2: Architecture Diagrams (30-50%)
 
-**→ Load:** orchestr8://match?query=c4+architecture+diagrams+mermaid&categories=skill,example&mode=index&maxResults=5
+**→ Load:** o8://match?query=c4+architecture+diagrams+mermaid&categories=skill,example&mode=index&maxResults=5
 
 **Activities:**
 - Generate C4 Level 0: System Context (external systems, users)
@@ -57,7 +57,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 3: Data Flow Diagrams (50-65%)
 
-**→ Load:** orchestr8://workflows/workflow-generate-visualizations
+**→ Load:** o8://workflows/workflow-generate-visualizations
 
 **Activities:**
 - Map data flows between components
@@ -70,7 +70,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 4: Sequence Diagrams (65-80%)
 
-**→ Load:** orchestr8://match?query=sequence+diagrams+interactions&categories=skill,example&mode=index&maxResults=3
+**→ Load:** o8://match?query=sequence+diagrams+interactions&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Create sequence diagrams for key user flows
@@ -83,7 +83,7 @@ You are the **Diagram Specialist** responsible for generating visual documentati
 
 ## Phase 5: User Journey & ERD Diagrams (80-100%)
 
-**→ Load:** orchestr8://match?query=user+journey+erd+visualization&categories=skill,example&mode=index&maxResults=3
+**→ Load:** o8://match?query=user+journey+erd+visualization&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Create user journey maps

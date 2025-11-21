@@ -16,9 +16,9 @@ useWhen:
   - Performing failover operations
 estimatedTokens: 480
 relatedResources:
-  - orchestr8://agents/mysql-specialist
-  - orchestr8://agents/database-architect-sql
-  - orchestr8://patterns/database-connection-pooling-scaling
+  - o8://agents/mysql-specialist
+  - o8://agents/database-architect-sql
+  - o8://patterns/database-connection-pooling-scaling
 ---
 
 # MySQL Replication & High Availability

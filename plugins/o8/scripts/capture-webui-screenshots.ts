@@ -142,7 +142,7 @@ async function main() {
   } catch (error) {
     console.error('❌ Server is not running!');
     console.error('Please start the server with: npm run start:http');
-    console.error('Or: ORCHESTR8_HTTP=true npm run dev\n');
+    console.error('Or: O8_HTTP=true npm run dev\n');
     process.exit(1);
   }
 

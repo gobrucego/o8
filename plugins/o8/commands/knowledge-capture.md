@@ -21,9 +21,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -49,15 +49,15 @@ This command uses **Just-In-Time (JIT) resource loading** for maximum token effi
 
 ```
 # Phase 0: Discovery (if knowledge type needs expertise)
-orchestr8://match?query=knowledge+management+capture&mode=index&maxResults=3&categories=agent,skill
+o8://match?query=knowledge+management+capture&mode=index&maxResults=3&categories=agent,skill
 
 # Phase 2: Load specific expertise based on knowledge type
-orchestr8://agents/knowledge-base-agent              # Knowledge capture methodology (~800 tokens)
-orchestr8://skills/technical-writing-principles      # Documentation quality (~600 tokens)
-orchestr8://skills/fragment-metadata-optimization    # Metadata structuring (~400 tokens)
+o8://agents/knowledge-base-agent              # Knowledge capture methodology (~800 tokens)
+o8://skills/technical-writing-principles      # Documentation quality (~600 tokens)
+o8://skills/fragment-metadata-optimization    # Metadata structuring (~400 tokens)
 
 # Phase 3: Validation resources (if needed)
-orchestr8://skills/fragment-discoverability-testing  # Searchability validation (~500 tokens)
+o8://skills/fragment-discoverability-testing  # Searchability validation (~500 tokens)
 ```
 
 **Token Efficiency:**
@@ -132,7 +132,7 @@ Identified improvements ranked by ROI.
 
 ## Phase 1: Parse Input (0-10%)
 
-**→ Load (if needed):** orchestr8://match?query=input+validation+parsing&mode=index&maxResults=3&categories=skill
+**→ Load (if needed):** o8://match?query=input+validation+parsing&mode=index&maxResults=3&categories=skill
 
 **Activities:**
 - Extract knowledge type
@@ -144,20 +144,20 @@ Identified improvements ranked by ROI.
 
 ## Phase 2: Knowledge Capture (10-80%)
 
-**→ Load:** orchestr8://match?query=knowledge+management+documentation+metadata&mode=index&maxResults=5
+**→ Load:** o8://match?query=knowledge+management+documentation+metadata&mode=index&maxResults=5
 
 **Recommended resources based on knowledge type:**
 ```
 # For patterns/anti-patterns
-orchestr8://agents/knowledge-base-agent
-orchestr8://skills/technical-writing-principles
+o8://agents/knowledge-base-agent
+o8://skills/technical-writing-principles
 
 # For performance baselines
-orchestr8://skills/performance-profiling-techniques
+o8://skills/performance-profiling-techniques
 
 # For technology comparisons
-orchestr8://skills/technology-evaluation
-orchestr8://skills/competitive-analysis
+o8://skills/technology-evaluation
+o8://skills/competitive-analysis
 ```
 
 **Activities:**
@@ -172,12 +172,12 @@ orchestr8://skills/competitive-analysis
 
 ## Phase 3: Verification (80-95%)
 
-**→ Load (if quality issues):** orchestr8://match?query=metadata+validation+discoverability&mode=index&maxResults=3
+**→ Load (if quality issues):** o8://match?query=metadata+validation+discoverability&mode=index&maxResults=3
 
 **Validation resources (load if needed):**
 ```
-orchestr8://skills/fragment-discoverability-testing  # Test searchability
-orchestr8://skills/fragment-metadata-optimization    # Validate metadata quality
+o8://skills/fragment-discoverability-testing  # Test searchability
+o8://skills/fragment-metadata-optimization    # Validate metadata quality
 ```
 
 **Activities:**

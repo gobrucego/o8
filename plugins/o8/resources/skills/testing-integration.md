@@ -20,12 +20,12 @@ useWhen:
 
 # Integration Testing Patterns
 
-> **Parent skill:** orchestr8://skills/testing-strategies (Testing pyramid, test philosophy)
+> **Parent skill:** o8://skills/testing-strategies (Testing pyramid, test philosophy)
 >
 > **Related skills:**
-> - orchestr8://skills/testing-unit - Testing components in isolation
-> - orchestr8://skills/testing-integration-patterns - Advanced integration patterns with test containers
-> - orchestr8://skills/testing-e2e-best-practices - Full user workflow testing
+> - o8://skills/testing-unit - Testing components in isolation
+> - o8://skills/testing-integration-patterns - Advanced integration patterns with test containers
+> - o8://skills/testing-e2e-best-practices - Full user workflow testing
 
 ## Test Database Setup
 

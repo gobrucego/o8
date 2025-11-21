@@ -20,11 +20,11 @@ useWhen:
 
 # E2E Testing Best Practices
 
-> **Parent skill:** orchestr8://skills/testing-strategies (Testing pyramid, flaky test prevention)
+> **Parent skill:** o8://skills/testing-strategies (Testing pyramid, flaky test prevention)
 >
 > **Related skills:**
-> - orchestr8://skills/testing-integration - API and component integration testing
-> - orchestr8://skills/testing-unit - Component unit testing
+> - o8://skills/testing-integration - API and component integration testing
+> - o8://skills/testing-unit - Component unit testing
 
 ## Page Object Pattern
 

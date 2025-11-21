@@ -187,7 +187,7 @@ Automated performance testing framework:
 - Comparison and ranking capabilities
 
 For complete TypeScript implementation:
-→ `orchestr8://examples/skills/technology-benchmarking-suite`
+→ `o8://examples/skills/technology-benchmarking-suite`
 
 **Performance Metrics:**
 - Operations per second (throughput)
@@ -284,7 +284,7 @@ Multi-dimensional weighted scoring system:
 - Generate recommendation report
 
 For complete TypeScript implementation with ranking:
-→ `orchestr8://examples/skills/technology-benchmarking-decision-matrix`
+→ `o8://examples/skills/technology-benchmarking-decision-matrix`
 
 **Recommendation Report Template:**
 

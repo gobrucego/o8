@@ -20,9 +20,9 @@ Automatically generate professional visualizations including Mermaid diagrams, d
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Usage
@@ -45,7 +45,7 @@ For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-l
 
 ## Phase 1: Analysis & Planning (0-20%)
 
-**→ Load Agent:** orchestr8://agents/visualization-specialist
+**→ Load Agent:** o8://agents/visualization-specialist
 
 **Activities:**
 - Analyze article content or project codebase
@@ -68,7 +68,7 @@ For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-l
 
 ## Phase 2: Mermaid Diagram Generation (20-45%)
 
-**→ Load:** orchestr8://skills/mermaid-diagram-generation
+**→ Load:** o8://skills/mermaid-diagram-generation
 
 **Parallel Tracks:**
 
@@ -127,7 +127,7 @@ For technical content or code projects:
 
 ## Phase 3: Data Chart Generation (45-70%)
 
-**→ Load:** orchestr8://skills/data-chart-generation
+**→ Load:** o8://skills/data-chart-generation
 
 **Chart Types:**
 
@@ -188,7 +188,7 @@ For technical content or code projects:
 
 ## Phase 4: Screenshot Generation (70-85%)
 
-**→ Load:** orchestr8://skills/screenshot-automation
+**→ Load:** o8://skills/screenshot-automation
 
 **Screenshot Types:**
 
@@ -240,7 +240,7 @@ For technical content or code projects:
 
 ## Phase 5: Hero Image Generation (85-95%)
 
-**→ Load:** orchestr8://skills/medium-hero-image-generation
+**→ Load:** o8://skills/medium-hero-image-generation
 
 **Activities:**
 - Extract article theme and key concepts

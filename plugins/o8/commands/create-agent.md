@@ -21,9 +21,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -32,7 +32,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 1: Expertise Scoping (0-25%)
 
-**→ Load:** orchestr8://workflows/workflow-create-agent
+**→ Load:** o8://workflows/workflow-create-agent
 
 **Activities:**
 - Define agent specialization and domain
@@ -47,7 +47,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 2: Content Structure Design (25-50%)
 
-**→ Load:** orchestr8://match?query=agent+designer+fragment+structure+metadata&categories=agent,skill&mode=index&maxResults=5
+**→ Load:** o8://match?query=agent+designer+fragment+structure+metadata&categories=agent,skill&mode=index&maxResults=5
 
 **Activities:**
 - Design content organization
@@ -66,7 +66,7 @@ You are the **Agent Designer** responsible for creating well-structured, discove
 
 ## Phase 3: Content Creation (50-75%)
 
-**→ Load:** orchestr8://match?query=$ARGUMENTS+domain+expertise&categories=agent,skill,example&mode=index&maxResults=8
+**→ Load:** o8://match?query=$ARGUMENTS+domain+expertise&categories=agent,skill,example&mode=index&maxResults=8
 
 **Activities:**
 
@@ -128,7 +128,7 @@ How to apply knowledge
 
 ## Phase 4: Discovery Testing & Integration (75-100%)
 
-**→ Load:** orchestr8://match?query=fragment+discovery+testing+optimization&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=fragment+discovery+testing+optimization&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 

@@ -24,12 +24,12 @@ useWhen:
   - Understanding Git internals and plumbing commands
   - Optimizing Git repository performance
 relatedResources:
-  - orchestr8://agents/git-expert
-  - orchestr8://agents/git-troubleshooter
-  - orchestr8://skills/git-rebase-merge
-  - orchestr8://skills/git-workflow
-  - orchestr8://skills/git-pr-workflow
-  - orchestr8://patterns/debugging-strategies
+  - o8://agents/git-expert
+  - o8://agents/git-troubleshooter
+  - o8://skills/git-rebase-merge
+  - o8://skills/git-workflow
+  - o8://skills/git-pr-workflow
+  - o8://patterns/debugging-strategies
 estimatedTokens: 880
 ---
 

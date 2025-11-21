@@ -6,8 +6,8 @@
  * This test suite validates the full MCP protocol implementation:
  * 1. Server startup and MCP handshake
  * 2. List all static resources
- * 3. Read a static resource (e.g., orchestr8://agents/typescript-core)
- * 4. Read a dynamic resource with fuzzy matching (orchestr8://agents/match?query=typescript+api)
+ * 3. Read a static resource (e.g., o8://agents/typescript-core)
+ * 4. Read a dynamic resource with fuzzy matching (o8://agents/match?query=typescript+api)
  * 5. Verify dynamic resource returns assembled content from multiple fragments
  * 6. Test invalid URIs return proper errors
  * 7. Test cache hit on second request
@@ -232,28 +232,28 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should include agent resources", () => {
       const hasAgents = resources.some((r) =>
-        r.uri.includes("orchestr8://agents/"),
+        r.uri.includes("o8://agents/"),
       );
       assert.ok(hasAgents, "Should have agent resources");
     });
 
     it("should include skill resources", () => {
       const hasSkills = resources.some((r) =>
-        r.uri.includes("orchestr8://skills/"),
+        r.uri.includes("o8://skills/"),
       );
       assert.ok(hasSkills, "Should have skill resources");
     });
 
     it("should include example resources", () => {
       const hasExamples = resources.some((r) =>
-        r.uri.includes("orchestr8://examples/"),
+        r.uri.includes("o8://examples/"),
       );
       assert.ok(hasExamples, "Should have example resources");
     });
 
     it("should include pattern resources", () => {
       const hasPatterns = resources.some((r) =>
-        r.uri.includes("orchestr8://patterns/"),
+        r.uri.includes("o8://patterns/"),
       );
       assert.ok(hasPatterns, "Should have pattern resources");
     });
@@ -264,8 +264,8 @@ describe("MCP Protocol Integration Tests", () => {
         assert.ok(resource.name, "Resource should have a name");
         assert.ok(resource.mimeType, "Resource should have a MIME type");
         assert.ok(
-          resource.uri.startsWith("orchestr8://"),
-          "Resource URI should use orchestr8:// protocol",
+          resource.uri.startsWith("o8://"),
+          "Resource URI should use o8:// protocol",
         );
       }
     });
@@ -290,9 +290,9 @@ describe("MCP Protocol Integration Tests", () => {
   // Test 3: Read a Static Resource
   // ==========================================================================
   describe("Read Static Resource", () => {
-    it("should read orchestr8://agents/typescript-core", async () => {
+    it("should read o8://agents/typescript-core", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/typescript-core",
+        uri: "o8://agents/typescript-core",
       });
 
       assert.ok(result, "Should return a result");
@@ -305,7 +305,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should return text content", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/typescript-core",
+        uri: "o8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -319,7 +319,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should have substantial content (>500 chars)", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/typescript-core",
+        uri: "o8://agents/typescript-core",
       });
 
       const text = result.contents[0].text;
@@ -331,7 +331,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should have correct MIME type", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/typescript-core",
+        uri: "o8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -344,7 +344,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should include URI in content response", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/typescript-core",
+        uri: "o8://agents/typescript-core",
       });
 
       const content = result.contents[0];
@@ -357,7 +357,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should read nested resource path", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://examples/typescript-rest-api-complete",
+        uri: "o8://examples/typescript-rest-api-complete",
       });
 
       assert.ok(result.contents[0].text, "Should read nested resource");
@@ -374,7 +374,7 @@ describe("MCP Protocol Integration Tests", () => {
   describe("Read Dynamic Resource with Fuzzy Matching", () => {
     it("should handle dynamic URI with query parameter", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript+api",
+        uri: "o8://agents/match?query=typescript+api",
       });
 
       assert.ok(result, "Should return a result");
@@ -387,7 +387,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should return assembled content", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript+api",
+        uri: "o8://agents/match?query=typescript+api",
       });
 
       const text = result.contents[0].text;
@@ -397,7 +397,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should support maxTokens parameter", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript+testing&maxTokens=1000",
+        uri: "o8://agents/match?query=typescript+testing&maxTokens=1000",
       });
 
       const text = result.contents[0].text;
@@ -408,7 +408,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should decode URL-encoded query parameters", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://skills/match?query=error+handling",
+        uri: "o8://skills/match?query=error+handling",
       });
 
       const text = result.contents[0].text;
@@ -421,7 +421,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should filter by category in URI path", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://examples/match?query=typescript",
+        uri: "o8://examples/match?query=typescript",
       });
 
       const text = result.contents[0].text;
@@ -440,7 +440,7 @@ describe("MCP Protocol Integration Tests", () => {
   describe("Dynamic Resource Assembly from Multiple Fragments", () => {
     it("should assemble content from multiple fragments", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript+api+async",
+        uri: "o8://agents/match?query=typescript+api+async",
       });
 
       const text = result.contents[0].text;
@@ -455,7 +455,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should include relevance scores in assembled content", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript",
+        uri: "o8://agents/match?query=typescript",
       });
 
       const text = result.contents[0].text;
@@ -471,7 +471,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should include tags in assembled content", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://skills/match?query=testing",
+        uri: "o8://skills/match?query=testing",
       });
 
       const text = result.contents[0].text;
@@ -486,11 +486,11 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should respect maxTokens budget", async () => {
       const smallResult = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript&maxTokens=500",
+        uri: "o8://agents/match?query=typescript&maxTokens=500",
       });
 
       const largeResult = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript&maxTokens=5000",
+        uri: "o8://agents/match?query=typescript&maxTokens=5000",
       });
 
       const smallText = smallResult.contents[0].text;
@@ -505,7 +505,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should match across different resource categories", async () => {
       const result = await client.sendRequest("resources/read", {
-        uri: "orchestr8://match?query=typescript+async",
+        uri: "o8://match?query=typescript+async",
       });
 
       const text = result.contents[0].text;
@@ -524,7 +524,7 @@ describe("MCP Protocol Integration Tests", () => {
       await assert.rejects(
         async () => {
           await client.sendRequest("resources/read", {
-            uri: "orchestr8://agents/non-existent-resource",
+            uri: "o8://agents/non-existent-resource",
           });
         },
         (error) => {
@@ -555,7 +555,7 @@ describe("MCP Protocol Integration Tests", () => {
       await assert.rejects(
         async () => {
           await client.sendRequest("resources/read", {
-            uri: "orchestr8://agents/match",
+            uri: "o8://agents/match",
           });
         },
         (error) => {
@@ -608,7 +608,7 @@ describe("MCP Protocol Integration Tests", () => {
   // ==========================================================================
   describe("Cache Hit on Second Request", () => {
     it("should cache static resource content", async () => {
-      const uri = "orchestr8://agents/typescript-core";
+      const uri = "o8://agents/typescript-core";
 
       // First request (cache miss)
       const result1 = await client.sendRequest("resources/read", { uri });
@@ -624,7 +624,7 @@ describe("MCP Protocol Integration Tests", () => {
 
     it("should cache dynamic resource content", async () => {
       const uri =
-        "orchestr8://agents/match?query=typescript+api&maxTokens=2000";
+        "o8://agents/match?query=typescript+api&maxTokens=2000";
 
       // First request (cache miss)
       const result1 = await client.sendRequest("resources/read", { uri });
@@ -645,13 +645,13 @@ describe("MCP Protocol Integration Tests", () => {
     it("should have different cache for different query parameters", async () => {
       // Request with first query
       const result1 = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=typescript+api&maxTokens=2000",
+        uri: "o8://agents/match?query=typescript+api&maxTokens=2000",
       });
       const text1 = result1.contents[0].text;
 
       // Request with different query
       const result2 = await client.sendRequest("resources/read", {
-        uri: "orchestr8://agents/match?query=python+web&maxTokens=2000",
+        uri: "o8://agents/match?query=python+web&maxTokens=2000",
       });
       const text2 = result2.contents[0].text;
 

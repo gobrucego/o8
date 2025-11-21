@@ -20,14 +20,14 @@ useWhen:
 
 # Integration Testing Patterns
 
-> **Parent skill:** orchestr8://skills/testing-strategies (Testing pyramid, test philosophy)
+> **Parent skill:** o8://skills/testing-strategies (Testing pyramid, test philosophy)
 >
 > **Related skills:**
-> - orchestr8://skills/testing-integration - Basic integration testing with supertest
-> - orchestr8://skills/testing-unit - Unit testing in isolation
-> - orchestr8://skills/testing-e2e-best-practices - Full stack testing
+> - o8://skills/testing-integration - Basic integration testing with supertest
+> - o8://skills/testing-unit - Unit testing in isolation
+> - o8://skills/testing-e2e-best-practices - Full stack testing
 
-**Note:** This skill covers advanced integration patterns. For basic API and database testing, see orchestr8://skills/testing-integration.
+**Note:** This skill covers advanced integration patterns. For basic API and database testing, see o8://skills/testing-integration.
 
 ## Test Container Setup
 

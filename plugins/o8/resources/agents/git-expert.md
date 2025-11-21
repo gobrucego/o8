@@ -22,14 +22,14 @@ useWhen:
   - Team collaboration using Git
   - Repository maintenance and optimization
 relatedResources:
-  - orchestr8://agents/github-workflow-specialist
-  - orchestr8://agents/git-troubleshooter
-  - orchestr8://skills/git-commit-best-practices
-  - orchestr8://skills/git-branching-strategies
-  - orchestr8://skills/git-rebase-merge
-  - orchestr8://skills/git-advanced-commands
-  - orchestr8://patterns/git-collaboration-workflow
-  - orchestr8://examples/git-commit-examples
+  - o8://agents/github-workflow-specialist
+  - o8://agents/git-troubleshooter
+  - o8://skills/git-commit-best-practices
+  - o8://skills/git-branching-strategies
+  - o8://skills/git-rebase-merge
+  - o8://skills/git-advanced-commands
+  - o8://patterns/git-collaboration-workflow
+  - o8://examples/git-commit-examples
 estimatedTokens: 950
 ---
 
@@ -330,7 +330,7 @@ When working with Git in Claude Code context:
 5. **History Clarity**: Use descriptive commits for better context reconstruction
 
 For advanced Git operations, load specialized expertise:
-- **GitHub Operations**: Load `orchestr8://agents/github-workflow-specialist`
-- **Troubleshooting**: Load `orchestr8://agents/git-troubleshooter`
-- **Branching Strategies**: Load `orchestr8://skills/git-branching-strategies`
-- **Commit Conventions**: Load `orchestr8://skills/git-commit-best-practices`
+- **GitHub Operations**: Load `o8://agents/github-workflow-specialist`
+- **Troubleshooting**: Load `o8://agents/git-troubleshooter`
+- **Branching Strategies**: Load `o8://skills/git-branching-strategies`
+- **Commit Conventions**: Load `o8://skills/git-commit-best-practices`

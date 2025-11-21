@@ -16,9 +16,9 @@ useWhen:
   - Checking buffer pool efficiency
 estimatedTokens: 450
 relatedResources:
-  - orchestr8://agents/mysql-specialist
-  - orchestr8://agents/database-architect-sql
-  - orchestr8://skills/observability-metrics-prometheus
+  - o8://agents/mysql-specialist
+  - o8://agents/database-architect-sql
+  - o8://skills/observability-metrics-prometheus
 ---
 
 # MySQL Monitoring Queries

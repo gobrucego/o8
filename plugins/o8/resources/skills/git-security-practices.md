@@ -25,13 +25,13 @@ useWhen:
   - Securing CI/CD Git operations
   - Implementing Git forensics and audit trails
 relatedResources:
-  - orchestr8://agents/security-auditor
-  - orchestr8://agents/git-expert
-  - orchestr8://skills/git-workflow
-  - orchestr8://skills/git-hooks-automation
-  - orchestr8://skills/security-owasp-top10
-  - orchestr8://skills/security-secrets-management
-  - orchestr8://patterns/security-audit-practices
+  - o8://agents/security-auditor
+  - o8://agents/git-expert
+  - o8://skills/git-workflow
+  - o8://skills/git-hooks-automation
+  - o8://skills/security-owasp-top10
+  - o8://skills/security-secrets-management
+  - o8://patterns/security-audit-practices
 estimatedTokens: 870
 ---
 

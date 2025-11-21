@@ -137,7 +137,7 @@ This is a test skill.
 
       // Load a dynamic resource (this should trigger token tracking)
       try {
-        await loader.loadResourceContent('orchestr8://match?query=testing&maxResults=5');
+        await loader.loadResourceContent('o8://match?query=testing&maxResults=5');
       } catch (error) {
         // May fail due to test environment, but tracking should still occur
       }
@@ -386,7 +386,7 @@ This is a test skill.
     });
 
     it('should include resource URI in metadata', () => {
-      const resourceUri = 'orchestr8://agents/test-agent';
+      const resourceUri = 'o8://agents/test-agent';
       const usage = tracker.track('meta-test-2', {
         input_tokens: 1000,
         output_tokens: 500,
@@ -415,7 +415,7 @@ This is a test skill.
     it('should handle all metadata fields together', () => {
       const metadata = {
         category: 'skill',
-        resourceUri: 'orchestr8://skills/test-skill',
+        resourceUri: 'o8://skills/test-skill',
         resourceCount: 3,
       };
 
@@ -467,20 +467,20 @@ This is a test skill.
     it('should maintain cache state in tracking', async () => {
       // First load - cache miss
       try {
-        await loader.loadResourceContent('orchestr8://agents/test-agent');
+        await loader.loadResourceContent('o8://agents/test-agent');
       } catch (error) {
         // May fail in test environment
       }
 
       // Second load - cache hit (from LRU cache)
       try {
-        await loader.loadResourceContent('orchestr8://agents/test-agent');
+        await loader.loadResourceContent('o8://agents/test-agent');
       } catch (error) {
         // May fail in test environment
       }
 
       // Verify caching worked
-      const cached = loader.getCachedResource('orchestr8://agents/test-agent');
+      const cached = loader.getCachedResource('o8://agents/test-agent');
       if (cached) {
         assert.ok(cached.length > 0, 'Cached content should exist');
       }
@@ -491,7 +491,7 @@ This is a test skill.
 
       for (let i = 0; i < 10; i++) {
         promises.push(
-          loader.loadResourceContent(`orchestr8://agents/test-agent`).catch(() => {
+          loader.loadResourceContent(`o8://agents/test-agent`).catch(() => {
             // Ignore errors in test environment
           })
         );
@@ -515,7 +515,7 @@ This is a test skill.
       const startNoTracking = Date.now();
       for (let i = 0; i < iterations; i++) {
         try {
-          await loaderNoTracking.loadResourceContent('orchestr8://agents/test-agent');
+          await loaderNoTracking.loadResourceContent('o8://agents/test-agent');
         } catch (error) {
           // Ignore errors
         }
@@ -528,7 +528,7 @@ This is a test skill.
       const startWithTracking = Date.now();
       for (let i = 0; i < iterations; i++) {
         try {
-          await loader.loadResourceContent('orchestr8://agents/test-agent');
+          await loader.loadResourceContent('o8://agents/test-agent');
         } catch (error) {
           // Ignore errors
         }
@@ -554,7 +554,7 @@ This is a test skill.
           output_tokens: 500,
         }, {
           category: 'agent',
-          resourceUri: `orchestr8://agents/test-${i}`,
+          resourceUri: `o8://agents/test-${i}`,
         });
         store.saveUsage(usage!);
       }

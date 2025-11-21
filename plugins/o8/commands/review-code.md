@@ -19,9 +19,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -30,7 +30,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 1: Code Quality Analysis (0-30%)
 
-**→ Load:** orchestr8://workflows/workflow-code-review
+**→ Load:** o8://workflows/workflow-code-review
 
 **Activities:**
 - Check code style and formatting consistency
@@ -48,7 +48,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 2: Architecture & Design (30-60%)
 
-**→ Load:** orchestr8://match?query=architecture+design+patterns+best+practices&categories=pattern,skill&mode=index&maxResults=8
+**→ Load:** o8://match?query=architecture+design+patterns+best+practices&categories=pattern,skill&mode=index&maxResults=8
 
 **Activities:**
 - Evaluate design patterns usage
@@ -66,7 +66,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 3: Security & Performance (60-90%)
 
-**→ Load:** orchestr8://match?query=security+vulnerabilities+performance+optimization&categories=skill,pattern&mode=index&maxResults=8
+**→ Load:** o8://match?query=security+vulnerabilities+performance+optimization&categories=skill,pattern&mode=index&maxResults=8
 
 **Activities:**
 - Scan for security vulnerabilities
@@ -86,7 +86,7 @@ You are the **Code Reviewer** responsible for comprehensive analysis of code qua
 
 ## Phase 4: Recommendations & Report (90-100%)
 
-**→ Load:** orchestr8://match?query=code+review+best+practices&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=code+review+best+practices&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Prioritize findings by severity

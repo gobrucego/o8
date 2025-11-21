@@ -14,8 +14,8 @@ useWhen:
   - Implementing continuous training workflows
 estimatedTokens: 1400
 relatedResources:
-  - orchestr8://agents/mlops-specialist
-  - orchestr8://skills/observability-metrics-prometheus
+  - o8://agents/mlops-specialist
+  - o8://skills/observability-metrics-prometheus
 ---
 
 # ML Model Monitoring & A/B Testing

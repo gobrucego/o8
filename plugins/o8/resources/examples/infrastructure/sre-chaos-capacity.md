@@ -14,8 +14,8 @@ useWhen:
   - Analyzing usage patterns for auto-scaling strategies
 estimatedTokens: 1900
 relatedResources:
-  - orchestr8://agents/sre-specialist
-  - orchestr8://skills/performance-optimization
+  - o8://agents/sre-specialist
+  - o8://skills/performance-optimization
 ---
 
 # SRE Chaos Engineering & Capacity Planning

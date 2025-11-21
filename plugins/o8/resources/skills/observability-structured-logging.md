@@ -142,14 +142,14 @@ logs:
 ## Related Observability Skills
 
 **Three Pillars of Observability:**
-- orchestr8://skills/observability-structured-logging - Logs pillar (this skill)
-- orchestr8://skills/observability-metrics-prometheus - Metrics pillar for quantitative data
-- orchestr8://skills/observability-distributed-tracing - Traces pillar for request flows
+- o8://skills/observability-structured-logging - Logs pillar (this skill)
+- o8://skills/observability-metrics-prometheus - Metrics pillar for quantitative data
+- o8://skills/observability-distributed-tracing - Traces pillar for request flows
 
 **Reliability & Debugging:**
-- orchestr8://skills/observability-sli-slo-monitoring - Using logs for incident response
-- orchestr8://skills/error-handling-logging - Error handling patterns
+- o8://skills/observability-sli-slo-monitoring - Using logs for incident response
+- o8://skills/error-handling-logging - Error handling patterns
 
 **Log Infrastructure:**
-- orchestr8://patterns/architecture-microservices - Distributed logging design
-- orchestr8://skills/observability-distributed-tracing - Correlation IDs and trace context
+- o8://patterns/architecture-microservices - Distributed logging design
+- o8://skills/observability-distributed-tracing - Correlation IDs and trace context

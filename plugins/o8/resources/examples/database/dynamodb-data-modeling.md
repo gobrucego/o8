@@ -14,8 +14,8 @@ useWhen:
   - Optimizing access patterns for DynamoDB
 estimatedTokens: 800
 relatedResources:
-  - orchestr8://agents/dynamodb-specialist
-  - orchestr8://skills/data-modeling-best-practices
+  - o8://agents/dynamodb-specialist
+  - o8://skills/data-modeling-best-practices
 ---
 
 # DynamoDB Data Modeling Best Practices

@@ -190,9 +190,9 @@ Use ${workflow-pattern} with these phases:
 3. Phase 3: ${description} (Y-100%)
 
 ### Resource Requirements
-- Agents: orchestr8://agents/match?query=${requirements}
-- Skills: orchestr8://skills/match?query=${techniques}
-- Patterns: orchestr8://patterns/match?query=${architecture}
+- Agents: o8://agents/match?query=${requirements}
+- Skills: o8://skills/match?query=${techniques}
+- Patterns: o8://patterns/match?query=${architecture}
 ```
 
 ## Best Practices

@@ -161,7 +161,7 @@ test.describe("Testing View - Complete Coverage", () => {
       await expect(input).toBeVisible();
       await expect(input).toHaveAttribute(
         "placeholder",
-        "orchestr8://agents/typescript-developer",
+        "o8://agents/typescript-developer",
       );
     });
   });
@@ -256,7 +256,7 @@ test.describe("Testing View - Complete Coverage", () => {
       expect(await select.inputValue()).toBe("resources/read");
 
       const uriInput = page.locator("#resourceUri");
-      await expect(uriInput).toHaveValue("orchestr8://registry");
+      await expect(uriInput).toHaveValue("o8://registry");
     });
 
     test('"TypeScript Agent" example should set URI field', async ({
@@ -270,7 +270,7 @@ test.describe("Testing View - Complete Coverage", () => {
 
       const uriInput = page.locator("#resourceUri");
       await expect(uriInput).toHaveValue(
-        "orchestr8://agents/typescript-developer",
+        "o8://agents/typescript-developer",
       );
     });
 
@@ -280,7 +280,7 @@ test.describe("Testing View - Complete Coverage", () => {
 
       const uriInput = page.locator("#resourceUri");
       const value = await uriInput.inputValue();
-      expect(value).toContain("orchestr8://match?query=api+development");
+      expect(value).toContain("o8://match?query=api+development");
       expect(value).toContain("maxTokens=2000");
     });
 
@@ -292,7 +292,7 @@ test.describe("Testing View - Complete Coverage", () => {
 
       const uriInput = page.locator("#resourceUri");
       const value = await uriInput.inputValue();
-      expect(value).toContain("orchestr8://match?query=full+stack+development");
+      expect(value).toContain("o8://match?query=full+stack+development");
       expect(value).toContain("categories=agent,skill,example");
       expect(value).toContain("maxTokens=3000");
     });
@@ -305,7 +305,7 @@ test.describe("Testing View - Complete Coverage", () => {
 
       const uriInput = page.locator("#resourceUri");
       const value = await uriInput.inputValue();
-      expect(value).toContain("orchestr8://match?query=typescript+api");
+      expect(value).toContain("o8://match?query=typescript+api");
       expect(value).toContain("mode=minimal");
     });
   });
@@ -550,7 +550,7 @@ test.describe("Testing View - Complete Coverage", () => {
       // Fill in URI
       await page.fill(
         "#resourceUri",
-        "orchestr8://agents/typescript-developer",
+        "o8://agents/typescript-developer",
       );
 
       await executeTest(page);

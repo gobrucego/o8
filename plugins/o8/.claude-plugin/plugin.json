@@ -20,7 +20,7 @@
     "deployment"
   ],
   "mcpServers": {
-    "orchestr8-resources": {
+    "o8-resources": {
       "command": "node",
       "args": [
         "${CLAUDE_PLUGIN_ROOT}/dist/index.js"

@@ -233,7 +233,7 @@ def handle_webhook():
 
 ## Related Resources
 
-**GraphQL alternative**: `orchestr8://skills/runpod-graphql-api`
-**Agent overview**: `orchestr8://agents/runpod-specialist`
-**Serverless deployment**: `orchestr8://skills/runpod-serverless-deployment`
-**Complete client example**: `orchestr8://examples/runpod-api-integration`
+**GraphQL alternative**: `o8://skills/runpod-graphql-api`
+**Agent overview**: `o8://agents/runpod-specialist`
+**Serverless deployment**: `o8://skills/runpod-serverless-deployment`
+**Complete client example**: `o8://examples/runpod-api-integration`

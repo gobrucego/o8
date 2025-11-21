@@ -238,6 +238,6 @@ pod_id = result["data"]["podFindAndDeployOnDemand"]["id"]
 
 ## Related Resources
 
-**Agent overview**: `orchestr8://agents/runpod-specialist`
-**REST API alternative**: `orchestr8://skills/runpod-rest-api`
-**Complete examples**: `orchestr8://examples/runpod-graphql-operations`
+**Agent overview**: `o8://agents/runpod-specialist`
+**REST API alternative**: `o8://skills/runpod-rest-api`
+**Complete examples**: `o8://examples/runpod-graphql-operations`

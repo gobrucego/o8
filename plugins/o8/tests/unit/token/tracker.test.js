@@ -82,12 +82,12 @@ describe('TokenTracker', () => {
         },
         {
           category: 'agents',
-          resourceUri: 'orchestr8://agents/project-manager',
+          resourceUri: 'o8://agents/project-manager',
         }
       );
 
       assert.equal(usage.category, 'agents');
-      assert.equal(usage.resourceUri, 'orchestr8://agents/project-manager');
+      assert.equal(usage.resourceUri, 'o8://agents/project-manager');
     });
 
     it('should calculate cost correctly', () => {

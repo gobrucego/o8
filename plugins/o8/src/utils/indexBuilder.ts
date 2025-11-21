@@ -501,7 +501,7 @@ export class IndexBuilder {
                           fragment.category === "pattern" ? "patterns" :
                           "workflows";
 
-    return `orchestr8://${categoryPlural}/${filename}`;
+    return `o8://${categoryPlural}/${filename}`;
   }
 
   /**

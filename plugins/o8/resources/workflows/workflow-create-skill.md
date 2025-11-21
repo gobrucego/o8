@@ -71,8 +71,8 @@ estimatedTokens: 480
 ## Example Queries for Testing
 ```markdown
 Skill: async-error-handling
-□ orchestr8://skills/match?query=error+handling
-□ orchestr8://skills/match?query=async+errors+typescript
-□ orchestr8://skills/match?query=try+catch+promises
-□ orchestr8://skills/match?query=exception+management+async
+□ o8://skills/match?query=error+handling
+□ o8://skills/match?query=async+errors+typescript
+□ o8://skills/match?query=try+catch+promises
+□ o8://skills/match?query=exception+management+async
 ```

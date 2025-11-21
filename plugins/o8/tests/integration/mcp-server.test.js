@@ -197,13 +197,13 @@ class MCPTester {
 
         const resourceUris = resources.resources?.map((r) => r.uri) || [];
         const hasAgents = resourceUris.some((uri) =>
-          uri.includes("orchestr8://agents/"),
+          uri.includes("o8://agents/"),
         );
         const hasSkills = resourceUris.some((uri) =>
-          uri.includes("orchestr8://skills/"),
+          uri.includes("o8://skills/"),
         );
         const hasExamples = resourceUris.some((uri) =>
-          uri.includes("orchestr8://examples/"),
+          uri.includes("o8://examples/"),
         );
 
         this.recordTest(
@@ -231,7 +231,7 @@ class MCPTester {
       console.log("\n📋 Test 3: Read Resource Content");
       try {
         const resourceResult = await this.sendRequest("resources/read", {
-          uri: "orchestr8://agents/typescript-core",
+          uri: "o8://agents/typescript-core",
         });
 
         this.recordTest(

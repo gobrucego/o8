@@ -19,9 +19,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -30,7 +30,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 1: Requirements & Planning (0-20%)
 
-**→ Load:** orchestr8://workflows/workflow-setup-cicd
+**→ Load:** o8://workflows/workflow-setup-cicd
 
 **Activities:**
 - Assess current development workflow
@@ -46,7 +46,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 2: Build Pipeline (20-50%)
 
-**→ Load:** orchestr8://match?query=cicd+build+automation+testing&categories=guide,skill&mode=index&maxResults=8
+**→ Load:** o8://match?query=cicd+build+automation+testing&categories=guide,skill&mode=index&maxResults=8
 
 **Activities:**
 
@@ -76,7 +76,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 3: Security & Quality Gates (50-80%)
 
-**→ Load:** orchestr8://match?query=security+scanning+code+quality+cicd&categories=skill,guide&mode=index&maxResults=8
+**→ Load:** o8://match?query=security+scanning+code+quality+cicd&categories=skill,guide&mode=index&maxResults=8
 
 **Activities:**
 
@@ -104,7 +104,7 @@ You are the **DevOps Engineer** responsible for establishing a comprehensive CI/
 
 ## Phase 4: Deployment Pipeline (80-100%)
 
-**→ Load:** orchestr8://match?query=deployment+automation+infrastructure+monitoring&categories=guide,pattern&mode=index&maxResults=8
+**→ Load:** o8://match?query=deployment+automation+infrastructure+monitoring&categories=guide,pattern&mode=index&maxResults=8
 
 **Activities:**
 

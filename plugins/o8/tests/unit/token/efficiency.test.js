@@ -158,21 +158,21 @@ describe('EfficiencyEngine', () => {
   describe('getTopResources()', () => {
     const records = [
       createMockUsage('msg-1', {
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         category: 'agents',
         totalTokens: 1000,
         baselineTokens: 4000,
         tokensSaved: 3000,
       }),
       createMockUsage('msg-2', {
-        resourceUri: 'orchestr8://skills/testing-unit',
+        resourceUri: 'o8://skills/testing-unit',
         category: 'skills',
         totalTokens: 500,
         baselineTokens: 1000,
         tokensSaved: 500,
       }),
       createMockUsage('msg-3', {
-        resourceUri: 'orchestr8://patterns/event-driven',
+        resourceUri: 'o8://patterns/event-driven',
         category: 'patterns',
         totalTokens: 2000,
         baselineTokens: 2500,
@@ -186,7 +186,7 @@ describe('EfficiencyEngine', () => {
       assert.equal(top.length, 2);
       // project-manager: 75% efficiency
       // testing-unit: 50% efficiency
-      assert.equal(top[0].uri, 'orchestr8://agents/project-manager');
+      assert.equal(top[0].uri, 'o8://agents/project-manager');
       assert.equal(top[0].efficiency, 75);
     });
 
@@ -195,7 +195,7 @@ describe('EfficiencyEngine', () => {
 
       assert.equal(top.length, 2);
       // project-manager saved 3000 tokens (highest)
-      assert.equal(top[0].uri, 'orchestr8://agents/project-manager');
+      assert.equal(top[0].uri, 'o8://agents/project-manager');
       assert.equal(top[0].savings, 3000);
     });
 
@@ -204,7 +204,7 @@ describe('EfficiencyEngine', () => {
 
       assert.equal(top.length, 2);
       // event-driven used 2000 tokens (highest)
-      assert.equal(top[0].uri, 'orchestr8://patterns/event-driven');
+      assert.equal(top[0].uri, 'o8://patterns/event-driven');
       assert.equal(top[0].tokens, 2000);
     });
 
@@ -217,12 +217,12 @@ describe('EfficiencyEngine', () => {
     it('should aggregate multiple loads of same resource', () => {
       const multiLoadRecords = [
         createMockUsage('msg-1', {
-          resourceUri: 'orchestr8://agents/project-manager',
+          resourceUri: 'o8://agents/project-manager',
           totalTokens: 1000,
           baselineTokens: 2000,
         }),
         createMockUsage('msg-2', {
-          resourceUri: 'orchestr8://agents/project-manager',
+          resourceUri: 'o8://agents/project-manager',
           totalTokens: 500,
           baselineTokens: 1000,
         }),
@@ -237,7 +237,7 @@ describe('EfficiencyEngine', () => {
 
     it('should skip records without resourceUri', () => {
       const mixedRecords = [
-        createMockUsage('msg-1', { resourceUri: 'orchestr8://agents/test' }),
+        createMockUsage('msg-1', { resourceUri: 'o8://agents/test' }),
         createMockUsage('msg-2', {}), // No resourceUri
       ];
 
@@ -286,7 +286,7 @@ describe('EfficiencyEngine', () => {
     const records = [
       createMockUsage('msg-1', {
         category: 'agents',
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         totalTokens: 1000,
         baselineTokens: 2000,
         tokensSaved: 1000,
@@ -296,7 +296,7 @@ describe('EfficiencyEngine', () => {
       }),
       createMockUsage('msg-2', {
         category: 'skills',
-        resourceUri: 'orchestr8://skills/testing-unit',
+        resourceUri: 'o8://skills/testing-unit',
         totalTokens: 500,
         baselineTokens: 1000,
         tokensSaved: 500,

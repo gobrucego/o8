@@ -851,7 +851,7 @@ class Dashboard {
                     <div class="form-group">
                         <label>Resource URI</label>
                         <input type="text" id="resourceUri" class="form-control"
-                               placeholder="orchestr8://agents/typescript-developer">
+                               placeholder="o8://agents/typescript-developer">
                     </div>
                 `;
         break;
@@ -1093,7 +1093,7 @@ class Dashboard {
         typeSelect.value = "resources/read";
         this.updateTestingForm();
         setTimeout(() => {
-          document.getElementById("resourceUri").value = "orchestr8://registry";
+          document.getElementById("resourceUri").value = "o8://registry";
         }, 100);
         break;
 
@@ -1102,7 +1102,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://agents/typescript-developer";
+            "o8://agents/typescript-developer";
         }, 100);
         break;
 
@@ -1111,7 +1111,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=api+development&maxTokens=2000";
+            "o8://match?query=api+development&maxTokens=2000";
         }, 100);
         break;
 
@@ -1120,7 +1120,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=full+stack+development&categories=agent,skill,example&maxTokens=3000";
+            "o8://match?query=full+stack+development&categories=agent,skill,example&maxTokens=3000";
         }, 100);
         break;
 
@@ -1129,7 +1129,7 @@ class Dashboard {
         this.updateTestingForm();
         setTimeout(() => {
           document.getElementById("resourceUri").value =
-            "orchestr8://match?query=typescript+api&mode=minimal";
+            "o8://match?query=typescript+api&mode=minimal";
         }, 100);
         break;
     }
@@ -1605,7 +1605,7 @@ class Dashboard {
         if (source === "local") {
           // For local resources, the resourceId already contains the full path (e.g., "agents/typescript-testing")
           // Just prepend the protocol
-          resourceUri = `orchestr8://${resourceId}`;
+          resourceUri = `o8://${resourceId}`;
         } else if (source === "aitmpl") {
           // For AITMPL, map singular category to plural
           const categoryPlural =

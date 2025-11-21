@@ -173,7 +173,7 @@ describe('Token Tracking Integration Tests', () => {
 
       const usage = tracker.track(messageId, claudeUsage, {
         category: 'agent',
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         resourceCount: 3,
       });
 
@@ -185,7 +185,7 @@ describe('Token Tracking Integration Tests', () => {
       assert.strictEqual(usage.cacheReadTokens, 100);
       assert.strictEqual(usage.totalTokens, 1800);
       assert.strictEqual(usage.category, 'agent');
-      assert.strictEqual(usage.resourceUri, 'orchestr8://agents/project-manager');
+      assert.strictEqual(usage.resourceUri, 'o8://agents/project-manager');
     });
 
     it('should calculate baseline tokens correctly', () => {
@@ -256,17 +256,17 @@ describe('Token Tracking Integration Tests', () => {
         {
           messageId: 'msg-1',
           claudeUsage: { input_tokens: 1000, output_tokens: 500 },
-          metadata: { category: 'agent', resourceUri: 'orchestr8://agents/test-1' },
+          metadata: { category: 'agent', resourceUri: 'o8://agents/test-1' },
         },
         {
           messageId: 'msg-2',
           claudeUsage: { input_tokens: 2000, output_tokens: 1000 },
-          metadata: { category: 'skill', resourceUri: 'orchestr8://skills/test-1' },
+          metadata: { category: 'skill', resourceUri: 'o8://skills/test-1' },
         },
         {
           messageId: 'msg-3',
           claudeUsage: { input_tokens: 1500, output_tokens: 750, cache_read_input_tokens: 500 },
-          metadata: { category: 'agent', resourceUri: 'orchestr8://agents/test-2' },
+          metadata: { category: 'agent', resourceUri: 'o8://agents/test-2' },
         },
       ];
 
@@ -430,7 +430,7 @@ describe('Token Tracking Integration Tests', () => {
           output_tokens: 500 * (index + 1),
         }, {
           category,
-          resourceUri: `orchestr8://${category}s/test-${index}`,
+          resourceUri: `o8://${category}s/test-${index}`,
         });
         store.saveUsage(usage);
       });

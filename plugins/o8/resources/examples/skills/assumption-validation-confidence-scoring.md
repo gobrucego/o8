@@ -13,7 +13,7 @@ useWhen:
   - Making evidence-based go/no-go decisions
 estimatedTokens: 450
 relatedResources:
-  - orchestr8://skills/assumption-validation
+  - o8://skills/assumption-validation
 ---
 
 # Assumption Validation: Confidence Scoring Framework

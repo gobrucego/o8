@@ -14,8 +14,8 @@ useWhen:
   - Setting up on-call response procedures
 estimatedTokens: 2100
 relatedResources:
-  - orchestr8://agents/sre-specialist
-  - orchestr8://skills/observability-structured-logging
+  - o8://agents/sre-specialist
+  - o8://skills/observability-structured-logging
 ---
 
 # SRE Incident Management

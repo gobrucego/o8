@@ -17,9 +17,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -148,7 +148,7 @@ Starting Phase 1: Discovery & Assessment...
 
 ```markdown
 → Load and execute:
-orchestr8://workflows/workflow-cloud-migration-planning
+o8://workflows/workflow-cloud-migration-planning
 
 Phases:
 1. Legacy System Assessment (0-25%)
@@ -170,7 +170,7 @@ Deliverables:
 
 ```markdown
 → Load and execute:
-orchestr8://workflows/workflow-microservices-transformation
+o8://workflows/workflow-microservices-transformation
 
 Phases:
 1. Monolith Analysis (0-25%)
@@ -396,25 +396,25 @@ This command automatically loads:
 
 **Patterns:**
 ```
-orchestr8://patterns/session-output-management
+o8://patterns/session-output-management
 ```
 
 **Agents:**
 ```
-orchestr8://agents/legacy-system-analyst
-orchestr8://agents/cloud-migration-architect
-orchestr8://agents/knowledge-base-agent
+o8://agents/legacy-system-analyst
+o8://agents/cloud-migration-architect
+o8://agents/knowledge-base-agent
 ```
 
 **Skills:**
 ```
-orchestr8://skills/service-dependency-mapping
+o8://skills/service-dependency-mapping
 ```
 
 **Workflows:**
 ```
-orchestr8://workflows/workflow-cloud-migration-planning
-orchestr8://workflows/workflow-microservices-transformation
+o8://workflows/workflow-cloud-migration-planning
+o8://workflows/workflow-microservices-transformation
 ```
 
 ## Examples

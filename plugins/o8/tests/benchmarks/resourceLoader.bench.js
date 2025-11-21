@@ -124,7 +124,7 @@ test("ResourceLoader Performance Benchmarks", async (t) => {
     const loader = new ResourceLoader(logger);
     loader["resourcesPath"] = testDir;
 
-    const uri = "orchestr8://agents/resource-0";
+    const uri = "o8://agents/resource-0";
 
     // First load (cache miss)
     await loader.loadResourceContent(uri);
@@ -147,11 +147,11 @@ test("ResourceLoader Performance Benchmarks", async (t) => {
     const loader = new ResourceLoader(logger);
 
     const uris = [
-      "orchestr8://agents/typescript-developer",
-      "orchestr8://skills/error-handling",
-      "orchestr8://examples/api/rest",
-      "orchestr8://agents/match?query=typescript+api&maxTokens=2000",
-      "orchestr8://match?query=development&categories=agent,skill",
+      "o8://agents/typescript-developer",
+      "o8://skills/error-handling",
+      "o8://examples/api/rest",
+      "o8://agents/match?query=typescript+api&maxTokens=2000",
+      "o8://match?query=development&categories=agent,skill",
     ];
 
     const { durationMs } = measureTime(() => {

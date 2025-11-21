@@ -139,8 +139,8 @@ Each MCP server provides:
 │                                                            │
 │  ┌──────────────────────────────────────────────────────┐ │
 │  │  Resource System                                    │ │
-│  │  - Static URIs (orchestr8://category/name)        │ │
-│  │  - Dynamic templates (orchestr8://match?query=...)│ │
+│  │  - Static URIs (o8://category/name)        │ │
+│  │  - Dynamic templates (o8://match?query=...)│ │
 │  │  - Fuzzy matching engine                          │ │
 │  │  - Token budget management                        │ │
 │  └──────────────────────────────────────────────────────┘ │
@@ -162,7 +162,7 @@ Each MCP server provides:
 Static resources are direct file mappings:
 
 ```
-URI:  orchestr8://agents/typescript-core
+URI:  o8://agents/typescript-core
 File: ./resources/agents/typescript-core.md
 ```
 
@@ -173,7 +173,7 @@ When Claude Code requests this URI, the server reads the file and returns its co
 Dynamic resources use intelligent matching to assemble content:
 
 ```
-URI: orchestr8://match?query=build+typescript+api&maxTokens=2000
+URI: o8://match?query=build+typescript+api&maxTokens=2000
 
 Process:
 1. Parse query: "build typescript api"
@@ -197,13 +197,13 @@ Process:
 Templates use wildcards to capture parameters:
 
 ```
-Template: orchestr8://agents/match{+rest}
-Matches:  orchestr8://agents/match?query=...
-          orchestr8://agents/match?query=...&mode=index&maxResults=5
+Template: o8://agents/match{+rest}
+Matches:  o8://agents/match?query=...
+          o8://agents/match?query=...&mode=index&maxResults=5
 
-Template: orchestr8://match{+rest}
-Matches:  orchestr8://match?query=...
-          orchestr8://match?query=...&categories=agents,skills&mode=catalog
+Template: o8://match{+rest}
+Matches:  o8://match?query=...
+          o8://match?query=...&categories=agents,skills&mode=catalog
 ```
 
 The `{+rest}` wildcard captures everything after `/match`, including query parameters.
@@ -212,26 +212,26 @@ The `{+rest}` wildcard captures everything after `/match`, including query param
 
 **Cross-References:**
 ```
-orchestr8://skills/api-design-rest?refs=true
+o8://skills/api-design-rest?refs=true
   → Returns resource with cross-references to related skills and patterns
 ```
 
 **Example References:**
 ```
-orchestr8://examples/express-jwt-auth
+o8://examples/express-jwt-auth
   → Code example that references prerequisite skills
 ```
 
 **Match Queries with Filters:**
 ```
-orchestr8://match?query=retry+timeout&mode=index&maxResults=5&categories=skills,patterns
-orchestr8://match?query=kubernetes&mode=minimal&minScore=20
-orchestr8://match?query=typescript+api&mode=catalog&tags=async,rest
+o8://match?query=retry+timeout&mode=index&maxResults=5&categories=skills,patterns
+o8://match?query=kubernetes&mode=minimal&minScore=20
+o8://match?query=typescript+api&mode=catalog&tags=async,rest
 ```
 
 **Registry Access:**
 ```
-orchestr8://registry
+o8://registry
   → Returns catalog of all available resources with statistics
 ```
 
@@ -253,7 +253,7 @@ arguments:
 
 Your task: {{task}}
 
-Load expertise dynamically using orchestr8://match?query=...
+Load expertise dynamically using o8://match?query=...
 ```
 
 Becomes slash command: `/orchestr8:now task="build an API"`
@@ -305,32 +305,32 @@ Technical details of the stdio transport:
 
 // Static resource
 ReadMcpResourceTool({
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/typescript-core"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://agents/typescript-core"
 })
 
 // Index mode (DEFAULT) - ultra-fast, minimal tokens
 ReadMcpResourceTool({
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://match?query=retry+timeout&mode=index&maxResults=5"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://match?query=retry+timeout&mode=index&maxResults=5"
 })
 
 // Minimal mode - compact JSON output
 ReadMcpResourceTool({
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://match?query=typescript+api&mode=minimal"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://match?query=typescript+api&mode=minimal"
 })
 
 // Catalog mode - full metadata
 ReadMcpResourceTool({
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/match?query=build+api&mode=catalog&maxResults=10"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://agents/match?query=build+api&mode=catalog&maxResults=10"
 })
 
 // Full mode - complete content
 ReadMcpResourceTool({
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/match?query=typescript&mode=full&maxTokens=2500"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://agents/match?query=typescript&mode=full&maxTokens=2500"
 })
 ```
 
@@ -342,14 +342,14 @@ ReadMcpResourceTool({
 /orchestr8:now task="Build a REST API with TypeScript"
 
 # This loads the /now prompt which then dynamically loads
-# relevant expertise using orchestr8://match?query=...
+# relevant expertise using o8://match?query=...
 ```
 
 ### Listing Available Resources
 
 ```javascript
 ListMcpResourcesTool({
-  server: "plugin:orchestr8:orchestr8-resources"
+  server: "plugin:o8:o8-resources"
 })
 
 // Returns array of all available static resources
@@ -362,7 +362,7 @@ The server is configured via `.mcp.json`:
 
 ```json
 {
-  "orchestr8-resources": {
+  "o8-resources": {
     "command": "node",
     "args": ["${CLAUDE_PLUGIN_ROOT}/dist/index.js"],
     "env": {

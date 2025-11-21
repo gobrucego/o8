@@ -231,9 +231,9 @@ Pulumi Cloud provides built-in GitOps with:
 ## Related IaC Skills
 
 **Tool-Specific Implementation:**
-- orchestr8://skills/iac-terraform-modules - Terraform module development
-- orchestr8://skills/iac-pulumi-programming - Pulumi infrastructure programming
+- o8://skills/iac-terraform-modules - Terraform module development
+- o8://skills/iac-pulumi-programming - Pulumi infrastructure programming
 
 **Related Practices:**
-- orchestr8://skills/iac-state-management - State management for GitOps
-- orchestr8://skills/iac-testing-validation - Automated testing in CI/CD pipelines
+- o8://skills/iac-state-management - State management for GitOps
+- o8://skills/iac-testing-validation - Automated testing in CI/CD pipelines

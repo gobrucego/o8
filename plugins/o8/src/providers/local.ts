@@ -502,7 +502,7 @@ export class LocalProvider implements ResourceProvider {
           ? new Date(frontmatter.updatedAt)
           : undefined,
         source: this.name,
-        sourceUri: `orchestr8://${categoryPlural}/${id}`,
+        sourceUri: `o8://${categoryPlural}/${id}`,
         content: body,
         dependencies: Array.isArray(frontmatter.dependencies)
           ? frontmatter.dependencies
@@ -989,7 +989,7 @@ export class LocalProvider implements ResourceProvider {
       useWhen: fragment.useWhen,
       estimatedTokens: fragment.estimatedTokens,
       source: this.name,
-      sourceUri: `orchestr8://${fragment.category}s/${id}`,
+      sourceUri: `o8://${fragment.category}s/${id}`,
     };
   }
 

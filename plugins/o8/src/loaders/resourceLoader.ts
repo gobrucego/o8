@@ -106,22 +106,22 @@ export class ResourceLoader {
 
     try {
       // Load examples
-      await this.scanDirectory("examples", "orchestr8://examples", resources);
+      await this.scanDirectory("examples", "o8://examples", resources);
 
       // Load patterns
-      await this.scanDirectory("patterns", "orchestr8://patterns", resources);
+      await this.scanDirectory("patterns", "o8://patterns", resources);
 
       // Load guides
-      await this.scanDirectory("guides", "orchestr8://guides", resources);
+      await this.scanDirectory("guides", "o8://guides", resources);
 
       // Load workflows
-      await this.scanDirectory("workflows", "orchestr8://workflows", resources);
+      await this.scanDirectory("workflows", "o8://workflows", resources);
 
       // Load agents (on-demand only, not auto-loaded by Claude)
-      await this.scanDirectory("agents", "orchestr8://agents", resources);
+      await this.scanDirectory("agents", "o8://agents", resources);
 
       // Load skills (on-demand only, not auto-loaded by Claude)
-      await this.scanDirectory("skills", "orchestr8://skills", resources);
+      await this.scanDirectory("skills", "o8://skills", resources);
     } catch (error) {
       this.logger.error("Error loading resources:", error);
       return [];
@@ -596,10 +596,10 @@ export class ResourceLoader {
    * @returns Promise resolving to resource content
    *
    * @example Static URI
-   * loadResourceContent("orchestr8://agents/typescript-developer")
+   * loadResourceContent("o8://agents/typescript-developer")
    *
    * @example Dynamic URI
-   * loadResourceContent("orchestr8://agents/match?query=build+api&maxTokens=2000")
+   * loadResourceContent("o8://agents/match?query=build+api&maxTokens=2000")
    */
   async loadResourceContent(uri: string): Promise<string> {
     // Check cache first (for static URIs)
@@ -613,8 +613,8 @@ export class ResourceLoader {
       // Special URIs (registry, etc.)
       // ============================================================================
 
-      // Handle orchestr8://registry - Generate catalog JSON
-      if (uri === "orchestr8://registry") {
+      // Handle o8://registry - Generate catalog JSON
+      if (uri === "o8://registry") {
         this.logger.debug("Generating registry catalog");
         await this.ensureIndexLoaded();
 
@@ -631,9 +631,9 @@ export class ResourceLoader {
               .length,
           },
           searchUri:
-            "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+            "o8://match?query=<keywords>&mode=index&maxResults=5",
           usage:
-            "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
+            "Use o8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
         };
 
         const content = JSON.stringify(catalog, null, 2);
@@ -719,7 +719,7 @@ export class ResourceLoader {
       }
 
       // ============================================================================
-      // Parse orchestr8:// URIs only
+      // Parse o8:// URIs only
       // ============================================================================
       const parsed = this.uriParser.parse(uri);
 
@@ -745,7 +745,7 @@ export class ResourceLoader {
     parsed: ParsedURI & { type: "static" },
   ): Promise<string> {
     // ============================================================================
-    // Local resource (orchestr8:// URIs only - providers handled in parent)
+    // Local resource (o8:// URIs only - providers handled in parent)
     // ============================================================================
 
     // Parse URI to file path
@@ -812,7 +812,7 @@ export class ResourceLoader {
       query: parsed.matchParams.query,
       maxTokens: parsed.matchParams.maxTokens,
       requiredTags: parsed.matchParams.tags,
-      category: parsed.category, // Category from URI path (e.g., orchestr8://agents/match?)
+      category: parsed.category, // Category from URI path (e.g., o8://agents/match?)
       categories: parsed.matchParams.categories, // Categories from query param (e.g., ?categories=agent,skill)
       mode: parsed.matchParams.mode || "catalog", // 'full' or 'catalog'
       maxResults: parsed.matchParams.maxResults, // Max results for catalog mode
@@ -867,7 +867,7 @@ export class ResourceLoader {
    */
   private uriToFilePath(uri: string): string {
     // Remove protocol
-    const pathPart = uri.replace("orchestr8://", "");
+    const pathPart = uri.replace("o8://", "");
 
     // Try different extensions
     const extensions = [".md", ".json", ".yaml"];
@@ -901,7 +901,7 @@ export class ResourceLoader {
       .map((fragment) => ({
         id: fragment.id,
         name: fragment.id, // Add name field for display
-        uri: `orchestr8://${fragment.id}`,
+        uri: `o8://${fragment.id}`,
         description:
           fragment.capabilities?.slice(0, 3).join(", ") || "No description", // Use capabilities as description
         tags: fragment.tags || [],
@@ -935,7 +935,7 @@ export class ResourceLoader {
       })
       .map((fragment) => ({
         id: fragment.id,
-        uri: `orchestr8://${fragment.id}`,
+        uri: `o8://${fragment.id}`,
         category: fragment.category,
         tags: fragment.tags || [],
         capabilities: fragment.capabilities || [],

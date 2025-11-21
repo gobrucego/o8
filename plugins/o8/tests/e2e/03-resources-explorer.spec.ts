@@ -347,7 +347,7 @@ test.describe("Resources Explorer View - Complete Coverage", () => {
       const firstCard = page.locator(".resource-card").first();
       const uri = await firstCard.getAttribute("data-uri");
       expect(uri).toBeTruthy();
-      expect(uri).toContain("orchestr8://");
+      expect(uri).toContain("o8://");
     });
 
     test("resource cards should display appropriate icons", async ({

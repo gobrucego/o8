@@ -112,13 +112,13 @@ site:github.com topic issues
 **MCP resource queries:**
 ```markdown
 # Relevant expertise
-orchestr8://match?query=${topic}&categories=agent,skill&mode=index&maxResults=8
+o8://match?query=${topic}&categories=agent,skill&mode=index&maxResults=8
 
 # Implementation patterns
-orchestr8://patterns/match?query=${topic}+implementation
+o8://patterns/match?query=${topic}+implementation
 
 # Code examples
-orchestr8://examples/match?query=${topic}+${technology}
+o8://examples/match?query=${topic}+${technology}
 ```
 
 **Code repository analysis:**

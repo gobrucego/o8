@@ -216,22 +216,22 @@ describe('HTTP API Token Endpoint Tests', () => {
       {
         messageId: 'api-msg-1',
         claudeUsage: { input_tokens: 1000, output_tokens: 500 },
-        metadata: { category: 'agent', resourceUri: 'orchestr8://agents/test-1' },
+        metadata: { category: 'agent', resourceUri: 'o8://agents/test-1' },
       },
       {
         messageId: 'api-msg-2',
         claudeUsage: { input_tokens: 2000, output_tokens: 1000, cache_read_input_tokens: 500 },
-        metadata: { category: 'skill', resourceUri: 'orchestr8://skills/test-1' },
+        metadata: { category: 'skill', resourceUri: 'o8://skills/test-1' },
       },
       {
         messageId: 'api-msg-3',
         claudeUsage: { input_tokens: 1500, output_tokens: 750, cache_creation_input_tokens: 1000 },
-        metadata: { category: 'pattern', resourceUri: 'orchestr8://patterns/test-1' },
+        metadata: { category: 'pattern', resourceUri: 'o8://patterns/test-1' },
       },
       {
         messageId: 'api-msg-4',
         claudeUsage: { input_tokens: 3000, output_tokens: 1500 },
-        metadata: { category: 'workflow', resourceUri: 'orchestr8://workflows/test-1' },
+        metadata: { category: 'workflow', resourceUri: 'o8://workflows/test-1' },
       },
     ];
 

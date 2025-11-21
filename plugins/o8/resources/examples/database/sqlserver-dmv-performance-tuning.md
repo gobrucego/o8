@@ -14,7 +14,7 @@ useWhen:
   - Analyzing system bottlenecks and resource consumption
 estimatedTokens: 950
 relatedResources:
-  - orchestr8://agents/sqlserver-specialist
+  - o8://agents/sqlserver-specialist
 ---
 
 # SQL Server DMV Performance Tuning

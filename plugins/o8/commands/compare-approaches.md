@@ -22,9 +22,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -35,7 +35,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 1: Comparison Setup (0-20%)
 
-**→ Load:** orchestr8://match?query=benchmark+comparison+evaluation&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=benchmark+comparison+evaluation&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Parse the 2-3 approaches to compare
@@ -49,7 +49,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 2: Parallel Benchmarking (20-70%)
 
-**→ Load:** orchestr8://workflows/workflow-benchmark
+**→ Load:** o8://workflows/workflow-benchmark
 
 **Parallel tracks:**
 - **Approach 1 Benchmarking:** Performance, features, cost analysis
@@ -69,7 +69,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 3: Comparison Analysis (70-90%)
 
-**→ Load:** orchestr8://match?query=comparison+matrix+scoring+trade-offs&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=comparison+matrix+scoring+trade-offs&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Generate weighted scoring matrix
@@ -84,7 +84,7 @@ This command is optimized for direct approach comparison when you already know t
 
 ## Phase 4: Recommendation (90-100%)
 
-**→ Load:** orchestr8://match?query=recommendation+decision+documentation&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=recommendation+decision+documentation&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Recommend best approach with trade-off analysis

@@ -25,14 +25,14 @@ useWhen:
 - This skill provides logging for all error scenarios
 
 **Domain-Specific Error Handling:**
-- orchestr8://skills/error-handling-api-patterns - API error logging
-- orchestr8://skills/error-handling-validation - Validation error logging
-- orchestr8://skills/error-handling-resilience - Retry/failure logging
+- o8://skills/error-handling-api-patterns - API error logging
+- o8://skills/error-handling-validation - Validation error logging
+- o8://skills/error-handling-resilience - Retry/failure logging
 
 **Related Observability:**
-- orchestr8://skills/observability-distributed-tracing - Distributed tracing
-- orchestr8://skills/observability-structured-logging - Advanced logging patterns
-- orchestr8://skills/observability-metrics-prometheus - Error metrics
+- o8://skills/observability-distributed-tracing - Distributed tracing
+- o8://skills/observability-structured-logging - Advanced logging patterns
+- o8://skills/observability-metrics-prometheus - Error metrics
 
 ## Structured Logging
 

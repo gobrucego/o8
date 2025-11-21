@@ -165,9 +165,9 @@ new PolicyPack("aws-policies", {
 ## Related IaC Skills
 
 **Tool-Specific Implementation:**
-- orchestr8://skills/iac-terraform-modules - Terraform module development
-- orchestr8://skills/iac-pulumi-programming - Pulumi infrastructure programming
+- o8://skills/iac-terraform-modules - Terraform module development
+- o8://skills/iac-pulumi-programming - Pulumi infrastructure programming
 
 **Related Practices:**
-- orchestr8://skills/iac-state-management - State management and drift detection
-- orchestr8://skills/iac-gitops-workflows - CI/CD pipelines for IaC (includes testing workflows)
+- o8://skills/iac-state-management - State management and drift detection
+- o8://skills/iac-gitops-workflows - CI/CD pipelines for IaC (includes testing workflows)

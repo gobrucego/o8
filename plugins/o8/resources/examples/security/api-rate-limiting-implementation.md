@@ -17,7 +17,7 @@ useWhen:
   - When creating cost-based API quotas
 estimatedTokens: 350
 relatedResources:
-  - orchestr8://skills/security-api-security
+  - o8://skills/security-api-security
 ---
 
 # API Rate Limiting Implementation

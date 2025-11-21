@@ -1,12 +1,12 @@
 /**
- * URI Parser for orchestr8:// protocol
+ * URI Parser for o8:// protocol
  * Handles both static and dynamic (match-based) URIs
  *
  * @example Static URI
- * orchestr8://agents/typescript-developer
+ * o8://agents/typescript-developer
  *
  * @example Dynamic URI
- * orchestr8://agents/match?query=build+api&maxTokens=2000&tags=typescript,async
+ * o8://agents/match?query=build+api&maxTokens=2000&tags=typescript,async
  */
 
 /**
@@ -59,7 +59,7 @@ export interface DynamicURI {
 export type ParsedURI = StaticURI | DynamicURI;
 
 /**
- * URI Parser for orchestr8:// protocol
+ * URI Parser for o8:// protocol
  *
  * Parses both static resource URIs and dynamic match URIs with query parameters.
  *
@@ -68,23 +68,23 @@ export type ParsedURI = StaticURI | DynamicURI;
  * const parser = new URIParser();
  *
  * // Parse static URI
- * const static = parser.parse('orchestr8://agents/typescript-developer');
+ * const static = parser.parse('o8://agents/typescript-developer');
  * // { type: 'static', category: 'agents', resourceId: 'typescript-developer' }
  *
  * // Parse dynamic URI
- * const dynamic = parser.parse('orchestr8://agents/match?query=build+api&maxTokens=2000');
+ * const dynamic = parser.parse('o8://agents/match?query=build+api&maxTokens=2000');
  * // { type: 'dynamic', category: 'agents', matchParams: { query: 'build api', maxTokens: 2000 } }
  * ```
  */
 export class URIParser {
-  private static readonly PROTOCOL = "orchestr8://";
+  private static readonly PROTOCOL = "o8://";
   private static readonly MATCH_PATH = "/match";
   private static readonly DEFAULT_MAX_TOKENS = 3000;
 
   /**
-   * Parse an orchestr8:// URI into its components
+   * Parse an o8:// URI into its components
    *
-   * @param uri - The URI to parse (e.g., 'orchestr8://agents/typescript-developer')
+   * @param uri - The URI to parse (e.g., 'o8://agents/typescript-developer')
    * @returns Parsed URI with discriminated type
    * @throws {Error} If URI format is invalid
    */

@@ -151,8 +151,8 @@ export AITMPL_ENABLED="true"
 export AITMPL_CACHE_TTL="86400000"
 
 # HTTP transport
-export ORCHESTR8_HTTP="true"              # Enable HTTP transport
-export ORCHESTR8_HTTP_PORT="3000"         # HTTP server port
+export O8_HTTP="true"              # Enable HTTP transport
+export O8_HTTP_PORT="3000"         # HTTP server port
 ```
 
 ### Environment Variable Substitution

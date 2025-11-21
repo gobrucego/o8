@@ -243,7 +243,7 @@ rclone sync /workspace/critical-data s3:my-bucket/backups/
 
 ## Related Resources
 
-**Agent overview**: `orchestr8://agents/runpod-specialist`
-**Pod management**: `orchestr8://skills/runpod-pod-management`
-**GraphQL API**: `orchestr8://skills/runpod-graphql-api`
-**GraphQL examples**: `orchestr8://examples/runpod-graphql-operations`
+**Agent overview**: `o8://agents/runpod-specialist`
+**Pod management**: `o8://skills/runpod-pod-management`
+**GraphQL API**: `o8://skills/runpod-graphql-api`
+**GraphQL examples**: `o8://examples/runpod-graphql-operations`

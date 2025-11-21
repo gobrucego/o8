@@ -22,9 +22,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -63,7 +63,7 @@ Returns knowledge base statistics and health metrics.
 
 ## Phase 2: Execute Search (10-40%)
 
-**→ Load:** orchestr8://match?query=knowledge+search+retrieval&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=knowledge+search+retrieval&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Execute search based on query type
@@ -76,7 +76,7 @@ Returns knowledge base statistics and health metrics.
 
 ## Phase 3: Analyze and Rank Results (40-75%)
 
-**→ Load:** orchestr8://agents/knowledge-base-agent
+**→ Load:** o8://agents/knowledge-base-agent
 
 **Activities:**
 - Read and analyze all matching knowledge items

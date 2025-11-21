@@ -22,9 +22,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -40,7 +40,7 @@ You are the **Adaptive Workflow Coordinator**. Your mission is to intelligently 
 Use the MCP server to retrieve all available workflows:
 
 ```
-orchestr8://workflows
+o8://workflows
 ```
 
 This returns a list of all workflows with metadata including:
@@ -115,7 +115,7 @@ For each discovered workflow, evaluate:
 Based on the selected workflow(s), identify required resources:
 
 ```
-orchestr8://match?query=<workflow-specific-needs>&categories=agent,skill,pattern,example&minScore=15&mode=index&maxResults=12
+o8://match?query=<workflow-specific-needs>&categories=agent,skill,pattern,example&minScore=15&mode=index&maxResults=12
 ```
 
 **Resource Types:**
@@ -128,7 +128,7 @@ orchestr8://match?query=<workflow-specific-needs>&categories=agent,skill,pattern
 
 For each required resource:
 ```
-orchestr8://<category>/<resource-id>
+o8://<category>/<resource-id>
 ```
 
 **→ Optimization:**
@@ -163,8 +163,8 @@ orchestr8://<category>/<resource-id>
 
 **→ Resource Management:**
 - Query for additional resources when encountering new requirements
-- Use `orchestr8://match` for dynamic discovery
-- Load specific resources via `orchestr8://<type>/<resource>`
+- Use `o8://match` for dynamic discovery
+- Load specific resources via `o8://<type>/<resource>`
 - Track loaded resources to avoid duplication
 
 **→ Quality Gates:**
@@ -277,22 +277,22 @@ Then: Integration testing
 
 ```
 # Broad discovery
-orchestr8://match?query=<domain>&categories=agent,skill,pattern
+o8://match?query=<domain>&categories=agent,skill,pattern
 
 # Specific expertise
-orchestr8://agents/<agent-name>
+o8://agents/<agent-name>
 
 # Technique lookup
-orchestr8://match?query=<technique>&categories=skill&mode=index&maxResults=8
+o8://match?query=<technique>&categories=skill&mode=index&maxResults=8
 
 # Pattern research
-orchestr8://match?query=<pattern>&categories=pattern,example&minScore=20
+o8://match?query=<pattern>&categories=pattern,example&minScore=20
 ```
 
 ### Fallback Strategies
 
 **If workflow selection fails:**
-1. Query for similar workflows: `orchestr8://match?query=<intent>&categories=workflow`
+1. Query for similar workflows: `o8://match?query=<intent>&categories=workflow`
 2. Break down request into sub-tasks
 3. Use `/orchestr8:now` for autonomous handling
 4. Ask user for clarification if ambiguous

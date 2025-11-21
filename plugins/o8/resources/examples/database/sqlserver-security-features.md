@@ -16,7 +16,7 @@ useWhen:
   - Setting up compliance auditing
 estimatedTokens: 850
 relatedResources:
-  - orchestr8://agents/sqlserver-specialist
+  - o8://agents/sqlserver-specialist
 ---
 
 # SQL Server Security Features

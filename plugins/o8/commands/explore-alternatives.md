@@ -23,9 +23,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -34,7 +34,7 @@ You are the **Solution Explorer** responsible for discovering and evaluating mul
 
 ## Phase 1: Problem Framing & Solution Discovery (0-20%)
 
-**→ Load:** orchestr8://match?query=problem+analysis+solution+discovery&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=problem+analysis+solution+discovery&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Deeply analyze the problem or goal
@@ -47,7 +47,7 @@ You are the **Solution Explorer** responsible for discovering and evaluating mul
 
 ## Phase 2: Parallel Alternative Exploration (20-65%)
 
-**→ Load:** orchestr8://workflows/workflow-explore-alternatives
+**→ Load:** o8://workflows/workflow-explore-alternatives
 
 **Parallel tracks:**
 - **Alternative 1 Exploration:** Prototype, benchmark, analyze, score
@@ -69,7 +69,7 @@ You are the **Solution Explorer** responsible for discovering and evaluating mul
 
 ## Phase 3: Multi-Criteria Evaluation (65-85%)
 
-**→ Load:** orchestr8://match?query=evaluation+comparison+trade-offs+pareto&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=evaluation+comparison+trade-offs+pareto&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Aggregate exploration results
@@ -83,7 +83,7 @@ You are the **Solution Explorer** responsible for discovering and evaluating mul
 
 ## Phase 4: Recommendation & Implementation Roadmap (85-100%)
 
-**→ Load:** orchestr8://match?query=recommendation+implementation+roadmap+adr&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=recommendation+implementation+roadmap+adr&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Formulate primary recommendation with evidence

@@ -19,9 +19,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -30,7 +30,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 1: Requirements & Architecture (0-20%)
 
-**→ Load:** orchestr8://match?query=architecture+design+requirements+analysis&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=architecture+design+requirements+analysis&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Parse functional and non-functional requirements
@@ -43,7 +43,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 2: Project Setup (20-30%)
 
-**→ Load:** orchestr8://match?query=project+initialization+build+tools+setup&categories=skill,example&mode=index&maxResults=5
+**→ Load:** o8://match?query=project+initialization+build+tools+setup&categories=skill,example&mode=index&maxResults=5
 
 **Activities:**
 - Initialize version control repository
@@ -56,7 +56,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 3: Core Implementation (30-70%)
 
-**→ Load:** orchestr8://workflows/workflow-new-project
+**→ Load:** o8://workflows/workflow-new-project
 
 **Parallel tracks:**
 - **Backend Track:** Database schema, business logic, API endpoints, authentication
@@ -74,7 +74,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 4: Testing & Quality (70-90%)
 
-**→ Load:** orchestr8://match?query=testing+strategies+quality+assurance+security&categories=skill,agent&mode=index&maxResults=8
+**→ Load:** o8://match?query=testing+strategies+quality+assurance+security&categories=skill,agent&mode=index&maxResults=8
 
 **Parallel tracks:**
 - **Testing Track:** Unit tests (80%+ coverage), integration tests, E2E tests
@@ -92,7 +92,7 @@ You are the **Project Architect** responsible for initializing a new project fro
 
 ## Phase 5: Deployment & Documentation (90-100%)
 
-**→ Load:** orchestr8://match?query=deployment+cicd+monitoring+documentation&categories=guide,skill&mode=index&maxResults=5
+**→ Load:** o8://match?query=deployment+cicd+monitoring+documentation&categories=guide,skill&mode=index&maxResults=5
 
 **Parallel tracks:**
 - **Deployment Track:** CI/CD pipeline, staging/production configs, IaC

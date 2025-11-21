@@ -21,9 +21,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -32,7 +32,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 1: Application Launch & Discovery (0-10%)
 
-**→ Load:** orchestr8://match?query=web+testing+playwright&categories=skill,example&mode=index&maxResults=3
+**→ Load:** o8://match?query=web+testing+playwright&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Start application locally on appropriate port
@@ -45,7 +45,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 2: Visual Testing (10-25%)
 
-**→ Load:** orchestr8://match?query=visual+testing+screenshots&categories=skill,example&mode=index&maxResults=3
+**→ Load:** o8://match?query=visual+testing+screenshots&categories=skill,example&mode=index&maxResults=3
 
 **Activities:**
 - Capture screenshots of all pages
@@ -59,7 +59,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 3: Functional Testing (25-50%)
 
-**→ Load:** orchestr8://workflows/workflow-test-web-ui
+**→ Load:** o8://workflows/workflow-test-web-ui
 
 **Activities:**
 - Test form submissions and validation
@@ -74,7 +74,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 4: Accessibility Testing (50-65%)
 
-**→ Load:** orchestr8://match?query=accessibility+wcag+testing&categories=skill,guide&mode=index&maxResults=5
+**→ Load:** o8://match?query=accessibility+wcag+testing&categories=skill,guide&mode=index&maxResults=5
 
 **Activities:**
 - Run automated accessibility audits (axe-core)
@@ -89,7 +89,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 5: Performance Testing (65-80%)
 
-**→ Load:** orchestr8://match?query=web+performance+lighthouse&categories=skill,guide&mode=index&maxResults=3
+**→ Load:** o8://match?query=web+performance+lighthouse&categories=skill,guide&mode=index&maxResults=3
 
 **Activities:**
 - Run Lighthouse performance audits
@@ -103,7 +103,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 6: Security Testing (80-90%)
 
-**→ Load:** orchestr8://match?query=web+security+testing&categories=skill,guide&mode=index&maxResults=3
+**→ Load:** o8://match?query=web+security+testing&categories=skill,guide&mode=index&maxResults=3
 
 **Activities:**
 - Check CSP headers
@@ -117,7 +117,7 @@ You are the **UI Test Engineer** responsible for comprehensive web UI testing in
 
 ## Phase 7: Issue Detection & Fixing (90-100%)
 
-**→ Load:** orchestr8://match?query=debugging+fixing+testing&categories=skill&mode=index&maxResults=3
+**→ Load:** o8://match?query=debugging+fixing+testing&categories=skill&mode=index&maxResults=3
 
 **Activities:**
 - Analyze all test failures

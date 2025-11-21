@@ -106,19 +106,19 @@ Response Content:
   ## Top Matches
 
   1. **Agent: typescript-developer** (~1200 tokens)
-     orchestr8://agents/typescript-developer
+     o8://agents/typescript-developer
 
   2. **Skill: async-patterns** (~600 tokens)
-     orchestr8://skills/async-patterns
+     o8://skills/async-patterns
 
   3. **Pattern: error-handling** (~500 tokens)
-     orchestr8://patterns/error-handling
+     o8://patterns/error-handling
 
   4. **Pattern: rest-api-design** (~800 tokens)
-     orchestr8://patterns/rest-api-design
+     o8://patterns/rest-api-design
 
   5. **Skill: typescript-best-practices** (~550 tokens)
-     orchestr8://skills/typescript-best-practices
+     o8://skills/typescript-best-practices
 
   **To load:** Use ReadMcpResourceTool with URIs above
 
@@ -155,7 +155,7 @@ Response Content:
     - Need type-safe Node.js development
   **Estimated Tokens:** ~1200
   **Load this resource:**
-  orchestr8://agents/typescript-developer
+  o8://agents/typescript-developer
 
   [7 more entries: ~70 tokens each]
 
@@ -172,7 +172,7 @@ Response Content:
   ## Top Matches
 
   1. **Agent: typescript-developer** (~1200 tokens)
-     orchestr8://agents/typescript-developer
+     o8://agents/typescript-developer
 
   [7 more entries: ~8 tokens each]
 
@@ -712,13 +712,13 @@ query: "typescript async patterns"
 
 ❌ Bad:
 ```
-orchestr8://match?query=testing
+o8://match?query=testing
 (returns skills, patterns, examples)
 ```
 
 ✅ Good:
 ```
-orchestr8://match?query=testing&categories=patterns
+o8://match?query=testing&categories=patterns
 (returns only patterns)
 ```
 
@@ -748,7 +748,7 @@ Need content immediately?
 ```typescript
 // Step 1: Get catalog (120 tokens)
 const catalog = await readResource(
-  'orchestr8://match?query=typescript+patterns&mode=catalog&maxResults=8'
+  'o8://match?query=typescript+patterns&mode=catalog&maxResults=8'
 );
 
 // Step 2: Review and select (human or AI decision)
@@ -767,7 +767,7 @@ const resources = await Promise.all(
 ```typescript
 // Step 1: Get index results (65 tokens)
 const matches = await readResource(
-  'orchestr8://match?query=retry+timeout&mode=index&maxResults=5'
+  'o8://match?query=retry+timeout&mode=index&maxResults=5'
 );
 
 // Step 2: Load only top result (650 tokens)
@@ -797,7 +797,7 @@ const commonQueries = [
 
 // These return in ~2ms with cache hit
 for (const query of commonQueries) {
-  await readResource(`orchestr8://match?query=${query}&mode=index`);
+  await readResource(`o8://match?query=${query}&mode=index`);
 }
 ```
 
@@ -822,7 +822,7 @@ async function getCatalog(query: string): Promise<CatalogResult> {
   }
 
   const result = await readResource(
-    `orchestr8://match?query=${query}&mode=catalog`
+    `o8://match?query=${query}&mode=catalog`
   );
 
   catalogCache.set(query, result);
@@ -835,19 +835,19 @@ async function getCatalog(query: string): Promise<CatalogResult> {
 **1. Increase minScore for Precision**
 ```typescript
 // Default (broad results)
-orchestr8://match?query=api&minScore=10
+o8://match?query=api&minScore=10
 
 // Strict (only high-relevance)
-orchestr8://match?query=api&minScore=25
+o8://match?query=api&minScore=25
 ```
 
 **2. Use Required Tags for Filtering**
 ```typescript
 // Without required tags (many results)
-orchestr8://match?query=api+development
+o8://match?query=api+development
 
 // With required tags (focused results)
-orchestr8://match?query=api+development&tags=typescript,async
+o8://match?query=api+development&tags=typescript,async
 ```
 
 ---

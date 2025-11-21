@@ -23,12 +23,12 @@ useWhen:
   - Rebasing vs merging for team collaboration
   - Managing commit history in monorepos
 relatedResources:
-  - orchestr8://agents/git-expert
-  - orchestr8://agents/git-troubleshooter
-  - orchestr8://skills/git-pr-workflow
-  - orchestr8://skills/git-advanced-commands
-  - orchestr8://skills/git-workflow
-  - orchestr8://skills/git-branching-strategies
+  - o8://agents/git-expert
+  - o8://agents/git-troubleshooter
+  - o8://skills/git-pr-workflow
+  - o8://skills/git-advanced-commands
+  - o8://skills/git-workflow
+  - o8://skills/git-branching-strategies
 estimatedTokens: 820
 ---
 

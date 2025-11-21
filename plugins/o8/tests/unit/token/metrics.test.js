@@ -40,14 +40,14 @@ describe('TokenMetrics', () => {
       // Add test data
       store.saveUsage(createMockUsage('msg-1', {
         category: 'agents',
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         totalTokens: 1000,
         baselineTokens: 2000,
       }));
 
       store.saveUsage(createMockUsage('msg-2', {
         category: 'skills',
-        resourceUri: 'orchestr8://skills/testing-unit',
+        resourceUri: 'o8://skills/testing-unit',
         totalTokens: 500,
         baselineTokens: 1000,
       }));
@@ -171,7 +171,7 @@ describe('TokenMetrics', () => {
     it('should include top resources for each category', () => {
       store.saveUsage(createMockUsage('msg-4', {
         category: 'agents',
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         totalTokens: 1000,
       }));
 
@@ -244,14 +244,14 @@ describe('TokenMetrics', () => {
   describe('getTopResources()', () => {
     beforeEach(() => {
       store.saveUsage(createMockUsage('msg-1', {
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         totalTokens: 2000,
         baselineTokens: 5000,
         tokensSaved: 3000,
       }));
 
       store.saveUsage(createMockUsage('msg-2', {
-        resourceUri: 'orchestr8://skills/testing-unit',
+        resourceUri: 'o8://skills/testing-unit',
         totalTokens: 1000,
         baselineTokens: 2000,
         tokensSaved: 1000,
@@ -263,7 +263,7 @@ describe('TokenMetrics', () => {
 
       assert.equal(top.length, 2);
       // project-manager: 60% efficiency, testing-unit: 50% efficiency
-      assert.equal(top[0].uri, 'orchestr8://agents/project-manager');
+      assert.equal(top[0].uri, 'o8://agents/project-manager');
     });
 
     it('should get top resources by savings', () => {
@@ -271,7 +271,7 @@ describe('TokenMetrics', () => {
 
       assert.equal(top.length, 2);
       // project-manager saved 3000, testing-unit saved 1000
-      assert.equal(top[0].uri, 'orchestr8://agents/project-manager');
+      assert.equal(top[0].uri, 'o8://agents/project-manager');
       assert.equal(top[0].savings, 3000);
     });
 
@@ -280,7 +280,7 @@ describe('TokenMetrics', () => {
 
       assert.equal(top.length, 2);
       // project-manager used 2000, testing-unit used 1000
-      assert.equal(top[0].uri, 'orchestr8://agents/project-manager');
+      assert.equal(top[0].uri, 'o8://agents/project-manager');
       assert.equal(top[0].tokens, 2000);
     });
 
@@ -293,7 +293,7 @@ describe('TokenMetrics', () => {
     it('should filter by category', () => {
       store.saveUsage(createMockUsage('msg-3', {
         category: 'patterns',
-        resourceUri: 'orchestr8://patterns/event-driven',
+        resourceUri: 'o8://patterns/event-driven',
         totalTokens: 1500,
       }));
 
@@ -308,7 +308,7 @@ describe('TokenMetrics', () => {
     beforeEach(() => {
       store.saveUsage(createMockUsage('msg-1', {
         category: 'agents',
-        resourceUri: 'orchestr8://agents/project-manager',
+        resourceUri: 'o8://agents/project-manager',
         totalTokens: 1000,
         baselineTokens: 2000,
         tokensSaved: 1000,
@@ -319,7 +319,7 @@ describe('TokenMetrics', () => {
 
       store.saveUsage(createMockUsage('msg-2', {
         category: 'skills',
-        resourceUri: 'orchestr8://skills/testing-unit',
+        resourceUri: 'o8://skills/testing-unit',
         totalTokens: 500,
         baselineTokens: 1000,
         tokensSaved: 500,

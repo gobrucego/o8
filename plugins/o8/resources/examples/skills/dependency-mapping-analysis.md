@@ -13,7 +13,7 @@ useWhen:
   - Planning service migrations
 estimatedTokens: 350
 relatedResources:
-  - orchestr8://skills/service-dependency-mapping
+  - o8://skills/service-dependency-mapping
 ---
 
 # Dependency Mapping: Analysis Algorithms

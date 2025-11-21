@@ -45,7 +45,7 @@ describe("IndexLookup", () => {
         "Result should contain header"
       );
       assert.ok(
-        result.includes("orchestr8://"),
+        result.includes("o8://"),
         "Result should contain URIs"
       );
     });

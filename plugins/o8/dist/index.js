@@ -48104,13 +48104,13 @@ var import_gray_matter6 = __toESM(require_gray_matter(), 1);
 
 // src/utils/uriParser.ts
 var URIParser = class _URIParser {
-  static PROTOCOL = "orchestr8://";
+  static PROTOCOL = "o8://";
   static MATCH_PATH = "/match";
   static DEFAULT_MAX_TOKENS = 3e3;
   /**
-   * Parse an orchestr8:// URI into its components
+   * Parse an o8:// URI into its components
    *
-   * @param uri - The URI to parse (e.g., 'orchestr8://agents/typescript-developer')
+   * @param uri - The URI to parse (e.g., 'o8://agents/typescript-developer')
    * @returns Parsed URI with discriminated type
    * @throws {Error} If URI format is invalid
    */
@@ -48763,12 +48763,12 @@ This catalog provides a lightweight index of relevant resources. Each entry incl
    - You need more specific or different expertise
 
 **To load a resource:**
-Simply reference it using the \`orchestr8://\` URI shown in each entry below. Claude will automatically load it via MCP.
+Simply reference it using the \`o8://\` URI shown in each entry below. Claude will automatically load it via MCP.
 
-Example: orchestr8://agents/api-designer-rest
+Example: o8://agents/api-designer-rest
 
 **To requery the catalog:**
-Reference: orchestr8://match?query=<refined-search>&categories=<cats>&minScore=15
+Reference: o8://match?query=<refined-search>&categories=<cats>&minScore=15
 
 ---
 
@@ -48777,7 +48777,7 @@ Reference: orchestr8://match?query=<refined-search>&categories=<cats>&minScore=1
     const entries = ordered.map(({ resource, score }, index) => {
       const categoryLabel = this.categoryLabel(resource.category);
       const resourceId = resource.id.split("/").pop();
-      const mcpUri = `orchestr8://${resource.category}s/${resourceId}`;
+      const mcpUri = `o8://${resource.category}s/${resourceId}`;
       const useWhenSection = resource.useWhen && resource.useWhen.length > 0 ? `**Use When:**
 ${resource.useWhen.slice(0, 4).map((use) => `  - ${use}`).join("\n")}${resource.useWhen.length > 4 ? "\n  - ..." : ""}` : "";
       return `
@@ -48790,7 +48790,7 @@ ${resource.capabilities.slice(0, 4).map((cap) => `  - ${cap}`).join("\n")}${reso
 ${useWhenSection}
 **Estimated Tokens:** ~${resource.estimatedTokens}
 
-**Load this resource:** orchestr8://${resource.category}s/${resourceId}
+**Load this resource:** o8://${resource.category}s/${resourceId}
 `;
     });
     const content = header + entries.join("\n---\n");
@@ -48809,7 +48809,7 @@ ${useWhenSection}
    */
   assembleMinimal(fragments) {
     const results = fragments.map(({ resource, score }) => ({
-      uri: `orchestr8://${resource.category}s/${resource.id.split("/").pop()}`,
+      uri: `o8://${resource.category}s/${resource.id.split("/").pop()}`,
       category: resource.category,
       score,
       tokens: resource.estimatedTokens,
@@ -49206,7 +49206,7 @@ var IndexLookup = class {
 
 `;
     });
-    output += `**To load:** Simply reference the orchestr8:// URIs shown above
+    output += `**To load:** Simply reference the o8:// URIs shown above
 `;
     output += `**To refine:** Add more specific keywords to query
 `;
@@ -50199,7 +50199,7 @@ var LocalProvider = class {
         createdAt: frontmatter.createdAt ? new Date(frontmatter.createdAt) : void 0,
         updatedAt: frontmatter.updatedAt ? new Date(frontmatter.updatedAt) : void 0,
         source: this.name,
-        sourceUri: `orchestr8://${categoryPlural}/${id}`,
+        sourceUri: `o8://${categoryPlural}/${id}`,
         content: body,
         dependencies: Array.isArray(frontmatter.dependencies) ? frontmatter.dependencies : void 0,
         related: Array.isArray(frontmatter.related) ? frontmatter.related : void 0
@@ -50585,7 +50585,7 @@ var LocalProvider = class {
       useWhen: fragment.useWhen,
       estimatedTokens: fragment.estimatedTokens,
       source: this.name,
-      sourceUri: `orchestr8://${fragment.category}s/${id}`
+      sourceUri: `o8://${fragment.category}s/${id}`
     };
   }
   /**
@@ -53382,12 +53382,12 @@ var ResourceLoader = class {
   async loadAllResources() {
     const resources = [];
     try {
-      await this.scanDirectory("examples", "orchestr8://examples", resources);
-      await this.scanDirectory("patterns", "orchestr8://patterns", resources);
-      await this.scanDirectory("guides", "orchestr8://guides", resources);
-      await this.scanDirectory("workflows", "orchestr8://workflows", resources);
-      await this.scanDirectory("agents", "orchestr8://agents", resources);
-      await this.scanDirectory("skills", "orchestr8://skills", resources);
+      await this.scanDirectory("examples", "o8://examples", resources);
+      await this.scanDirectory("patterns", "o8://patterns", resources);
+      await this.scanDirectory("guides", "o8://guides", resources);
+      await this.scanDirectory("workflows", "o8://workflows", resources);
+      await this.scanDirectory("agents", "o8://agents", resources);
+      await this.scanDirectory("skills", "o8://skills", resources);
     } catch (error) {
       this.logger.error("Error loading resources:", error);
       return [];
@@ -53749,10 +53749,10 @@ var ResourceLoader = class {
    * @returns Promise resolving to resource content
    *
    * @example Static URI
-   * loadResourceContent("orchestr8://agents/typescript-developer")
+   * loadResourceContent("o8://agents/typescript-developer")
    *
    * @example Dynamic URI
-   * loadResourceContent("orchestr8://agents/match?query=build+api&maxTokens=2000")
+   * loadResourceContent("o8://agents/match?query=build+api&maxTokens=2000")
    */
   async loadResourceContent(uri) {
     if (this.cache.has(uri)) {
@@ -53760,7 +53760,7 @@ var ResourceLoader = class {
       return this.cache.get(uri);
     }
     try {
-      if (uri === "orchestr8://registry") {
+      if (uri === "o8://registry") {
         this.logger.debug("Generating registry catalog");
         await this.ensureIndexLoaded();
         const resources = this.resourceIndex || [];
@@ -53774,8 +53774,8 @@ var ResourceLoader = class {
             examples: resources.filter((r) => r.category === "example").length,
             workflows: resources.filter((r) => r.category === "workflow").length
           },
-          searchUri: "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
-          usage: "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
+          searchUri: "o8://match?query=<keywords>&mode=index&maxResults=5",
+          usage: "Use o8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
         };
         const content = JSON.stringify(catalog, null, 2);
         this.cache.set(uri, content);
@@ -53889,7 +53889,7 @@ var ResourceLoader = class {
       maxTokens: parsed.matchParams.maxTokens,
       requiredTags: parsed.matchParams.tags,
       category: parsed.category,
-      // Category from URI path (e.g., orchestr8://agents/match?)
+      // Category from URI path (e.g., o8://agents/match?)
       categories: parsed.matchParams.categories,
       // Categories from query param (e.g., ?categories=agent,skill)
       mode: parsed.matchParams.mode || "catalog",
@@ -53932,7 +53932,7 @@ var ResourceLoader = class {
    * Convert URI to filesystem path
    */
   uriToFilePath(uri) {
-    const pathPart = uri.replace("orchestr8://", "");
+    const pathPart = uri.replace("o8://", "");
     const extensions = [".md", ".json", ".yaml"];
     for (const ext of extensions) {
       const filePath = join7(this.resourcesPath, pathPart + ext);
@@ -53953,7 +53953,7 @@ var ResourceLoader = class {
       id: fragment.id,
       name: fragment.id,
       // Add name field for display
-      uri: `orchestr8://${fragment.id}`,
+      uri: `o8://${fragment.id}`,
       description: fragment.capabilities?.slice(0, 3).join(", ") || "No description",
       // Use capabilities as description
       tags: fragment.tags || [],
@@ -53981,7 +53981,7 @@ var ResourceLoader = class {
       return idMatch || tagMatch || capMatch;
     }).map((fragment) => ({
       id: fragment.id,
-      uri: `orchestr8://${fragment.id}`,
+      uri: `o8://${fragment.id}`,
       category: fragment.category,
       tags: fragment.tags || [],
       capabilities: fragment.capabilities || [],
@@ -55988,8 +55988,8 @@ if (process.env.NODE_ENV !== "test") {
 var __filename = fileURLToPath(import.meta.url);
 var __dirname = path3.dirname(__filename);
 var logger3 = new Logger("orchestr8-mcp");
-var HTTP_MODE = process.env.ORCHESTR8_HTTP === "true" || process.env.ORCHESTR8_HTTP === "1";
-var HTTP_PORT = parseInt(process.env.ORCHESTR8_HTTP_PORT || "1337", 10);
+var HTTP_MODE = process.env.O8_HTTP === "true" || process.env.O8_HTTP === "1";
+var HTTP_PORT = parseInt(process.env.O8_HTTP_PORT || "1337", 10);
 var Orchestr8Server = class {
   server;
   promptLoader;
@@ -56127,14 +56127,14 @@ var Orchestr8Server = class {
   registerResourceRegistry(resources) {
     this.server.registerResource(
       "resource-registry",
-      "orchestr8://registry",
+      "o8://registry",
       {
         mimeType: "application/json",
         description: "Lightweight resource catalog for discovery"
       },
       async () => {
         this.stats.logActivity("resource_read", {
-          uri: "orchestr8://registry",
+          uri: "o8://registry",
           category: "registry"
         });
         const catalog = {
@@ -56148,13 +56148,13 @@ var Orchestr8Server = class {
             guides: resources.filter((r) => r.category === "guides").length,
             workflows: resources.filter((r) => r.category === "workflows").length
           },
-          searchUri: "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
-          usage: "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
+          searchUri: "o8://match?query=<keywords>&mode=index&maxResults=5",
+          usage: "Use o8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency."
         };
         return {
           contents: [
             {
-              uri: "orchestr8://registry",
+              uri: "o8://registry",
               mimeType: "application/json",
               text: JSON.stringify(catalog, null, 2)
             }
@@ -56197,7 +56197,7 @@ var Orchestr8Server = class {
     ];
     for (const { name, description } of categories) {
       const categoryResources = byCategory[name] || [];
-      const aggregateUri = `orchestr8://${name}`;
+      const aggregateUri = `o8://${name}`;
       this.server.registerResource(
         `${name}-list`,
         aggregateUri,
@@ -56325,7 +56325,7 @@ var Orchestr8Server = class {
       }
     ];
     for (const { category, description } of dynamicCategories) {
-      const dynamicTemplateUri = `orchestr8://${category}/match{+rest}`;
+      const dynamicTemplateUri = `o8://${category}/match{+rest}`;
       this.server.registerResource(
         `${category}-dynamic`,
         new ResourceTemplate(dynamicTemplateUri, { list: void 0 }),
@@ -56363,7 +56363,7 @@ var Orchestr8Server = class {
       logger3.debug(
         `Registered dynamic resource template: ${dynamicTemplateUri}`
       );
-      const staticTemplateUri = `orchestr8://${category}/{+resourceId}`;
+      const staticTemplateUri = `o8://${category}/{+resourceId}`;
       this.server.registerResource(
         `${category}-static`,
         new ResourceTemplate(staticTemplateUri, { list: void 0 }),
@@ -56405,7 +56405,7 @@ var Orchestr8Server = class {
       );
       logger3.debug(`Registered static resource template: ${staticTemplateUri}`);
     }
-    const globalTemplateUri = "orchestr8://match{+rest}";
+    const globalTemplateUri = "o8://match{+rest}";
     this.server.registerResource(
       "global-dynamic",
       new ResourceTemplate(globalTemplateUri, { list: void 0 }),

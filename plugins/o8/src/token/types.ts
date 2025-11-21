@@ -34,7 +34,7 @@ export interface TokenUsage {
   /** Resource category that triggered this usage (e.g., 'agent', 'skill', 'pattern') */
   category?: string;
 
-  /** Specific resource URI loaded (e.g., 'orchestr8://agents/project-manager') */
+  /** Specific resource URI loaded (e.g., 'o8://agents/project-manager') */
   resourceUri?: string;
 
   /** Baseline tokens (what would have been used without orchestr8) */

@@ -1,7 +1,7 @@
 {
-  "name": "orchestr8-mcp-server",
+  "name": "o8-mcp-server",
   "version": "8.0.6",
-  "description": "MCP server for orchestr8 - Autonomous software development workflows, agents, and skills for Claude Code",
+  "description": "MCP server for o8 - Autonomous software development workflows, agents, and skills for Claude Code",
   "main": "dist/index.js",
   "scripts": {
     "build": "npm run bundle && npm run copy-static",
@@ -11,9 +11,9 @@
     "build-index": "tsx scripts/build-index.ts",
     "watch": "tsc --project tsconfig.dev.json --watch",
     "dev": "tsx watch src/index.ts",
-    "dev:http": "ORCHESTR8_HTTP=true tsx watch src/index.ts",
+    "dev:http": "O8_HTTP=true tsx watch src/index.ts",
     "start": "node dist/index.js",
-    "start:http": "ORCHESTR8_HTTP=true node dist/index.js",
+    "start:http": "O8_HTTP=true node dist/index.js",
     "clean": "rm -rf dist",
     "test": "npm run test:unit && npm run test:integration",
     "test:unit": "node --test tests/unit/**/*.test.js",
@@ -38,12 +38,12 @@
   "keywords": [
     "mcp",
     "claude",
-    "orchestr8",
+    "o8",
     "ai",
     "workflow",
     "automation"
   ],
-  "author": "orchestr8",
+  "author": "o8",
   "license": "MIT",
   "type": "module",
   "dependencies": {

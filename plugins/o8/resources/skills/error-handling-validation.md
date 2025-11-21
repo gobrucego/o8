@@ -25,14 +25,14 @@ useWhen:
 - This skill defines custom error types used across error handling family
 
 **API Layer (uses these error types):**
-- orchestr8://skills/error-handling-api-patterns - API error responses and middleware
+- o8://skills/error-handling-api-patterns - API error responses and middleware
 
 **Cross-Cutting:**
-- orchestr8://skills/error-handling-logging - Error logging with context
-- orchestr8://skills/error-handling-resilience - Retry and circuit breaker patterns
+- o8://skills/error-handling-logging - Error logging with context
+- o8://skills/error-handling-resilience - Retry and circuit breaker patterns
 
 **Related Security:**
-- orchestr8://skills/security-input-validation - Security-focused validation
+- o8://skills/security-input-validation - Security-focused validation
 
 ## Schema Validation with Zod
 

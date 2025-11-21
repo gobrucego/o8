@@ -40,8 +40,8 @@ const logger = new Logger("orchestr8-mcp");
 
 // Check if HTTP mode is enabled via environment variable
 const HTTP_MODE =
-  process.env.ORCHESTR8_HTTP === "true" || process.env.ORCHESTR8_HTTP === "1";
-const HTTP_PORT = parseInt(process.env.ORCHESTR8_HTTP_PORT || "1337", 10);
+  process.env.O8_HTTP === "true" || process.env.O8_HTTP === "1";
+const HTTP_PORT = parseInt(process.env.O8_HTTP_PORT || "1337", 10);
 
 class Orchestr8Server {
   private server: McpServer;
@@ -230,7 +230,7 @@ class Orchestr8Server {
   private registerResourceRegistry(resources: any[]): void {
     this.server.registerResource(
       "resource-registry",
-      "orchestr8://registry",
+      "o8://registry",
       {
         mimeType: "application/json",
         description: "Lightweight resource catalog for discovery",
@@ -238,7 +238,7 @@ class Orchestr8Server {
       async () => {
         // Track MCP registry request
         this.stats.logActivity("resource_read", {
-          uri: "orchestr8://registry",
+          uri: "o8://registry",
           category: "registry",
         });
 
@@ -255,15 +255,15 @@ class Orchestr8Server {
               .length,
           },
           searchUri:
-            "orchestr8://match?query=<keywords>&mode=index&maxResults=5",
+            "o8://match?query=<keywords>&mode=index&maxResults=5",
           usage:
-            "Use orchestr8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
+            "Use o8://match?query=... for resource discovery. Default mode is 'index' for optimal efficiency.",
         };
 
         return {
           contents: [
             {
-              uri: "orchestr8://registry",
+              uri: "o8://registry",
               mimeType: "application/json",
               text: JSON.stringify(catalog, null, 2),
             },
@@ -312,7 +312,7 @@ class Orchestr8Server {
 
     for (const { name, description } of categories) {
       const categoryResources = byCategory[name] || [];
-      const aggregateUri = `orchestr8://${name}`;
+      const aggregateUri = `o8://${name}`;
 
       this.server.registerResource(
         `${name}-list`,
@@ -466,8 +466,8 @@ class Orchestr8Server {
     ];
 
     for (const { category, description } of dynamicCategories) {
-      // Register dynamic matching template (e.g., orchestr8://agents/match?query=...)
-      const dynamicTemplateUri = `orchestr8://${category}/match{+rest}`;
+      // Register dynamic matching template (e.g., o8://agents/match?query=...)
+      const dynamicTemplateUri = `o8://${category}/match{+rest}`;
 
       this.server.registerResource(
         `${category}-dynamic`,
@@ -514,8 +514,8 @@ class Orchestr8Server {
         `Registered dynamic resource template: ${dynamicTemplateUri}`,
       );
 
-      // Register static resource template (e.g., orchestr8://agents/medium-writer-expert)
-      const staticTemplateUri = `orchestr8://${category}/{+resourceId}`;
+      // Register static resource template (e.g., o8://agents/medium-writer-expert)
+      const staticTemplateUri = `o8://${category}/{+resourceId}`;
 
       this.server.registerResource(
         `${category}-static`,
@@ -570,7 +570,7 @@ class Orchestr8Server {
     }
 
     // Register global catch-all template
-    const globalTemplateUri = "orchestr8://match{+rest}";
+    const globalTemplateUri = "o8://match{+rest}";
     this.server.registerResource(
       "global-dynamic",
       new ResourceTemplate(globalTemplateUri, { list: undefined }),

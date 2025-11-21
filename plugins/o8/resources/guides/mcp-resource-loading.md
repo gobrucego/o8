@@ -1,6 +1,6 @@
 # How to Load orchestr8 MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using the MCP resource tools.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using the MCP resource tools.
 
 ## Tool Usage
 
@@ -8,8 +8,8 @@ Use the `ReadMcpResourceTool` with these parameters:
 
 ```
 ReadMcpResourceTool:
-- server: "plugin:orchestr8:orchestr8-resources"
-- uri: "<the orchestr8:// URI>"
+- server: "plugin:o8:o8-resources"
+- uri: "<the o8:// URI>"
 ```
 
 ## Examples
@@ -17,32 +17,32 @@ ReadMcpResourceTool:
 **Load a specific resource:**
 ```
 ReadMcpResourceTool(
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://patterns/autonomous-organization"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://patterns/autonomous-organization"
 )
 ```
 
 **Query for matching resources:**
 ```
 ReadMcpResourceTool(
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://match?query=typescript react&categories=agents,skills&minScore=15"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://match?query=typescript react&categories=agents,skills&minScore=15"
 )
 ```
 
 **Load an agent:**
 ```
 ReadMcpResourceTool(
-  server: "plugin:orchestr8:orchestr8-resources",
-  uri: "orchestr8://agents/project-manager"
+  server: "plugin:o8:o8-resources",
+  uri: "o8://agents/project-manager"
 )
 ```
 
 ## Common URI Patterns
 
-- **Direct resource:** `orchestr8://category/resource-name`
-- **Dynamic query:** `orchestr8://match?query=<keywords>&categories=<cats>&minScore=<threshold>`
-- **Category search:** `orchestr8://category/match?query=<keywords>`
+- **Direct resource:** `o8://category/resource-name`
+- **Dynamic query:** `o8://match?query=<keywords>&categories=<cats>&minScore=<threshold>`
+- **Category search:** `o8://category/match?query=<keywords>`
 
 ## Categories
 

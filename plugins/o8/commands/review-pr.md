@@ -22,9 +22,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -33,7 +33,7 @@ You are the **Code Reviewer** responsible for comprehensive PR review across sty
 
 ## Phase 1: PR Context Gathering (0-15%)
 
-**→ Load:** orchestr8://workflows/workflow-review-pr
+**→ Load:** o8://workflows/workflow-review-pr
 
 **Activities:**
 - Fetch PR details from GitHub (title, description, author, branches)
@@ -48,7 +48,7 @@ You are the **Code Reviewer** responsible for comprehensive PR review across sty
 
 ## Phase 2: Multi-Stage Code Review (15-80%)
 
-**→ Load:** orchestr8://match?query=code+review+security+performance+architecture&categories=skill,pattern&mode=index&maxResults=8
+**→ Load:** o8://match?query=code+review+security+performance+architecture&categories=skill,pattern&mode=index&maxResults=8
 
 **Parallel Review Stages:**
 - **Style & Readability:** Code style, naming, complexity, formatting
@@ -72,7 +72,7 @@ You are the **Code Reviewer** responsible for comprehensive PR review across sty
 
 ## Phase 3: Review Summary & GitHub Posting (80-100%)
 
-**→ Load:** orchestr8://match?query=code+review+github+automation&categories=skill&mode=index&maxResults=5
+**→ Load:** o8://match?query=code+review+github+automation&categories=skill&mode=index&maxResults=5
 
 **Activities:**
 - Aggregate findings from all review stages

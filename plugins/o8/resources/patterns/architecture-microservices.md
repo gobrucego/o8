@@ -203,8 +203,8 @@ class OrderSaga {
 
 ## Related Architecture Patterns
 
-- **orchestr8://patterns/architecture-layered** - Layered architecture within each microservice
-- **orchestr8://patterns/architecture-decision-records** - Document microservices decomposition decisions
-- **orchestr8://patterns/event-driven-saga** - Distributed transactions across microservices
-- **orchestr8://patterns/event-driven-pubsub** - Inter-service communication pattern
-- **orchestr8://patterns/event-driven-cqrs** - CQRS often used in microservices
+- **o8://patterns/architecture-layered** - Layered architecture within each microservice
+- **o8://patterns/architecture-decision-records** - Document microservices decomposition decisions
+- **o8://patterns/event-driven-saga** - Distributed transactions across microservices
+- **o8://patterns/event-driven-pubsub** - Inter-service communication pattern
+- **o8://patterns/event-driven-cqrs** - CQRS often used in microservices

@@ -201,7 +201,7 @@ describe("ResourceLoader Provider Integration", () => {
       await resourceLoader.initializeProviders();
     });
 
-    it("should load resource from local provider via orchestr8:// URI", async () => {
+    it("should load resource from local provider via o8:// URI", async () => {
       try {
         // Search for a resource first
         const results = await resourceLoader.searchProvider("local", "test", {
@@ -210,7 +210,7 @@ describe("ResourceLoader Provider Integration", () => {
 
         if (results.length > 0) {
           const resourceId = results[0].resource.id;
-          const uri = `orchestr8://${resourceId}`;
+          const uri = `o8://${resourceId}`;
 
           const content = await resourceLoader.loadResourceContent(uri);
 
@@ -231,7 +231,7 @@ describe("ResourceLoader Provider Integration", () => {
 
         if (results.length > 0) {
           const resourceId = results[0].resource.id;
-          const uri = `orchestr8://${resourceId}`;
+          const uri = `o8://${resourceId}`;
 
           // First load
           await resourceLoader.loadResourceContent(uri);
@@ -249,7 +249,7 @@ describe("ResourceLoader Provider Integration", () => {
     it("should handle dynamic resource URIs", async () => {
       try {
         const uri =
-          "orchestr8://agents/match?query=typescript+api&maxResults=3&mode=catalog";
+          "o8://agents/match?query=typescript+api&maxResults=3&mode=catalog";
 
         const content = await resourceLoader.loadResourceContent(uri);
 
@@ -491,7 +491,7 @@ describe("ResourceLoader Provider Integration", () => {
       await assert.rejects(
         async () => {
           await resourceLoader.loadResourceContent(
-            "orchestr8://nonexistent/resource-xyz-123",
+            "o8://nonexistent/resource-xyz-123",
           );
         },
         Error,
@@ -502,7 +502,7 @@ describe("ResourceLoader Provider Integration", () => {
     it("should continue working after provider errors", async () => {
       try {
         // Try to load non-existent resource
-        await resourceLoader.loadResourceContent("orchestr8://nonexistent/xyz");
+        await resourceLoader.loadResourceContent("o8://nonexistent/xyz");
       } catch (error) {
         // Expected to fail
       }
@@ -625,7 +625,7 @@ describe("ResourceLoader Provider Integration", () => {
           const firstResult = results[0];
 
           // 3. Construct URI and load content
-          const uri = `orchestr8://${firstResult.resource.id}`;
+          const uri = `o8://${firstResult.resource.id}`;
           const content = await resourceLoader.loadResourceContent(uri);
 
           // 4. Verify content

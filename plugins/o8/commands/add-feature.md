@@ -19,9 +19,9 @@ allowed-tools:
 
 ## How to Load MCP Resources
 
-**CRITICAL:** All `orchestr8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:orchestr8:orchestr8-resources"` and the `uri` parameter set to the resource URI shown.
+**CRITICAL:** All `o8://` URIs in this workflow must be loaded using `ReadMcpResourceTool` with `server: "plugin:o8:o8-resources"` and the `uri` parameter set to the resource URI shown.
 
-For detailed instructions and examples, load: `orchestr8://guides/mcp-resource-loading`
+For detailed instructions and examples, load: `o8://guides/mcp-resource-loading`
 
 
 ## Your Role
@@ -30,7 +30,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 1: Analysis & Design (0-20%)
 
-**→ Load:** orchestr8://match?query=requirement+analysis+api+design+integration&categories=skill,pattern&mode=index&maxResults=5
+**→ Load:** o8://match?query=requirement+analysis+api+design+integration&categories=skill,pattern&mode=index&maxResults=5
 
 **Activities:**
 - Parse feature requirements and define acceptance criteria
@@ -44,7 +44,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 2: Implementation (20-70%)
 
-**→ Load:** orchestr8://workflows/workflow-add-feature
+**→ Load:** o8://workflows/workflow-add-feature
 
 **Parallel tracks:**
 - **Backend Track:** Schema/migrations, models, business logic, API endpoints, authentication
@@ -65,7 +65,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 3: Quality Assurance (70-90%)
 
-**→ Load:** orchestr8://match?query=testing+code+review+security+validation&categories=skill,agent&mode=index&maxResults=5
+**→ Load:** o8://match?query=testing+code+review+security+validation&categories=skill,agent&mode=index&maxResults=5
 
 **Parallel tracks:**
 - **Testing Track:** E2E tests, edge cases, coverage verification
@@ -84,7 +84,7 @@ You are the **Feature Developer** responsible for seamlessly integrating new fun
 
 ## Phase 4: Integration & Deployment (90-100%)
 
-**→ Load:** orchestr8://match?query=deployment+feature+flags+documentation&categories=guide,skill&mode=index&maxResults=5
+**→ Load:** o8://match?query=deployment+feature+flags+documentation&categories=guide,skill&mode=index&maxResults=5
 
 **Parallel tracks:**
 - **Documentation Track:** API docs, inline comments, changelog, migration notes

@@ -371,7 +371,7 @@ test('MCP server handles resource requests', async (t) => {
   const server = new McpServer();
   await server.initialize();
 
-  const resource = await server.getResource('orchestr8://agents/typescript-core');
+  const resource = await server.getResource('o8://agents/typescript-core');
   assert.ok(resource.content);
 });
 ```
@@ -654,7 +654,7 @@ Configure the MCP server using environment variables:
 
 ```json
 {
-  "orchestr8-resources": {
+  "o8-resources": {
     "command": "node",
     "args": ["${CLAUDE_PLUGIN_ROOT}/dist/index.js"],
     "env": {

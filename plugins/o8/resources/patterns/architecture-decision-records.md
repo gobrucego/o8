@@ -136,7 +136,7 @@ Reassess decisions when:
 
 ## Related Architecture Patterns
 
-- **orchestr8://patterns/architecture-layered** - Document layering decisions with ADRs
-- **orchestr8://patterns/architecture-microservices** - ADRs essential for microservices design choices
-- **orchestr8://patterns/technology-selection-criteria** - Systematic technology evaluation
-- **orchestr8://patterns/trade-off-analysis-framework** - Structured decision-making for ADRs
+- **o8://patterns/architecture-layered** - Document layering decisions with ADRs
+- **o8://patterns/architecture-microservices** - ADRs essential for microservices design choices
+- **o8://patterns/technology-selection-criteria** - Systematic technology evaluation
+- **o8://patterns/trade-off-analysis-framework** - Structured decision-making for ADRs

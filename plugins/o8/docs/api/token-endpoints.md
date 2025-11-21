@@ -6,7 +6,7 @@
 
 The Token Efficiency API provides 6 HTTP endpoints for accessing real-time token usage metrics, cost savings, and efficiency analysis. All endpoints return JSON responses and support time-period filtering.
 
-**Base URL**: `http://localhost:1337` (configurable via `ORCHESTR8_HTTP_PORT`)
+**Base URL**: `http://localhost:1337` (configurable via `O8_HTTP_PORT`)
 
 **Authentication**: None required (local server only)
 
@@ -126,12 +126,12 @@ curl http://localhost:1337/api/tokens/efficiency?period=last_day
       "costSavingsUSD": 2.025,
       "topResources": [
         {
-          "uri": "orchestr8://agents/typescript-developer",
+          "uri": "o8://agents/typescript-developer",
           "loadCount": 15,
           "tokens": 22500
         },
         {
-          "uri": "orchestr8://agents/python-expert-core",
+          "uri": "o8://agents/python-expert-core",
           "loadCount": 12,
           "tokens": 18000
         }
@@ -151,7 +151,7 @@ curl http://localhost:1337/api/tokens/efficiency?period=last_day
       "costSavingsUSD": 2.01,
       "topResources": [
         {
-          "uri": "orchestr8://skills/api-optimization",
+          "uri": "o8://skills/api-optimization",
           "loadCount": 18,
           "tokens": 9000
         }
@@ -173,13 +173,13 @@ curl http://localhost:1337/api/tokens/efficiency?period=last_day
   },
   "topPerformers": [
     {
-      "uri": "orchestr8://skills/api-optimization",
+      "uri": "o8://skills/api-optimization",
       "category": "skill",
       "efficiency": 98.2,
       "tokensSaved": 15234
     },
     {
-      "uri": "orchestr8://patterns/event-driven-cqrs",
+      "uri": "o8://patterns/event-driven-cqrs",
       "category": "pattern",
       "efficiency": 97.8,
       "tokensSaved": 12456
@@ -187,7 +187,7 @@ curl http://localhost:1337/api/tokens/efficiency?period=last_day
   ],
   "needsOptimization": [
     {
-      "uri": "orchestr8://agents/legacy-system-analyst",
+      "uri": "o8://agents/legacy-system-analyst",
       "category": "agent",
       "efficiency": 52.1,
       "loadCount": 8
@@ -361,7 +361,7 @@ curl http://localhost:1337/api/tokens/sessions/sess_abc123
       "cacheCreationTokens": 1200,
       "totalTokens": 5250,
       "category": "agent",
-      "resourceUri": "orchestr8://agents/typescript-developer",
+      "resourceUri": "o8://agents/typescript-developer",
       "baselineTokens": 15000,
       "tokensSaved": 9750,
       "efficiencyPercentage": 65.0,
@@ -444,7 +444,7 @@ curl http://localhost:1337/api/tokens/by-category?period=last_day
       "costSavingsUSD": 2.025,
       "topResources": [
         {
-          "uri": "orchestr8://agents/typescript-developer",
+          "uri": "o8://agents/typescript-developer",
           "loadCount": 15,
           "tokens": 22500
         }
@@ -464,7 +464,7 @@ curl http://localhost:1337/api/tokens/by-category?period=last_day
       "costSavingsUSD": 2.01,
       "topResources": [
         {
-          "uri": "orchestr8://skills/api-optimization",
+          "uri": "o8://skills/api-optimization",
           "loadCount": 18,
           "tokens": 9000
         }
